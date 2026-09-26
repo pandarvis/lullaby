@@ -1,7 +1,8 @@
 # Fidélité aux moteurs Claude et Codex
 
 Date : 26 septembre 2026. Exigence utilisateur retenue ; mécanismes ci-dessous
-à valider avec les versions retenues. Aucune intégration réelle testée.
+à valider avec les versions retenues. Les premiers essais réels Claude sont décrits
+dans la [recette locale](validation/claude-local.md) ; la parité globale reste à vérifier.
 
 ## Contrat produit
 

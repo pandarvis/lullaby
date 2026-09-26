@@ -33,7 +33,10 @@ ne doit pas bloquer l'utilisation du paquet final. Le bloc ci-dessus les relève
 seulement pour l'inventaire. Le paquet Electron devra embarquer son runtime et
 ses bibliothèques ; aucun serveur web séparé, WSL ou Docker n'est prévu.
 
-L'installation ou l'intégration des moteurs Claude/Codex reste à déterminer.
+Le SDK Claude épinglé embarque un exécutable Windows natif. La recette personnelle
+a été réalisée avec Git for Windows et son Bash natif disponibles ; vérifier ces
+prérequis et l'autorisation de cet exécutable sur le poste pro. Codex sera détecté
+comme moteur externe configurable. Voir la [recette Claude](validation/claude-local.md).
 Un paquet unique peut lancer plusieurs exécutables : chacun peut être bloqué.
 Vérifier les exigences d'autorisation, de signature du paquet et des exécutables
 enfants, et la méthode de distribution acceptée (installateur ou autre).
@@ -150,3 +153,26 @@ Noter le plan disponible et l'état des quotas sans publier d'informations de co
 Conserver ce compte rendu localement ; ne pas ajouter les détails internes de
 l'entreprise au dépôt public. Un statut « à vérifier » est préférable à une
 conclusion obtenue uniquement à partir d'un test réseau partiel.
+
+## Réglages implémentés dans le socle Windows
+
+Le panneau Réseau configure chaque moteur séparément : adresse HTTP(S), certificat
+PEM et, en option, exécutable/arguments/port du relais. Les champs vides conservent
+l'environnement hérité, dont l'interface n'affiche que la présence des variables.
+La configuration est stockée dans network.json sous les données utilisateur de
+Lullaby, hors des projets. Aucun identifiant n'est à saisir dans ces champs.
+
+Le bouton de lancement est explicite. Un port déjà ouvert est traité comme relais
+externe : Lullaby le conserve à sa fermeture. Seul le processus lancé par Lullaby
+est arrêté. Un port ouvert ne prouve ni l'authentification au proxy d'entreprise ni
+l'accès au fournisseur ; le diagnostic puis un véritable échange restent nécessaires.
+Le relais doit rester en avant-plan dans son processus (pas de mode daemon détaché).
+
+Claude reçoit NODE_EXTRA_CA_CERTS ; Codex reçoit CODEX_CA_CERTIFICATE, avec son
+héritage SSL_CERT_FILE préservé si aucun chemin n'est saisi. Référence Codex :
+[certificats et authentification](https://learn.chatgpt.com/docs/auth#custom-ca-bundles).
+Ces réglages ne désactivent pas TLS et ne changent pas l'environnement global.
+
+Tests locaux : environnements séparés, URL/arguments avec secrets refusés, relais
+TCP externe conservé, lanceur absent, timeout, lancement/arrêt possédé et rechargement
+des profils. Px et le certificat d'entreprise réels restent non testés sur poste pro.

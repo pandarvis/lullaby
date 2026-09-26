@@ -1,10 +1,10 @@
 # Lullaby V0 — validation locale sous Windows
 
-Date : 26 septembre 2026. Spécification proposée pour revue avant implémentation.
+Date : 26 septembre 2026. Spécification validée avec le plan d'implémentation.
 
 Un [plan d'implémentation](../plans/2026-09-26-v0-windows.md) a été demandé et rédigé.
-Aucune exécution commencée. La demande de préparation du plan ne vaut pas validation
-de chaque choix technique ci-dessous.
+Le socle est implémenté sur sa branche feature ; les résultats réels et limites
+sont tenus dans [l'état du projet](../../etat-projet.md) et les recettes liées.
 
 ## Objectif
 

@@ -32,8 +32,8 @@ documentée avec une décision validée ou une fonctionnalité implémentée.
   `docs/decisions.md`. Marquer les propositions comme telles.
 - À la fin d'une tâche ou avant une passation, actualiser `docs/etat-projet.md` :
   résultat, vérifications réelles, limites, prochaine action et branche concernée.
-- Ne pas inventer de commande de test : actuellement aucune application ni suite de
-  tests n'existe. Documenter les commandes utiles dès leur introduction.
+- Ne pas inventer de commande de test : les commandes et prérequis sont dans
+  `docs/developpement.md`. Documenter toute nouvelle commande lors de son introduction.
 
 ## Cohabitation Codex / Claude
 

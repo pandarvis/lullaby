@@ -15,9 +15,14 @@ dans la même PR. Éviter les comptes rendus redondants et les copies de convers
 | [Feuille de route](feuille-de-route.md) | Ordre des jalons et accès aux plans d'implémentation |
 | [Vue Git V1](superpowers/specs/2026-09-26-v1-git-design.md) | Graphe des commits, arborescence des changements et différences |
 | [Poste professionnel](poste-pro.md) | Prérequis et contrôles à effectuer sur la machine cible |
+| [Développement](developpement.md) | Commandes du socle Electron et tests |
+| [Recette Claude](validation/claude-local.md) | Essais réels de l'abonnement et reprise CLI |
+| [Recette Codex](validation/codex-local.md) | App Server, authentification, skills et reprise |
+| [Recette interface](validation/interface-v0.md) | Parcours Iris et chat assistant-ui |
+| [Recette du paquet Windows](validation/v0-windows.md) | Vérifications finales, décisions de réalisation et réserves V0 |
 | [Contribution](../CONTRIBUTING.md) | Gitflow, PR et mise à jour des documents |
 | [Consignes communes](../AGENTS.md) | Règles partagées par Codex et Claude |
 
 Ordre conseillé à la reprise : état du projet, contribution, puis les documents
 touchés par la tâche. Les plans du socle Windows et de la vue Git sont disponibles
-depuis la feuille de route ; leur existence ne vaut pas démarrage de leur exécution.
+depuis la feuille de route ; leur progression réelle est décrite dans l'état du projet.
