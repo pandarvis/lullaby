@@ -35,6 +35,13 @@ Les traits survolés mettent leurs extrémités en évidence. Aucun nom de branc
 d'origine n'est inféré. Aucun appel Git supplémentaire, aucune dépendance ajoutée.
 L'aperçu Windows contient cette amélioration ; la branche reste locale et non fusionnée.
 
+Suite approuvée sur `feature/iris-workspace`, depuis `feature/git-hover` (`f5998ed`)
+pour conserver les fiches validées : huit emblèmes facettés SVG, identité stable par
+projet, pictogrammes Git, suppression des slogans et du grand titre redondant.
+Le chat occupe la hauteur restante de la fenêtre et conserve ses contrôles natifs.
+Aucune dépendance ni migration de stockage. La nouvelle branche inclut le survol
+encore non fusionné ; intégrer cette branche suffit pour livrer les deux évolutions.
+
 Implémenté : shell Electron Windows, Iris et logo SVG validés, menu repliable,
 projets par dossier, conversations Claude/Codex, chat assistant-ui, Markdown/code,
 actions, questions, autorisations, arrêt et reprise par identifiant natif.
@@ -70,6 +77,12 @@ professionnelle n'a été inventée ni aucun réglage global modifié.
 - Avec les fiches Git : 67 tests réussis, 5 essais fournisseurs ignorés ; build et
   TypeScript réussis. Fiche de merge, références, navigation clavier et fermeture
   Échap observées dans l'aperçu Electron sur le dépôt Lullaby.
+- Emblèmes et densité : build/TypeScript et 14 tests ciblés Git/chat réussis.
+  Aperçu Electron vérifié avec une conversation existante : modèles, messages,
+  saisie visible en bas, emblèmes cohérents dans les cartes et le menu. Environ
+  140 px récupérés au-dessus de la conversation à taille de fenêtre identique.
+  Contrôle supplémentaire à 797 × 574 px : conversations à gauche, messages
+  défilants et saisie accessible. Fenêtre ensuite réagrandie pour l'essai utilisateur.
 - Paquet Windows construit et aperçu hors checkout actualisé. Graphe, merge,
   changements locaux et actualisation d'un diff observés. Fenêtre sous 850 px et
   recette V0 complète restent à vérifier. Paquet non signé.
@@ -90,7 +103,8 @@ Terminer les essais ouverts de la
 [recette du paquet](validation/v0-windows.md) et les contrôles du poste professionnel.
 La V0 a déjà été intégrée localement à develop ; cette nouvelle tranche suit
 la même intégration locale, sans publication de release. Les fiches au survol
-restent sur `feature/git-hover` pour validation avant intégration.
+et la nouvelle disposition sont disponibles sur `feature/iris-workspace` pour
+validation avant intégration.
 Chronos par projet/session, distinction humain/agent, supervision avancée et alertes
 internes appartiennent aux jalons suivants. Notifications Windows non prioritaires,
 espace documentaire spécialisé envisagé en V2.

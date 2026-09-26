@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { GitSnapshot } from '../../../shared/git';
+import { GitIcon } from './GitIcon';
 
 type Target = { oid:string; parent?:string; x:number; y:number; snapshotId:string };
 export function useCommitHover(snapshot:GitSnapshot, active:boolean) {
@@ -49,11 +50,11 @@ function CommitHover({id,target,snapshot,onEnter,onLeave}:{id:string;target:Targ
   },[target]);
   if(!commit)return null;
   return createPortal(<div ref={ref} id={id} role="tooltip" data-git-tooltip className="git-hover-card" style={position} onMouseEnter={onEnter} onMouseLeave={onLeave}>
-    <div className="git-hover-eyebrow">{target.parent?'Lien vers un parent':commit.parents.length>1?`Fusion · ${commit.parents.length} parents`:commit.parents.length===0?'Commit racine':'Commit'}{snapshot.head===commit.oid&&<span>{snapshot.branch?'HEAD':'HEAD détachée'}</span>}</div>
+    <div className="git-hover-eyebrow"><GitIcon name={target.parent?'parent':'commit'}/>{target.parent?'Lien vers un parent':commit.parents.length>1?`Fusion · ${commit.parents.length} parents`:commit.parents.length===0?'Commit racine':'Commit'}{snapshot.head===commit.oid&&<span>{snapshot.branch?'HEAD':'HEAD détachée'}</span>}</div>
     <strong className="git-hover-title">{commit.subject||'(sans message)'}</strong>
     <p>{commit.author}<br/><time dateTime={commit.date} title={commit.date}>{Number.isNaN(Date.parse(commit.date))?commit.date:new Date(commit.date).toLocaleString('fr-FR',{dateStyle:'long',timeStyle:'short'})}</time></p>
     <code>{commit.oid.slice(0,8)}</code>
-    {snapshot.refs.some(r=>r.oid===commit.oid)&&<ul className="git-hover-refs">{snapshot.refs.filter(r=>r.oid===commit.oid).map(r=><li key={`${r.kind}:${r.name}`} className={`git-hover-ref ${r.kind}`}>{r.kind==='local'?'Branche locale':r.kind==='remote'?'Référence distante connue':'Tag'} : {r.name}</li>)}</ul>}
-    {target.parent?<div className="git-hover-parents"><span>{parent?'Parent':'Parent hors des commits chargés'}</span><code>{target.parent.slice(0,8)}</code>{parent&&<p>{parent.subject}</p>}</div>:commit.parents.length>0&&<div className="git-hover-parents"><span>{commit.parents.length>1?'Parents':'Parent'}</span>{commit.parents.map(oid=><code key={oid}>{oid.slice(0,8)}</code>)}</div>}
+    {snapshot.refs.some(r=>r.oid===commit.oid)&&<ul className="git-hover-refs">{snapshot.refs.filter(r=>r.oid===commit.oid).map(r=><li key={`${r.kind}:${r.name}`} className={`git-hover-ref ${r.kind}`}><GitIcon name={r.kind==='local'?'branch':r.kind==='remote'?'remote':'tag'}/><span>{r.kind==='local'?'Branche locale':r.kind==='remote'?'Référence distante connue':'Tag'} : {r.name}</span></li>)}</ul>}
+    {target.parent?<div className="git-hover-parents"><GitIcon name="parent"/><span>{parent?'Parent':'Parent hors des commits chargés'}</span><code>{target.parent.slice(0,8)}</code>{parent&&<p>{parent.subject}</p>}</div>:commit.parents.length>0&&<div className="git-hover-parents"><GitIcon name="parent"/><span>{commit.parents.length>1?'Parents':'Parent'}</span>{commit.parents.map(oid=><code key={oid}>{oid.slice(0,8)}</code>)}</div>}
   </div>,document.body);
 }

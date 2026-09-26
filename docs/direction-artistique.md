@@ -91,7 +91,18 @@ Format SVG confirmé par l'utilisateur pour les emblèmes et icônes Lullaby.
 Prévoir une bibliothèque locale réutilisable, sans génération à chaque session.
 L'emblème identifie durablement le projet ; fournisseur, catégorie de tâche et état
 restent distincts. Les catégories ne modifient pas les capacités de l'agent.
-Le nombre d'emblèmes et leur sélecteur restent à concevoir ; bibliothèque non créée.
+Bibliothèque implémentée sur `feature/iris-workspace` : huit emblèmes SVG facettés
+(montagne, livre, cristal, boussole, feuille, tour, éclair, portail), déclinés en
+lavande, menthe et ambre. Le dessin et la couleur dérivent de l'identifiant stable
+du projet, sans dépendre de l'ordre d'affichage. Les combinaisons peuvent se répéter ;
+ce ne sont pas des logos uniques générés. Le logo Lullaby reste réservé à l'application.
+Le sélecteur manuel d'emblème reste à concevoir.
+
+Pour l'usage quotidien personnel, les slogans et le grand en-tête des projets sont
+retirés. Nom et chemin tiennent dans la barre supérieure ; la conversation occupe
+la hauteur restante, avec défilement interne des messages et saisie en bas. Les
+contrôles modèle/effort et les autorisations restent accessibles. La fiche Git reçoit
+des pictogrammes SVG distincts pour commit, branche, référence distante, tag et parent.
 
 ## Navigation et mouvement
 
