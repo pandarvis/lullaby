@@ -101,3 +101,20 @@ sont désactivés dans les processus de lecture, sans modifier les configuration
 du dépôt. Conséquence : les projets utilisant des filtres voient les octets locaux.
 La lecture ne lance aucun fetch ni commande de mutation. Limites, annulations,
 essais et arbitrages détaillés dans la [recette Git](validation/git-v1.md).
+
+## D010 — Studio local, permissions et aperçus
+
+Date : 27 septembre 2026. Statut : **implémenté** sur `feature/studio-v1`.
+
+La connexion OpenAI utilise Codex App Server et l'abonnement ChatGPT existant.
+Le chemin du moteur se détecte sur le poste ou se configure localement ; aucune
+clé API, installation supplémentaire ou chemin utilisateur fixé dans le code.
+Les profils du compositeur correspondent aux modes des moteurs, sans approbation
+automatique simulée côté interface. Natif restaure les réglages à la reprise.
+
+Les artefacts HTML autonomes s'ouvrent dans un panneau isolé et un service éphémère
+lié uniquement à 127.0.0.1. CSP, sandbox, navigation filtrée et IPC du main frame
+empêchent l'accès aux capacités de Lullaby ; la copie externe est statique. Les
+références de fichiers se joignent au brouillon sous forme de chemins explicites.
+Retirer un projet concerne son entrée et ses échanges locaux, jamais son dossier.
+Voir [utilisation et limites](validation/studio-v1.md).

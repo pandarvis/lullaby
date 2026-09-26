@@ -37,6 +37,9 @@ Aperçus HTML : chargement sur action utilisateur, limites de taille, lecture de
 fichiers contenue dans le projet après résolution des liens. Documents autonomes
 isolés ; ressources réseau et privilèges hôte absents. Une URL localhost proposée
 peut être ouverte extérieurement ; pas de serveur arbitraire démarré implicitement.
+L'aperçu embarqué exécute les scripts inline sans pont natif. Une liste exacte
+d'URL dans le processus main bloque ses navigations externes. Le lien navigateur
+ouvre une copie statique sans scripts, protégée aussi par le sandbox HTTP.
 
 ## Vérification
 

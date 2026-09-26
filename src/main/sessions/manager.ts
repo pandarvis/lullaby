@@ -38,6 +38,21 @@ export class SessionManager {
     }
     this.state.sessions.push(session);this.state.messages[session.id]=[];this.publish();await this.save(); return structuredClone(session);
   }
+  async renameProject(projectId:string,name:string){
+    const project=this.state.projects.find(p=>p.id===projectId);if(!project)throw new Error('PROJECT_NOT_FOUND');
+    if(!name.trim()||name.trim().length>120)throw new Error('INVALID_PROJECT_NAME');
+    project.name=name.trim();this.publish();await this.save();
+  }
+  async removeProject(projectId:string){
+    const project=this.state.projects.find(p=>p.id===projectId);if(!project)throw new Error('PROJECT_NOT_FOUND');
+    if(this.folders.has(project.folderKey))throw new Error('FOLDER_BUSY');
+    const removed=new Set(this.state.sessions.filter(s=>s.projectId===projectId).map(s=>s.id));
+    this.state.projects=this.state.projects.filter(p=>p.id!==projectId);
+    this.state.sessions=this.state.sessions.filter(s=>!removed.has(s.id));
+    this.state.pending=this.state.pending.filter(e=>!removed.has(e.sessionId));
+    for(const id of removed)this.state.messages[id]&&delete this.state.messages[id];
+    this.publish();await this.save();
+  }
   async configureSession(sessionId:string,choices:LaunchChoices){
     if(this.active.has(sessionId))throw new Error('SESSION_RUNNING');this.session(sessionId).choices=structuredClone(choices);this.publish();await this.save();
   }

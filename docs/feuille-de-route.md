@@ -8,6 +8,7 @@ implémentée et vérifiée sur fixtures locales ; sa recette est liée depuis l
 | --- | --- | --- |
 | A — V0 Windows | Ouvrir un dossier, discuter avec chaque moteur, agir, autoriser, interrompre et reprendre dans Iris ; paquet testable | [Plan du socle](superpowers/plans/2026-09-26-v0-windows.md) |
 | B — Git V1 | Graphe commits/branches/merges ET arborescence des fichiers modifiés avec diffs, demandés tous les deux | [Plan Git](superpowers/plans/2026-09-26-v1-git.md) |
+| B2 — Studio V1 | Connexion Codex fiabilisée, compositeur compact, paramètres, références locales et aperçu HTML isolé ; implémenté, recette personnelle effectuée | [Plan Studio](superpowers/plans/2026-09-27-studio-v1.md) |
 | C — Confort V1 | Vue « À mon attention », alertes internes et sons réglables, reprise et navigation soignées | À concevoir après les retours A/B |
 | D — Supervision | Plusieurs projets, temps humain/agent par session et projet, puis parallélisme isolé | À découper après validation du socle |
 | E — V2 documentaire | Espace de travail documentaire spécialisé éventuel | Exploration conservée dans le cadrage |

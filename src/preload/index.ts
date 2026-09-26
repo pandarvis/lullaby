@@ -2,6 +2,16 @@ import { contextBridge, ipcRenderer } from 'electron';
 import { channels, type LullabyApi } from '../shared/api';
 import type { Snapshot } from '../shared/contracts';
 const api: LullabyApi = {
+  renameProject:(id,name)=>ipcRenderer.invoke(channels.renameProject,id,name),
+  removeProject:id=>ipcRenderer.invoke(channels.removeProject,id),
+  pickAttachments:kind=>ipcRenderer.invoke(channels.pickAttachments,kind),
+  previewHtml:(id,input)=>ipcRenderer.invoke(channels.previewHtml,id,input),
+  pickPreview:id=>ipcRenderer.invoke(channels.pickPreview,id),
+  openPreview:id=>ipcRenderer.invoke(channels.openPreview,id),
+  releasePreview:id=>ipcRenderer.invoke(channels.releasePreview,id),
+  engineSettings:()=>ipcRenderer.invoke(channels.engineSettings),
+  saveEngineSettings:settings=>ipcRenderer.invoke(channels.saveEngineSettings,settings),
+  pickCodexExecutable:()=>ipcRenderer.invoke(channels.pickCodexExecutable),
   git:{
     read:projectId=>ipcRenderer.invoke(channels.gitRead,projectId),
     loadMore:snapshotId=>ipcRenderer.invoke(channels.gitMore,snapshotId),

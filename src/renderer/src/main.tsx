@@ -2,4 +2,8 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './app/App';
 import './styles/iris.css';
+import './styles/studio.css';
+document.documentElement.dataset.motion=localStorage.getItem('lullaby.motion')??'on';
+const textSize=localStorage.getItem('lullaby.text-size');
+if(textSize&&['13','15','17'].includes(textSize))document.documentElement.style.setProperty('--chat-font',`${textSize}px`);
 createRoot(document.getElementById('root')!).render(<React.StrictMode><App/></React.StrictMode>);

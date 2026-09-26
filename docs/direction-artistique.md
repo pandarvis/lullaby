@@ -121,25 +121,26 @@ Une bibliothèque d'animation supplémentaire doit être justifiée par un besoi
 
 ## Avec assistant-ui
 
-Les pictogrammes de fournisseurs présents dans la maquette sont provisoires.
-L'utilisateur demande les véritables logos Anthropic et Codex. Employer des assets
-officiels, avec le nom du moteur visible, lors de la prochaine retouche de l'interface ;
-ne pas les redessiner dans le style facetté de Lullaby. Sources de départ :
-[ressources de marque OpenAI](https://openai.com/brand/) et
-[kit presse Anthropic](https://www.anthropic.com/news).
+Le studio utilise le véritable astérisque Claude et le symbole OpenAI pour Codex,
+avec le nom du moteur visible et un mouvement discret au survol. Leur provenance
+est documentée dans la [recette Studio](validation/studio-v1.md). Les fournisseurs
+ne sont pas redessinés dans le style facetté des projets.
 Le logo Lullaby et la palette Iris restent les références validées.
 
 assistant-ui fournit les composants et comportements du chat. Les styles de Lullaby
 seront partagés entre ce chat et le reste de l'application : couleurs, espacements,
 rayons, ombres, typographie et mouvements. La bibliothèque ne fixe pas notre identité
-visuelle. Garder ces réglages centralisés pour maintenir la cohérence et limiter les
-retouches dispersées.
+visuelle. Les styles `iris.css` et `studio.css` centralisent ces réglages. Modèle,
+effort, permissions, ajout et envoi sont dans le compositeur, les aperçus à droite.
+Les listes Markdown conservent des marqueurs distincts et des espacements lisibles.
+Paramètres regroupe moteurs/réseau/apparence ; le point vert décoratif a été retiré
+car il ne confirmait aucune connexion. Les états d'abonnement viennent du diagnostic.
 
 ## Validation et vérifications restantes
 
 La [première maquette interactive](mockups/README.md) présente deux vues, supervision
 et conversation. Iris et le logo sont validés ; les interactions restent simulées
-en HTML. L'intégration réelle utilisera assistant-ui.
+en HTML. L'intégration réelle utilise maintenant assistant-ui.
 
 Les vues présentent les états vide, actif, attente et erreur. Approfondir la validation
 de la lisibilité du code, navigation clavier, contraste, densité et mouvements

@@ -88,7 +88,8 @@ test('another project streaming during launch cannot detach the new session stat
 
 test('stopping during startup still persists a queued native session binding',async()=>{
   const {manager,provider,a}=await setup();const original=provider.run.bind(provider);let release!:()=>void;
-  provider.run=async()=>{const run=await original();await new Promise<void>(resolve=>{release=resolve;});provider.emit({kind:'bound',nativeId:'created-during-startup'});return run;};
-  const sending=manager.send({sessionId:a.id,text:'work'});await tick();const stopping=manager.interrupt(a.id);release();await sending;await stopping;
+  let entered!:()=>void;const ready=new Promise<void>(resolve=>{entered=resolve;});
+  provider.run=async()=>{const run=await original();await new Promise<void>(resolve=>{release=resolve;entered();});provider.emit({kind:'bound',nativeId:'created-during-startup'});return run;};
+  const sending=manager.send({sessionId:a.id,text:'work'});await ready;const stopping=manager.interrupt(a.id);release();await sending;await stopping;
   expect(manager.snapshot().sessions.find(s=>s.id===a.id)).toMatchObject({phase:'interrupted',nativeId:'created-during-startup'});await manager.close();
 });
