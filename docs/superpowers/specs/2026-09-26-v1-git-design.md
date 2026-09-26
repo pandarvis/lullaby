@@ -1,7 +1,8 @@
 # Lullaby V1 — graphe Git et fichiers modifiés
 
 Date : 26 septembre 2026. Besoin confirmé : les deux vues sont souhaitées.
-Conception proposée pour revue ; aucune implémentation.
+Conception validée, implémentée sur `feature/git-inspector`.
+État de vérification : [recette Git](../../validation/git-v1.md).
 
 ## Objectif et place dans la V1
 

@@ -89,3 +89,15 @@ Codex officiel installé sur le poste. ASAR reste désactivé pour cette premiè
 recette afin de conserver les chemins natifs des ressources Claude. Le dossier
 est volumineux et non signé ; ce choix doit être réévalué avant une distribution
 plus large. Voir la [recette du paquet](validation/v0-windows.md).
+
+## D009 — Git V1 en consultation locale
+
+Date : 26 septembre 2026. Statut : **implémenté** sur `feature/git-inspector`.
+
+Git installé fournit les données ; SVG et React assurent le graphe et les arbres,
+sans dépendance supplémentaire. Le renderer sélectionne des identifiants validés
+par le main, jamais des commandes arbitraires. Les helpers de diff et filtres clean
+sont désactivés dans les processus de lecture, sans modifier les configurations
+du dépôt. Conséquence : les projets utilisant des filtres voient les octets locaux.
+La lecture ne lance aucun fetch ni commande de mutation. Limites, annulations,
+essais et arbitrages détaillés dans la [recette Git](validation/git-v1.md).

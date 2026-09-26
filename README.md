@@ -34,4 +34,7 @@ Les connexions officielles Claude/ChatGPT doivent déjà être présentes.
 - [Vérifications sur le poste professionnel](docs/poste-pro.md)
 - [Contribuer : Gitflow et cohabitation entre agents](CONTRIBUTING.md)
 
-La vue Git, les chronos et les alertes internes appartiennent aux jalons suivants.
+La branche `feature/git-inspector` ajoute la consultation Git : graphe des commits,
+branches/tags, arbre des changements et différences par fichier ou parent de merge.
+Voir la [recette Git](docs/validation/git-v1.md). Chronos et alertes internes restent
+des jalons suivants.
