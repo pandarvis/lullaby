@@ -15,6 +15,10 @@ et le logo facetté en forme de L. La référence est la
 CSS de `:root` et symbole SVG `em-lullaby`. Réutiliser ces valeurs et ce dessin
 lors de l'intégration, plutôt que de les recréer approximativement.
 
+L'utilisateur confirme conserver ce dessin pour l'icône Windows. La déclinaison
+ICO de `resources/lullaby.ico` est exportée du SVG en huit tailles transparentes ;
+le SVG reste la source de référence. Aucun nouveau dessin ou fond n'est ajouté.
+
 Iris est la direction du produit. Lagon reste une exploration consultable dans
 la maquette, sans engagement à livrer plusieurs thèmes. Les ajustements de lisibilité,
 d'accessibilité et de densité resteront possibles en préservant cette identité.
