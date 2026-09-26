@@ -9,8 +9,9 @@ Dernière mise à jour : 26 septembre 2026, Codex.
 - Choix assistant-ui confirmé comme base du chat ; parité complète avec les clients
   officiels non validée et périmètre détaillé encore à préciser.
 - Gitflow et documentation commune Codex/Claude formalisés.
-- Référence artistique Ankama/Dofus 3 consignée dans `direction-artistique.md` ;
-  aucune maquette visuelle produite ou validée à ce stade.
+- Références artistiques Ankama/Dofus 3 documentées dans `direction-artistique.md`,
+  avec sources, observations et transpositions proposées ; aucune maquette visuelle
+  produite ou validée à ce stade.
 - Le périmètre écrit de la V0 n'a pas encore reçu de validation explicite complète.
   Aucun plan d'implémentation détaillé ni exécution de ce plan n'a commencé.
 
@@ -21,6 +22,9 @@ Dernière mise à jour : 26 septembre 2026, Codex.
 - Syntaxe des deux blocs PowerShell de la checklist vérifiée, sans les exécuter
   sur le poste professionnel.
 - Les checks de documentation accompagnent la PR (espaces et liens locaux).
+- Étude Dofus du studio Figs lue et deux visuels examinés dans le navigateur ;
+  témoignage de la designer Ankama et sources complémentaires consultés.
+  Aucun devblog original sur la refonte 3.1 consulté directement.
 - Aucun essai réel de connexion SDK aux abonnements, de génération de réponse,
   de paquet Electron ou de réseau professionnel réalisé.
 

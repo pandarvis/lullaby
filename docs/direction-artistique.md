@@ -11,9 +11,44 @@ Donner à Lullaby une identité chaleureuse et travaillée, agréable pendant de
 sessions de développement. Les projets et agents doivent se repérer rapidement.
 La qualité graphique fait partie du produit dès la V0, même si son périmètre est réduit.
 
-Référence officielle à consulter pour les interfaces :
-[Dofus 3 — cosmétique et apparence](https://support.ankama.com/hc/fr/articles/47823763118097--DOFUS-L-interface-de-cosm%C3%A9tique-et-d-apparence).
-Une capture choisie par l'utilisateur permettra de préciser quels éléments lui plaisent.
+## Références étudiées
+
+Recherche du 26 septembre 2026. Les recherches de devblogs ont surtout donné des
+comptes rendus ; aucun devblog original consacré à la refonte 3.1 n'a été consulté
+directement. Les références ci-dessous permettent néanmoins de travailler sur des
+sources de conception et des exemples concrets, sans attendre des captures de l'utilisateur.
+
+| Source | Nature et apport | Limite |
+| --- | --- | --- |
+| [Dofus — Figs](https://www.figs-lab.com/projects/dofus) | Source primaire du studio : refonte du HUD, modularité, design system et tests utilisateurs. Texte lu et deux visuels examinés dans le navigateur : HUD et panneau de sorts. | Portfolio d'un travail commencé en janvier 2022 pour Dofus Unity ; ne prouve pas l'état actuel du client. |
+| [Retour d'Angélique Delporte, UX/UI designer chez Ankama](https://fr.linkedin.com/posts/ang%C3%A9lique-delporte-6abb3115_dofus-3-est-sorti-le-3-d%C3%A9cembre-activity-7270009108831834112-qh9y) | Témoignage direct sur la collaboration avec Figs, la DA et le système de composants déclinés pour Dofus 3. | Retour de production, pas une spécification visuelle à reproduire. |
+| [Wakfu — Figs](https://www.figs-lab.com/projects/wakfu) | Autre référence Ankama : rapprochement de certains espaces et personnalisation du HUD. Texte consulté via l'index de recherche. | Jeu distinct ; captures non examinées pendant cette recherche. |
+| [Refonte des interfaces 3.1 — Breakflip, 22 avril 2025](https://www.breakflip.com/actualites/9050.html) | Compte rendu des changements de dialogues, de chat et de widgets. | Source secondaire qui mélange changements et intentions ; ne vaut pas validation des fonctionnalités livrées. |
+| [Cosmétique et apparence — support Ankama](https://support.ankama.com/hc/fr/articles/47823763118097--DOFUS-L-interface-de-cosm%C3%A9tique-et-d-apparence) | Documentation officielle d'un parcours d'interface précis. | Ne couvre qu'une partie du jeu. |
+
+### Observations visuelles et transposition proposée
+
+Sur les deux visuels du portfolio Dofus examinés : surfaces bleu-violet sombres,
+bandeaux distincts, icônes illustrées colorées, accents dorés, groupes de commandes
+compacts et panneaux de détail superposés. Le centre du HUD reste largement disponible
+pour le jeu. Ces observations concernent ces images, pas l'ensemble de Dofus 3.
+
+Pour Lullaby, les pistes suivantes sont notre interprétation à valider en maquette :
+
+- Une identité de projet reconnaissable (emblème, nom, accent) et des cartes de sessions
+  indiquant immédiatement l'agent, sa tâche et son état.
+- Une composition avec navigation latérale, conversation centrale et détail d'activité
+  repliable. Le code et les réponses longues disposent de la plus grande surface utile.
+- Des détails progressifs : résumé d'une action visible, commande, sortie et diff
+  consultables à la demande. Une approbation en attente reste directement visible.
+- Des panneaux ajustables avec quelques dispositions simples à terme ; la modularité
+  ne justifie pas d'ajouter dès la V0 un éditeur complet de fenêtres.
+- Un même vocabulaire graphique pour les cartes, boutons, états et composants
+  assistant-ui. Créer nos propres formes et icônes ; les assets du jeu restent des références.
+
+La densité d'un HUD de jeu et la superposition de nombreuses fenêtres demandent une
+adaptation à la lecture prolongée de code. Les animations proposées plus bas sont
+un choix pour Lullaby : leur durée n'a pas été mesurée dans Dofus.
 
 ## Pistes proposées pour Lullaby
 
