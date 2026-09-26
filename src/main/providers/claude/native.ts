@@ -3,17 +3,17 @@ import type { SpawnOptions, SpawnedProcess } from '@anthropic-ai/claude-agent-sd
 
 // SDK 0.3.283 supplies this flag even when no permission mode is requested.
 // Omitting it lets the native CLI resolve the user's and project's settings.
-export function nativePermissionArgs(args:string[]):string[] {
+export function nativePermissionArgs(args:string[],preserveExplicitDefault=false):string[] {
   const result:string[]=[];
   for(let index=0;index<args.length;index++) {
-    if(args[index]==='--permission-mode' && args[index+1]==='default') {index++;continue;}
+    if(!preserveExplicitDefault&&args[index]==='--permission-mode' && args[index+1]==='default') {index++;continue;}
     result.push(args[index]);
   }
   return result;
 }
 
-export function spawnNativeClaude(options:SpawnOptions):SpawnedProcess {
-  const child=spawn(options.command,nativePermissionArgs(options.args),{
+export function spawnNativeClaude(options:SpawnOptions,preserveExplicitDefault=false):SpawnedProcess {
+  const child=spawn(options.command,nativePermissionArgs(options.args,preserveExplicitDefault),{
     cwd:options.cwd,env:options.env,signal:options.signal,
     windowsHide:true,shell:false,stdio:['pipe','pipe','pipe'],
   });
