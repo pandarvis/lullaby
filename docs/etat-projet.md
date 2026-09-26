@@ -122,3 +122,9 @@ tests IPC passent. Fenêtre Iris observée sous Windows ; menu repliable et ouve
 annulation du sélecteur natif vérifiés. La sélection finale doit être retestée :
 le pilote UI cible mal le dialogue secondaire sur cette configuration d'écran.
 T2 (sessions et stockage) est la prochaine tâche. Aucun moteur réellement connecté.
+
+T2 : gestion des sessions et stockage JSON implémentés. Suite actuelle : 15 tests
+passants ; build/typecheck réussis. Verrou par dossier, routage des autorisations,
+remplacement des deltas par le texte final, reprise en état interrompu, identifiant
+natif, brouillons et fermeture pendant lancement couverts. Les tests utilisent un
+moteur factice et ne prouvent pas encore une connexion aux abonnements.
