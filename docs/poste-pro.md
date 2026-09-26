@@ -69,6 +69,30 @@ un mot de passe dans Git ou dans un compte rendu.
 
 ## 3. Réseau et restrictions à identifier
 
+L'utilisateur indique lancer un proxy local avant Claude, avec une commande de
+mémoire `px -proxy <option>`. Le poste n'est pas disponible pour confirmation.
+Cela évoque [Px](https://github.com/genotrance/px), relais HTTP(S) vers un proxy
+d'entreprise pouvant gérer son authentification Windows ; identité de l'outil,
+version, arguments et port local restent à confirmer. La documentation Px emploie
+`--proxy=HOST:PORT` pour le proxy amont : ne pas confondre cette destination avec
+l'adresse locale que Claude doit utiliser.
+
+À relever localement lors du prochain accès au poste :
+
+- Nom/version du programme et méthode de démarrage actuellement utilisée.
+- Port d'écoute local et manière dont Claude reçoit ce réglage (terminal,
+  variables d'environnement ou configuration Claude).
+- Certificats éventuellement nécessaires et comportement quand Px est arrêté.
+- Résultat d'un essai Codex séparé : ChatGPT Desktop semble fonctionner sans Px,
+  selon l'utilisateur, mais cela ne valide pas le réseau du moteur Codex.
+
+Premier essai proposé : garder le lancement manuel existant de Px et configurer
+le processus Claude lancé par Lullaby pour utiliser ce relais. Ne pas réinstaller
+Px ni ajouter un runtime Python si le programme déjà présent suffit. Prévoir une
+configuration par moteur ; ne pas appliquer automatiquement le proxy Claude à
+Codex ou à toute l'application. Ne pas arrêter un Px démarré en dehors de Lullaby.
+Le lancement automatique de Px reste une évolution à cadrer après cet essai.
+
 - Le blocage Claude Desktop vise-t-il seulement l'application, ou aussi Claude Code CLI ?
 - Les exécutables locaux et processus enfants nécessaires sont-ils autorisés ?
 - La connexion officielle au compte et son retour local dans le navigateur fonctionnent-ils ?
@@ -107,9 +131,12 @@ Noter le plan disponible et l'état des quotas sans publier d'informations de co
 | Git, Node, npm, Claude, Codex : présents et versions | |
 | Autorisation d'utiliser les moteurs locaux | |
 | Type de proxy et certificat requis | |
+| Outil Px confirmé, port local et transmission du réglage à Claude | |
+| Claude avec relais local / Codex testé séparément | |
 | Connexion Claude par abonnement | |
 | Connexion Codex par abonnement | |
 | Réponse puis reprise de session | |
+| Reprise dans Lullaby d'une session Claude créée en CLI (essai ultérieur) | |
 | Installation du paquet et lancement des processus enfants | |
 | Téléchargement des dépendances (si développement sur ce poste) | |
 | Dossier de travail utilisable | |

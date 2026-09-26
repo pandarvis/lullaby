@@ -19,6 +19,13 @@ Dernière mise à jour : 26 septembre 2026, Codex.
   référence concrète désormais fixée par Iris. Figs reste une inspiration ancienne.
 - Le périmètre écrit de la V0 n'a pas encore reçu de validation explicite complète.
   Aucun plan d'implémentation détaillé ni exécution de ce plan n'a commencé.
+- Usage CLI précisé : dossier de projet puis reprise de session Claude. Parcours
+  projet/conversations et essai de reprise CLI ajoutés au cadrage, non implémentés.
+- Proxy local requis pour Claude sur le poste pro, probablement Px d'après une
+  commande citée de mémoire. Outil et configuration à confirmer sur ce poste ;
+  démarrage manuel conservé pour le premier essai, réglages par moteur proposés.
+- Vrais logos Anthropic/Codex demandés pour la prochaine retouche ; les pictogrammes
+  de fournisseurs de la maquette restent provisoires.
 
 ## Vérifications effectuées
 
@@ -53,6 +60,8 @@ ce fichier ne remplace pas l'état réel du checkout.
 ## Prochaine action
 
 Préserver Iris et le logo validés lors du passage de la maquette au produit.
+Confirmer sur le poste pro le relais Px et les réglages transmis à Claude ; tester
+Codex séparément. Intégrer le parcours dossier puis sélection/reprise de conversation.
 Terminer la revue du périmètre V0, puis rédiger son plan d'implémentation. Le premier
 jalon reste une application Windows sur le poste personnel avec les deux abonnements,
 puis un paquet à vérifier sur le poste professionnel. Chronos et supervision avancée

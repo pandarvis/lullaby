@@ -92,6 +92,14 @@ Une bibliothèque d'animation supplémentaire doit être justifiée par un besoi
 
 ## Avec assistant-ui
 
+Les pictogrammes de fournisseurs présents dans la maquette sont provisoires.
+L'utilisateur demande les véritables logos Anthropic et Codex. Employer des assets
+officiels, avec le nom du moteur visible, lors de la prochaine retouche de l'interface ;
+ne pas les redessiner dans le style facetté de Lullaby. Sources de départ :
+[ressources de marque OpenAI](https://openai.com/brand/) et
+[kit presse Anthropic](https://www.anthropic.com/news).
+Le logo Lullaby et la palette Iris restent les références validées.
+
 assistant-ui fournit les composants et comportements du chat. Les styles de Lullaby
 seront partagés entre ce chat et le reste de l'application : couleurs, espacements,
 rayons, ombres, typographie et mouvements. La bibliothèque ne fixe pas notre identité

@@ -41,6 +41,25 @@ Source : [AI Elements](https://elements.ai-sdk.dev/docs).
 
 ## Les protocoles et l'affichage
 
+### Dossiers et sessions existantes
+
+Usage précisé par l'utilisateur : ouvrir un dossier de projet, lancer Claude CLI,
+puis reprendre une session avec `resume`. Le parcours de Lullaby doit donc distinguer
+le projet (dossier local) des conversations rattachées à ce dossier. Ouvrir un projet
+doit permettre de choisir une conversation existante ou d'en créer une nouvelle.
+
+Étudier la reprise de sessions Claude créées hors de Lullaby, au lieu de limiter
+durablement l'interface aux sessions qu'elle crée elle-même. Le SDK documente
+l'énumération, la lecture et la reprise par identifiant des sessions locales.
+Cette capacité est une piste d'intégration, pas un essai réussi avec la version
+installée. Préserver le dossier de travail et la configuration native ; ne pas
+reprendre simultanément une même session en CLI et dans Lullaby. La reprise d'un
+historique ne signifie pas s'attacher à un processus CLI déjà en cours.
+
+Source : [sessions du SDK Claude](https://code.claude.com/docs/en/agent-sdk/sessions).
+
+### Adaptateurs
+
 Nous intégrons des moteurs d'agents, pas uniquement les API de modèles.
 
 - Claude Agent SDK : flux de messages et d'événements via une bibliothèque TypeScript.
@@ -136,9 +155,10 @@ Les éléments ci-dessous décrivent la cible fonctionnelle plus large après ce
    Mesurer séparément la durée des exécutions des agents.
 
 Hypothèses à confirmer : fournisseur choisi par session ; reprise par un autre
-fournisseur reportée ; un seul chrono humain actif ; première version centrée sur
-les sessions créées depuis Lullaby. Les sessions externes et les sous-agents ne
-sont pas automatiquement équivalents à des conversations pilotables.
+fournisseur reportée ; un seul chrono humain actif. Le premier essai crée ses propres
+sessions puis vérifie une reprise Claude depuis la CLI sur un dossier d'essai.
+Un catalogue complet des sessions externes et le pilotage des sous-agents restent
+à cadrer séparément.
 
 Le parallélisme sur un même dépôt doit utiliser des répertoires Git séparés ou
 empêcher les écritures simultanées. Pas de bascule automatique vers une API facturée.
@@ -164,6 +184,19 @@ interruption, une reprise, une perte de connexion et l'association correcte des
 événements quand deux sessions tournent. Aucun de ces essais n'a encore été exécuté.
 
 ## Inventaire local observé
+
+### Réseau propre à chaque moteur
+
+Le poste professionnel nécessite, d'après l'utilisateur, un relais local lancé
+avant Claude, probablement Px (identité et commande à confirmer). Prévoir des
+réglages proxy/certificats par moteur, appliqués à son processus au lancement,
+sans modifier l'environnement global ni écraser les réglages administrés.
+Le fonctionnement supposé de ChatGPT Desktop sans relais ne valide pas Codex.
+Le premier essai réutilisera un relais lancé manuellement ; la gestion automatique
+de son cycle de vie n'est pas décidée. Voir les relevés dans
+[la checklist professionnelle](poste-pro.md).
+
+### Exécutables du poste personnel
 
 Le 26 septembre 2026 : Git 2.49.0.windows.1, Node 22.16.0, npm 10.9.2,
 Claude Code 2.1.220 et Codex CLI 0.158.0-alpha.2.1 sont accessibles.
