@@ -87,6 +87,11 @@ retouches dispersées.
 
 ## Validation visuelle à venir
 
+Une [première maquette interactive](mockups/README.md) propose les palettes Iris
+et Lagon, des emblèmes facettés et les deux vues. Elle est disponible pour revue,
+sans validation graphique acquise. Les interactions sont simulées en HTML ;
+l'intégration réelle utilisera assistant-ui.
+
 Avant de décliner tous les écrans, présenter une vue de supervision et un détail
 de conversation avec états vide, actif, attente et erreur. Valider lisibilité du code,
 navigation clavier, contraste, densité et mouvements. L'expression « UI/UX++ » ne

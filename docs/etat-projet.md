@@ -10,8 +10,10 @@ Dernière mise à jour : 26 septembre 2026, Codex.
   officiels non validée et périmètre détaillé encore à préciser.
 - Gitflow et documentation commune Codex/Claude formalisés.
 - Références artistiques Ankama/Dofus 3 documentées dans `direction-artistique.md`,
-  avec sources, observations et transpositions proposées ; aucune maquette visuelle
-  produite ou validée à ce stade.
+  avec sources, observations et transpositions proposées.
+- Première maquette interactive dans `docs/mockups/atelier.html` : supervision,
+  conversation, palettes Iris/Lagon, emblèmes facettés et interactions fictives.
+  Réalisée pour revue, pas encore approuvée ; aucune intégration assistant-ui ou moteur.
 - Préférence précisée : app colorée, palette maîtrisée et icônes un peu « sharp » ;
   teintes et formes exactes à valider. Référence Figs retenue comme inspiration ancienne.
 - Le périmètre écrit de la V0 n'a pas encore reçu de validation explicite complète.
@@ -24,6 +26,13 @@ Dernière mise à jour : 26 septembre 2026, Codex.
 - Syntaxe des deux blocs PowerShell de la checklist vérifiée, sans les exécuter
   sur le poste professionnel.
 - Les checks de documentation accompagnent la PR (espaces et liens locaux).
+- Maquette : syntaxe JavaScript vérifiée avec Node ; essais dans le navigateur de
+  l'approbation, du refus, de l'interruption, de l'envoi simulé, de l'erreur/reprise,
+  de la création d'une session vide, de la recherche sans résultat et de l'isolation
+  des brouillons. Aucun message d'erreur navigateur observé pendant ces essais.
+- Inspection visuelle au format bureau, à 900 et 390 px ; absence de débordement
+  horizontal vérifiée à 320 px sur atelier et conversation après correction du bandeau.
+  Variante Lagon et navigation par projet vérifiées. Pas d'audit d'accessibilité complet.
 - Étude Dofus du studio Figs lue et deux visuels examinés dans le navigateur ;
   témoignage de la designer Ankama et sources complémentaires consultés.
   Aucun devblog original sur la refonte 3.1 consulté directement.
@@ -42,6 +51,7 @@ ce fichier ne remplace pas l'état réel du checkout.
 
 ## Prochaine action
 
+Recueillir le retour sur la maquette (couleurs, icônes, densité et navigation).
 Terminer la revue du périmètre V0, puis rédiger son plan d'implémentation. Le premier
 jalon reste une application Windows sur le poste personnel avec les deux abonnements,
 puis un paquet à vérifier sur le poste professionnel. Chronos et supervision avancée
