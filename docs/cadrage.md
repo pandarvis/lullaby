@@ -146,6 +146,27 @@ paquet ; vérifier les exigences de signature et d'installation avec le poste ci
 
 ## Périmètre proposé de la première version
 
+### Trajectoire V0 / V1 / V2
+
+- **V0 : validation technique**, avec les deux abonnements sur Windows, puis essai
+  du paquet sur le poste professionnel.
+- **V1 : priorité au développement**, confirmée par l'utilisateur : projets,
+  sessions et agents, chat, outils et reprise fidèles aux moteurs. La rédaction et
+  la maintenance des README, décisions et autres documents du dépôt restent des
+  tâches accessibles aux agents dans ce même espace. Le périmètre détaillé reste
+  à préciser ; cette priorité ne valide pas toute la spécification V0.
+- **V2 : piste documentaire à explorer**, éventuellement un outil spécialisé et
+  une UX dédiée. Aucun format, éditeur ou périmètre n'est encore choisi.
+
+Piste UX proposée pour cette V2 : un espace « Documents » rattaché au projet,
+associant document consultable/éditable, conversation de l'agent et modifications
+à relire. Comparer cette approche à un simple aperçu à côté du chat avant de choisir.
+Réutiliser projets, sessions et identité Iris ; déterminer les formats et usages
+réels avant de retenir une bibliothèque. Cette exploration ne bloque pas la V1
+et n'ajoute aucune dépendance pour le moment.
+
+### Cible fonctionnelle
+
 Le premier livrable sera la [V0 de validation locale](superpowers/specs/2026-09-26-v0-windows-design.md)
 sur le poste personnel, puis son paquet sera testé sur le poste professionnel.
 Les éléments ci-dessous décrivent la cible fonctionnelle plus large après cette V0.

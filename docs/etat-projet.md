@@ -37,6 +37,10 @@ Dernière mise à jour : 26 septembre 2026, Codex.
   `fidelite-moteurs.md`. Catégories de session sans rôle restrictif implicite.
   Configuration native, skills et reprise documentés, toujours sans intégration.
 
+- Trajectoire précisée : V1 centrée développement ; outil documentaire spécialisé
+  envisagé en V2, sans périmètre ni choix technique arrêté. La documentation du dépôt
+  reste une tâche des agents en V1. Pistes UX conservées dans le cadrage.
+
 ## Vérifications effectuées
 
 - Documentation officielle consultée : preset Claude Code distinct du prompt SDK
