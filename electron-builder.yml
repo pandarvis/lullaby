@@ -8,11 +8,13 @@ npmRebuild: false
 files:
   - out/**
   - package.json
+  - resources/lullaby.ico
   - '!**/*.map'
   - '!**/tests/**'
   - '!**/test/**'
 win:
+  icon: resources/lullaby.ico
   target:
     - target: dir
       arch: [x64]
-  signAndEditExecutable: false
+  signExecutable: false

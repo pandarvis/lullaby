@@ -12,6 +12,12 @@ depuis `feature/windows-agent-foundation`. Le worktree
 ses dépendances et son paquet Windows. Cette intégration ne vaut pas validation
 complète de la recette V0.
 
+Suite locale sur `feature/iris-windows-icon`, dans le même worktree libre :
+logo Iris conservé et décliné pour l'icône de la fenêtre et de l'exécutable Windows.
+Paquet reconstruit, huit tailles embarquées vérifiées, aucune dépendance ajoutée.
+L'aperçu local est mis à jour ; l'icône Iris est observée dans la barre de titre.
+Cette branche n'est pas encore intégrée à develop.
+
 Implémenté : shell Electron Windows, Iris et logo SVG validés, menu repliable,
 projets par dossier, conversations Claude/Codex, chat assistant-ui, Markdown/code,
 actions, questions, autorisations, arrêt et reprise par identifiant natif.

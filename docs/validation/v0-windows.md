@@ -27,7 +27,13 @@ résolution de sa configuration native. Aucun mode plus permissif n'est injecté
 
 Conserver le dossier complet avec `Lullaby.exe`, pas seulement l'exécutable.
 Electron et Claude sont embarqués ; Codex doit être installé séparément et connecté.
-Le paquet est non signé et utilise encore l'icône Windows par défaut d'Electron.
+Le paquet est non signé. La branche `feature/iris-windows-icon` remplace l'icône
+Windows d'Electron par une déclinaison du SVG Iris en huit tailles, sans changer
+le dessin. Construction Windows et vérification des images intégrées dans
+l'exécutable réussies ; l'ICO utilisé par la fenêtre est aussi présent dans le paquet.
+L'aperçu `C:\Sources\Lullaby-preview-0.1.0` a été mis à jour et rouvert :
+le logo Iris est visible dans la barre de titre Windows. L'affichage de l'icône
+dans un raccourci déjà épinglé n'a pas été vérifié.
 Les réglages utilisateur et les conversations ne font pas partie du paquet.
 
 - Vite 7 retenu pour la compatibilité avec electron-vite 5 ; aucune résolution
