@@ -15,6 +15,8 @@ dans la même PR. Éviter les comptes rendus redondants et les copies de convers
 | [Feuille de route](feuille-de-route.md) | Ordre des jalons et accès aux plans d'implémentation |
 | [Vue Git V1](superpowers/specs/2026-09-26-v1-git-design.md) | Graphe des commits, arborescence des changements et différences |
 | [Poste professionnel](poste-pro.md) | Prérequis et contrôles à effectuer sur la machine cible |
+| [Développement](developpement.md) | Commandes du socle Electron et tests |
+| [Recette Claude](validation/claude-local.md) | Essais réels de l'abonnement et reprise CLI |
 | [Contribution](../CONTRIBUTING.md) | Gitflow, PR et mise à jour des documents |
 | [Consignes communes](../AGENTS.md) | Règles partagées par Codex et Claude |
 

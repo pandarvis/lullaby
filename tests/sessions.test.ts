@@ -62,3 +62,15 @@ test('shutdown waits for an in-flight provider launch',async()=>{
   release();await sending;await closing;
   expect(manager.snapshot().sessions[0].phase).toBe('interrupted');
 });
+
+test('an approval is removed even when another event arrives during its reply',async()=>{
+  const {manager,provider,a}=await setup();
+  const original=provider.run.bind(provider);let release!:()=>void;
+  provider.run=async()=>{const run=await original();return {...run,reply:async()=>new Promise<void>(resolve=>{release=resolve;})};};
+  const {runId}=await manager.send({sessionId:a.id,text:'work'});
+  provider.emit({kind:'request',requestId:'q',requestKind:'approval',text:'Allow?'});await tick();
+  const replying=manager.reply({sessionId:a.id,runId,requestId:'q',answer:{kind:'allow'}});
+  provider.emit({kind:'text',itemId:'m',mode:'append',text:'progress'});await tick();
+  release();await replying;
+  expect(manager.snapshot().pending).toEqual([]);await manager.close();
+});

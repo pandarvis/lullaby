@@ -89,7 +89,9 @@ export class SessionManager {
     active.replying.add(input.requestId);
     try {
       await active.run.reply(input.requestId,input.answer);
-      this.state.pending=this.state.pending.filter(e=>e!==pending);this.session(input.sessionId).phase=this.state.pending.some(e=>e.sessionId===input.sessionId)?'waiting':'running';this.publish();await this.save();
+      this.state.pending=this.state.pending.filter(e=>!(e.sessionId===input.sessionId && e.runId===input.runId && e.body.kind==='request' && e.body.requestId===input.requestId));
+      if(this.active.get(input.sessionId)===active && !active.stopped) this.session(input.sessionId).phase=this.state.pending.some(e=>e.sessionId===input.sessionId)?'waiting':'running';
+      this.publish();await this.save();
     } finally {active.replying.delete(input.requestId);}
   }
   async interrupt(sessionId:string) {

@@ -33,7 +33,10 @@ ne doit pas bloquer l'utilisation du paquet final. Le bloc ci-dessus les relève
 seulement pour l'inventaire. Le paquet Electron devra embarquer son runtime et
 ses bibliothèques ; aucun serveur web séparé, WSL ou Docker n'est prévu.
 
-L'installation ou l'intégration des moteurs Claude/Codex reste à déterminer.
+Le SDK Claude épinglé embarque un exécutable Windows natif. La recette personnelle
+a été réalisée avec Git for Windows et son Bash natif disponibles ; vérifier ces
+prérequis et l'autorisation de cet exécutable sur le poste pro. Codex sera détecté
+comme moteur externe configurable. Voir la [recette Claude](validation/claude-local.md).
 Un paquet unique peut lancer plusieurs exécutables : chacun peut être bloqué.
 Vérifier les exigences d'autorisation, de signature du paquet et des exécutables
 enfants, et la méthode de distribution acceptée (installateur ou autre).

@@ -5,6 +5,7 @@ import { registerIpc } from './ipc/register';
 import { SessionManager } from './sessions/manager';
 import { readStore, writeStore } from './storage/store';
 import { channels } from '../shared/api';
+import { ClaudeAdapter } from './providers/claude/adapter';
 let manager:SessionManager|undefined;
 let quitting=false;
 async function openWindow() {
@@ -13,7 +14,7 @@ async function openWindow() {
   try { initial=await readStore(storeFile); }
   catch { dialog.showErrorBox('Stockage Lullaby indisponible',`Les données ne peuvent pas être chargées. Elles sont préservées. Vérifiez le fichier et sa sauvegarde .bak :\n${storeFile}`);app.quit();return; }
   const window = createWindow();
-  manager=new SessionManager({adapters:[],initial,persist:state=>writeStore(storeFile,state),onChange:state=>{if(!window.isDestroyed())window.webContents.send(channels.changed,state);}});
+  manager=new SessionManager({adapters:[new ClaudeAdapter()],initial,persist:state=>writeStore(storeFile,state),onChange:state=>{if(!window.isDestroyed())window.webContents.send(channels.changed,state);}});
   registerIpc(window,manager);
   if (process.env.ELECTRON_RENDERER_URL) void window.loadURL(process.env.ELECTRON_RENDERER_URL);
   else void window.loadFile(join(__dirname,'../renderer/index.html'));
