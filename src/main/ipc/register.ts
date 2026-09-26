@@ -3,8 +3,10 @@ import { channels } from '../../shared/api';
 import type { Result } from '../../shared/contracts';
 import type { SessionManager } from '../sessions/manager';
 import { id, provider, text, nativeId, launchChoices, validateSend, validateReply } from './validation';
+import type { NetworkSettings } from '../network/settings';
+import { validateNetworkProfile } from '../network/profiles';
 
-export function registerIpc(window: BrowserWindow, manager: SessionManager): void {
+export function registerIpc(window: BrowserWindow, manager: SessionManager, network:NetworkSettings): void {
   function handle(channel: string, fn: (...args: any[]) => unknown) {
     ipcMain.handle(channel, async (event, ...args): Promise<Result<unknown>> => {
       if (event.sender !== window.webContents || event.senderFrame !== window.webContents.mainFrame) return {ok:false,code:'INVALID_SENDER',message:'Requête refusée.'};
@@ -18,6 +20,11 @@ export function registerIpc(window: BrowserWindow, manager: SessionManager): voi
     });
   }
   handle(channels.snapshot, () => manager.snapshot());
+  function idleProvider(value:unknown){const selected=provider(value);if(manager.snapshot().sessions.some(s=>s.provider===selected&&['running','waiting'].includes(s.phase)))throw new Error('SESSION_RUNNING');return selected;}
+  handle(channels.networkSettings,()=>network.snapshot());
+  handle(channels.saveNetworkProfile,value=>{const profile=validateNetworkProfile(value);idleProvider(profile.provider);return network.save(profile);});
+  handle(channels.startProxy,value=>network.proxy.start(network.profile(idleProvider(value))));
+  handle(channels.stopProxy,value=>network.proxy.stop(idleProvider(value)));
   handle(channels.pickProject, async () => {
     const choice = await dialog.showOpenDialog(window, {title:'Ouvrir un projet',properties:['openDirectory']});
     if (choice.canceled || !choice.filePaths[0]) return null;

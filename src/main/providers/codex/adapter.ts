@@ -22,10 +22,10 @@ export class CodexAdapter implements ProviderAdapter {
       return {rpc,version:initialized.userAgent as string|undefined,configuredModel:config.config.model as string|undefined};
     }catch(error){await rpc.close();throw error;}
   }
-  async diagnose(cwd:string):Promise<Diagnostic>{
+  async diagnose(cwd:string,env:NodeJS.ProcessEnv=process.env):Promise<Diagnostic>{
     const result:Diagnostic={provider:'codex',available:false,auth:'missing',issues:[],skills:[]};let rpc:RpcProcess|undefined;
     try{
-      const connected=await this.connect(cwd,{...process.env});rpc=connected.rpc;
+      const connected=await this.connect(cwd,{...env});rpc=connected.rpc;
       result.available=true;result.auth='subscription';result.version=connected.version;
       result.configuredModel=connected.configuredModel;
       const catalog=await rpc.request('model/list',{});

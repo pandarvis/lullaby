@@ -6,7 +6,7 @@ import { canonicalizeFolder } from '../projects/registry';
 import { emptySnapshot } from '../storage/store';
 import { applyEvent } from './projection';
 type Active = {id:string;folderKey:string;run?:ProviderRun;done?:Promise<void>;ready:Promise<void>;started:()=>void;stopped:boolean;seen:Set<string>;replying:Set<string>};
-type Options = {adapters:ProviderAdapter[];initial?:Snapshot;persist?:(s:Snapshot)=>Promise<void>;onChange?:(s:Snapshot)=>void};
+type Options = {adapters:ProviderAdapter[];initial?:Snapshot;persist?:(s:Snapshot)=>Promise<void>;onChange?:(s:Snapshot)=>void;envFor?:(provider:Provider)=>NodeJS.ProcessEnv};
 export class SessionManager {
   private state: Snapshot;
   private active = new Map<string,Active>();
@@ -57,7 +57,7 @@ export class SessionManager {
       session.phase='running';session.draft='';
       if(session.title==='Nouvelle conversation') session.title=input.text.slice(0,72);
       this.state.messages[session.id].push({id:randomUUID(),role:'user',text:input.text,actions:[]});this.publish();await this.save();
-      active.run = await adapter.run({cwd:project.cwd,nativeId:session.nativeId,text:input.text,choices:session.choices,env:{...process.env}});
+      active.run = await adapter.run({cwd:project.cwd,nativeId:session.nativeId,text:input.text,choices:session.choices,env:this.options.envFor?.(session.provider)??{...process.env}});
       active.done=this.consume(session.id,active);
       active.started();
       if(active.stopped) await active.run.interrupt();
@@ -107,6 +107,6 @@ export class SessionManager {
     active.stopped=true;await active.ready;await active.run?.interrupt();await active.done;
   }
   async saveDraft(sessionId:string,text:string) {this.session(sessionId).draft=text;this.publish();await this.save();}
-  async diagnose(projectId:string) {const project=this.state.projects.find(p=>p.id===projectId);if(!project)throw new Error('PROJECT_NOT_FOUND');return Promise.all(this.options.adapters.map(a=>a.diagnose(project.cwd)));}
+  async diagnose(projectId:string) {const project=this.state.projects.find(p=>p.id===projectId);if(!project)throw new Error('PROJECT_NOT_FOUND');return Promise.all(this.options.adapters.map(a=>a.diagnose(project.cwd,this.options.envFor?.(a.provider))));}
   async close() { this.closing=true;await Promise.all([...this.active.keys()].map(id=>this.interrupt(id)));await this.save(); }
 }

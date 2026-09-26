@@ -8,15 +8,15 @@ import { ClaudeMessages } from './messages';
 type Answer=ReplyRequest['answer'];
 export class ClaudeAdapter implements ProviderAdapter {
   readonly provider='claude' as const;
-  async diagnose(cwd:string):Promise<Diagnostic> {
+  async diagnose(cwd:string,env:NodeJS.ProcessEnv=process.env):Promise<Diagnostic> {
     const diagnostic:Diagnostic={provider:'claude',available:false,auth:'missing',issues:[],skills:[]};
     let runtime:Query|undefined;
     const input=new AsyncQueue<SDKUserMessage>();
     const controller=new AbortController();
     const timeout=setTimeout(()=>controller.abort(),20000);
     try {
-      checkSubscriptionEnvironment(process.env,'claude');
-      runtime=query({prompt:input,options:{cwd,systemPrompt:{type:'preset',preset:'claude_code'},settingSources:['user','project','local'],abortController:controller}});
+      checkSubscriptionEnvironment(env,'claude');
+      runtime=query({prompt:input,options:{cwd,env,systemPrompt:{type:'preset',preset:'claude_code'},settingSources:['user','project','local'],abortController:controller}});
       const account=await runtime.accountInfo();diagnostic.available=true;assertClaudeSubscription(account);diagnostic.auth='subscription';
       diagnostic.skills=(await runtime.supportedCommands()).map(skill=>({name:skill.name,available:true,evidence:'Commande annoncée par le moteur natif ; invocation à vérifier.'}));
       diagnostic.models=(await runtime.supportedModels()).map(model=>({id:model.value,name:model.displayName,efforts:model.supportedEffortLevels??[],default:false}));

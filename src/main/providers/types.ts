@@ -11,6 +11,6 @@ export type ProviderRun = {
 };
 export interface ProviderAdapter {
   provider: Provider;
-  diagnose(cwd: string): Promise<Diagnostic>;
+  diagnose(cwd: string,env?:NodeJS.ProcessEnv): Promise<Diagnostic>;
   run(input: RunInput): Promise<ProviderRun>;
 }

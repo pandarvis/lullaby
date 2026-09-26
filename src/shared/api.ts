@@ -1,9 +1,13 @@
-import type { Diagnostic, Project, Provider, PromptRequest, ReplyRequest, Result, Session, Snapshot, LaunchChoices } from './contracts';
+import type { Diagnostic, Project, Provider, PromptRequest, ReplyRequest, Result, Session, Snapshot, LaunchChoices, NetworkProfile, NetworkSnapshot, ProxyState } from './contracts';
 export interface LullabyApi {
   pickProject(): Promise<Result<Project | null>>;
   snapshot(): Promise<Result<Snapshot>>;
   createSession(projectId: string, provider: Provider, nativeId?:string): Promise<Result<Session>>;
   configureSession(sessionId:string,choices:LaunchChoices):Promise<Result<void>>;
+  networkSettings():Promise<Result<NetworkSnapshot>>;
+  saveNetworkProfile(profile:NetworkProfile):Promise<Result<void>>;
+  startProxy(provider:Provider):Promise<Result<ProxyState>>;
+  stopProxy(provider:Provider):Promise<Result<ProxyState>>;
   send(input: PromptRequest): Promise<Result<{runId: string}>>;
   reply(input: ReplyRequest): Promise<Result<void>>;
   interrupt(sessionId: string): Promise<Result<void>>;
@@ -17,4 +21,5 @@ export const channels = {
   interrupt:'lullaby:interrupt', saveDraft:'lullaby:save-draft', diagnose:'lullaby:diagnose',
   changed:'lullaby:changed',
   configureSession:'lullaby:configure-session',
+  networkSettings:'lullaby:network-settings',saveNetworkProfile:'lullaby:save-network',startProxy:'lullaby:start-proxy',stopProxy:'lullaby:stop-proxy',
 } as const;

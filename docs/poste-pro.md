@@ -153,3 +153,26 @@ Noter le plan disponible et l'état des quotas sans publier d'informations de co
 Conserver ce compte rendu localement ; ne pas ajouter les détails internes de
 l'entreprise au dépôt public. Un statut « à vérifier » est préférable à une
 conclusion obtenue uniquement à partir d'un test réseau partiel.
+
+## Réglages implémentés dans le socle Windows
+
+Le panneau Réseau configure chaque moteur séparément : adresse HTTP(S), certificat
+PEM et, en option, exécutable/arguments/port du relais. Les champs vides conservent
+l'environnement hérité, dont l'interface n'affiche que la présence des variables.
+La configuration est stockée dans network.json sous les données utilisateur de
+Lullaby, hors des projets. Aucun identifiant n'est à saisir dans ces champs.
+
+Le bouton de lancement est explicite. Un port déjà ouvert est traité comme relais
+externe : Lullaby le conserve à sa fermeture. Seul le processus lancé par Lullaby
+est arrêté. Un port ouvert ne prouve ni l'authentification au proxy d'entreprise ni
+l'accès au fournisseur ; le diagnostic puis un véritable échange restent nécessaires.
+Le relais doit rester en avant-plan dans son processus (pas de mode daemon détaché).
+
+Claude reçoit NODE_EXTRA_CA_CERTS ; Codex reçoit CODEX_CA_CERTIFICATE, avec son
+héritage SSL_CERT_FILE préservé si aucun chemin n'est saisi. Référence Codex :
+[certificats et authentification](https://learn.chatgpt.com/docs/auth#custom-ca-bundles).
+Ces réglages ne désactivent pas TLS et ne changent pas l'environnement global.
+
+Tests locaux : environnements séparés, URL/arguments avec secrets refusés, relais
+TCP externe conservé, lanceur absent, timeout, lancement/arrêt possédé et rechargement
+des profils. Px et le certificat d'entreprise réels restent non testés sur poste pro.

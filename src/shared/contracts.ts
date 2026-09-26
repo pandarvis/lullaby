@@ -41,4 +41,5 @@ export type NetworkProfile = {
   launcher?: { executable: string; args: string[]; host: string; port: number };
 };
 export type ProxyState = 'stopped' | 'starting' | 'owned' | 'external' | 'error';
+export type NetworkSnapshot={profiles:NetworkProfile[];states:Record<Provider,ProxyState>;inherited:{name:string;present:boolean}[]};
 export type Result<T> = { ok: true; value: T } | { ok: false; code: string; message: string };
