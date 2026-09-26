@@ -5,6 +5,7 @@ import type { Diagnostic, EventBody, ReplyRequest } from '../../../shared/contra
 import { checkSubscriptionEnvironment, assertClaudeSubscription } from '../../diagnostics/providers';
 import { AsyncQueue } from '../queue';
 import { ClaudeMessages } from './messages';
+import { spawnNativeClaude } from './native';
 type Answer=ReplyRequest['answer'];
 export class ClaudeAdapter implements ProviderAdapter {
   readonly provider='claude' as const;
@@ -16,7 +17,7 @@ export class ClaudeAdapter implements ProviderAdapter {
     const timeout=setTimeout(()=>controller.abort(),20000);
     try {
       checkSubscriptionEnvironment(env,'claude');
-      runtime=query({prompt:input,options:{cwd,env,systemPrompt:{type:'preset',preset:'claude_code'},settingSources:['user','project','local'],abortController:controller}});
+      runtime=query({prompt:input,options:{cwd,env,systemPrompt:{type:'preset',preset:'claude_code'},settingSources:['user','project','local'],abortController:controller,spawnClaudeCodeProcess:spawnNativeClaude}});
       const account=await runtime.accountInfo();diagnostic.available=true;assertClaudeSubscription(account);diagnostic.auth='subscription';
       diagnostic.skills=(await runtime.supportedCommands()).map(skill=>({name:skill.name,available:true,evidence:'Commande annoncée par le moteur natif ; invocation à vérifier.'}));
       diagnostic.models=(await runtime.supportedModels()).map(model=>({id:model.value,name:model.displayName,efforts:model.supportedEffortLevels??[],default:false}));
@@ -43,7 +44,7 @@ export class ClaudeAdapter implements ProviderAdapter {
     }
     const options:Options={cwd:input.cwd,resume:input.nativeId,env:input.env,
       systemPrompt:{type:'preset',preset:'claude_code'},settingSources:['user','project','local'],
-      includePartialMessages:true,abortController:controller,
+      includePartialMessages:true,abortController:controller,spawnClaudeCodeProcess:spawnNativeClaude,
       canUseTool:async(name,args,context):Promise<PermissionResult>=>{
         if(name==='AskUserQuestion'&&Array.isArray(args.questions)) {
           const answers:Record<string,string>={};

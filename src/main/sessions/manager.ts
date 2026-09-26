@@ -43,7 +43,7 @@ export class SessionManager {
   }
   async send(input:PromptRequest): Promise<{runId:string}> {
     if(this.closing) throw new Error('CLOSING');
-    const session=this.session(input.sessionId);
+    let session=this.session(input.sessionId);
     const project=this.state.projects.find(p=>p.id===session.projectId)!;
     if(this.folders.has(project.folderKey)) throw new Error('FOLDER_BUSY');
     const adapter=this.options.adapters.find(a=>a.provider===session.provider);
@@ -54,6 +54,8 @@ export class SessionManager {
     this.folders.add(project.folderKey);this.active.set(session.id,active);
     try {
       const actual=await canonicalizeFolder(project.cwd); if(actual.folderKey!==project.folderKey) throw new Error('PROJECT_MOVED');
+      // Another session may replace the snapshot while the folder is resolving.
+      session=this.session(input.sessionId);
       session.phase='running';session.draft='';
       if(session.title==='Nouvelle conversation') session.title=input.text.slice(0,72);
       this.state.messages[session.id].push({id:randomUUID(),role:'user',text:input.text,actions:[]});this.publish();await this.save();
@@ -69,7 +71,9 @@ export class SessionManager {
   private async consume(sessionId:string,active:Active) {
     try {
       for await(const event of active.run!.events) {
-        if(active.stopped || this.active.get(sessionId)!==active || active.seen.has(event.eventId)) continue;
+        if(this.active.get(sessionId)!==active || active.seen.has(event.eventId)) continue;
+        // Preserve the native ID even when cancellation races with startup.
+        if(active.stopped && event.body.kind!=='bound') continue;
         active.seen.add(event.eventId);
         this.state=applyEvent(this.state,{...event,sessionId,runId:active.id});this.publish();
         if(event.body.kind==='text') this.scheduleSave();else await this.save();

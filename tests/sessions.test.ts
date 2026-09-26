@@ -74,3 +74,21 @@ test('an approval is removed even when another event arrives during its reply',a
   release();await replying;
   expect(manager.snapshot().pending).toEqual([]);await manager.close();
 });
+
+test('another project streaming during launch cannot detach the new session state',async()=>{
+  const {manager,provider,a}=await setup();const dir=await mkdtemp(join(tmpdir(),'lullaby-other-'));
+  const project=await manager.addProject(dir);const b=await manager.createSession(project.id,'claude');
+  await manager.send({sessionId:a.id,text:'A'});await manager.saveDraft(b.id,'B draft');
+  const sending=manager.send({sessionId:b.id,text:'B'});
+  provider.emit({kind:'text',itemId:'a-message',mode:'append',text:'A is working'});
+  await sending;
+  expect(manager.snapshot().sessions.find(s=>s.id===b.id)).toMatchObject({phase:'running',draft:'',title:'B'});
+  await manager.close();
+});
+
+test('stopping during startup still persists a queued native session binding',async()=>{
+  const {manager,provider,a}=await setup();const original=provider.run.bind(provider);let release!:()=>void;
+  provider.run=async()=>{const run=await original();await new Promise<void>(resolve=>{release=resolve;});provider.emit({kind:'bound',nativeId:'created-during-startup'});return run;};
+  const sending=manager.send({sessionId:a.id,text:'work'});await tick();const stopping=manager.interrupt(a.id);release();await sending;await stopping;
+  expect(manager.snapshot().sessions.find(s=>s.id===a.id)).toMatchObject({phase:'interrupted',nativeId:'created-during-startup'});await manager.close();
+});
