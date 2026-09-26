@@ -23,7 +23,10 @@ Dernière mise à jour : 26 septembre 2026, Codex.
   projet/conversations et essai de reprise CLI ajoutés au cadrage, non implémentés.
 - Proxy local requis pour Claude sur le poste pro, probablement Px d'après une
   commande citée de mémoire. Outil et configuration à confirmer sur ce poste ;
-  démarrage manuel conservé pour le premier essai, réglages par moteur proposés.
+  bouton de lancement à la demande souhaité, réglages par moteur proposés.
+- Maquette enrichie : menu repliable à 76 px avec préférence locale mémorisée,
+  emblèmes de projets et panneau « Proxy Claude » avec démarrage/arrêt simulés.
+  Aucun processus Px réel lancé ; commande à confirmer sur le poste pro.
 - Vrais logos Anthropic/Codex demandés pour la prochaine retouche ; les pictogrammes
   de fournisseurs de la maquette restent provisoires.
 
@@ -34,6 +37,9 @@ Dernière mise à jour : 26 septembre 2026, Codex.
 - Syntaxe des deux blocs PowerShell de la checklist vérifiée, sans les exécuter
   sur le poste professionnel.
 - Les checks de documentation accompagnent la PR (espaces et liens locaux).
+- Menu compact vérifié au clavier : repli, dépli, mémorisation après actualisation,
+  sélection de projet et ouverture du chat. Démarrage/arrêt Px simulés vérifiés.
+  Aucun débordement horizontal à 390 px en modes compact et déplié.
 - Maquette : syntaxe JavaScript vérifiée avec Node ; essais dans le navigateur de
   l'approbation, du refus, de l'interruption, de l'envoi simulé, de l'erreur/reprise,
   de la création d'une session vide, de la recherche sans résultat et de l'isolation

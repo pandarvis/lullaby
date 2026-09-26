@@ -83,6 +83,12 @@ un choix pour Lullaby : leur durée n'a pas été mesurée dans Dofus.
 
 ## Mouvement
 
+Navigation repliable demandée par l'utilisateur : conserver une barre compacte avec
+logo Lullaby, emblèmes de projets, indicateurs d'attention et accès au proxy Claude.
+Le contrôle de repli reste visible en haut, fonctionne au clavier et mémorise le choix.
+Dans la maquette, la barre passe à 76 px ; les boutons conservent leur nom accessible
+et une infobulle quand le texte est masqué. Le chat profite de la place libérée.
+
 Privilégier des transitions CSS courtes (ordre de grandeur proposé : 120–200 ms)
 pour survol, sélection, ouverture d'un panneau et changement d'état. Ne pas retarder
 les actions pour laisser une animation finir. Éviter les mouvements décoratifs continus,

@@ -91,7 +91,13 @@ le processus Claude lancé par Lullaby pour utiliser ce relais. Ne pas réinstal
 Px ni ajouter un runtime Python si le programme déjà présent suffit. Prévoir une
 configuration par moteur ; ne pas appliquer automatiquement le proxy Claude à
 Codex ou à toute l'application. Ne pas arrêter un Px démarré en dehors de Lullaby.
-Le lancement automatique de Px reste une évolution à cadrer après cet essai.
+L'utilisateur demande un bouton pour démarrer Px depuis Lullaby. Il est simulé
+dans la maquette ; le branchement réel attend la confirmation de l'exécutable,
+de ses arguments et de son port. Démarrer à la demande, sans activation automatique
+à l'ouverture de Lullaby. Si un relais existe déjà, le réutiliser ; un bouton d'arrêt
+ne doit arrêter qu'un processus lancé par Lullaby. Distinguer processus démarré,
+port disponible et connexion Claude vérifiée. Conserver le lancement externe pour
+le premier diagnostic réseau si la commande n'est pas encore configurée.
 
 - Le blocage Claude Desktop vise-t-il seulement l'application, ou aussi Claude Code CLI ?
 - Les exécutables locaux et processus enfants nécessaires sont-ils autorisés ?

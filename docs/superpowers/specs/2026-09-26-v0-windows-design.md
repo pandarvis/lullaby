@@ -37,6 +37,8 @@ session encore utilisée activement dans un autre client.
 
 Fenêtre unique : liste des conversations à gauche, chat au centre, accès à un
 petit panneau de diagnostic. Afficher le dossier et le fournisseur de la conversation.
+Le menu doit être repliable en une barre d'icônes et mémoriser cette préférence,
+avec noms accessibles et indicateurs d'attention conservés.
 États visibles : disponible, travaille, attend une réponse, interrompu, terminé,
 erreur et quota atteint lorsque le moteur permet de l'identifier.
 Les messages d'erreur précisent l'étape concernée sans révéler de secret.
@@ -86,11 +88,16 @@ autres outils. Une limite d'abonnement arrête la requête sans bascule payante.
 
 Prévoir dès l'essai professionnel un réglage réseau propre à Claude, pour réutiliser
 le relais local que l'utilisateur démarre actuellement (probablement Px, à confirmer).
-Garder son démarrage manuel lors du premier essai ; transmettre les réglages requis
+Prévoir un bouton « Démarrer Px » à la demande de l'utilisateur, une fois sa commande
+confirmée et configurée. Garder le lancement externe comme solution de diagnostic
+initiale. Transmettre les réglages requis
 au processus Claude sans les propager automatiquement à Codex. Vérifier les variables
 héritées et la configuration native effective. Signaler un relais indisponible dans
 le diagnostic, sans modifier les paramètres réseau globaux. Le lancement automatique
-du relais n'entre pas dans ce premier essai.
+du relais à l'ouverture de l'application n'est pas demandé. Le lancement par bouton
+est à intégrer après validation de la configuration : exécutable et arguments séparés,
+réutilisation d'un relais existant, arrêt limité au processus que Lullaby a lancé,
+erreurs lisibles. Ne pas confondre un port ouvert avec un accès Claude fonctionnel.
 
 ### Distribution
 

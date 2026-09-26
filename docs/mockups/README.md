@@ -24,6 +24,9 @@ Il s'agit d'un outil de revue, pas d'un serveur requis par la future application
 - Lagon : exploration non retenue, toujours accessible dans le sélecteur supérieur.
 - Emblèmes SVG originaux, facettés ; pas d'assets Ankama ni de police distante.
 - Deux vues : supervision et conversation avec activité, fichiers et approbation.
+- Menu repliable : barre compacte de 76 px, emblèmes de projets, noms accessibles
+  et infobulles. Le bouton se trouve à gauche du fil de navigation supérieur.
+- Accès « Proxy Claude » en bas du menu : démarrage/arrêt de Px simulés, état visible.
 
 Iris et le logo Lullaby sont les références à préserver. Le HTML simule le chat pour
 explorer la composition sans installer de dépendances. L'application utilisera assistant-ui
@@ -38,9 +41,13 @@ comme prévu ; ni React, ni assistant-ui, ni les moteurs ne sont intégrés ici.
    une erreur de connexion, puis réessayer.
 5. Créer une session fictive Claude ou Codex et explorer son état vide.
 6. Comparer Iris et Lagon et réduire la fenêtre.
+7. Replier/déplier le menu et naviguer avec les emblèmes ; actualiser pour vérifier
+   que la préférence est mémorisée quand le stockage du navigateur est disponible.
+8. Ouvrir « Proxy Claude », démarrer puis arrêter le relais fictif.
 
 Les conversations et brouillons restent en mémoire par session ; actualiser la page
-réinitialise la démonstration. Aucun abonnement n'est appelé, aucune commande exécutée,
+réinitialise la démonstration, sauf la préférence de menu enregistrée localement.
+Aucun abonnement n'est appelé, aucune commande exécutée,
 aucun fichier de projet modifié. Les durées affichées sont des exemples fixes.
 
 ## Suite de la revue

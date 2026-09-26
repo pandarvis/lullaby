@@ -192,8 +192,11 @@ avant Claude, probablement Px (identité et commande à confirmer). Prévoir des
 réglages proxy/certificats par moteur, appliqués à son processus au lancement,
 sans modifier l'environnement global ni écraser les réglages administrés.
 Le fonctionnement supposé de ChatGPT Desktop sans relais ne valide pas Codex.
-Le premier essai réutilisera un relais lancé manuellement ; la gestion automatique
-de son cycle de vie n'est pas décidée. Voir les relevés dans
+Un bouton de lancement du relais depuis Lullaby est demandé ; son branchement
+attend la confirmation de la commande Px. Le lancement est explicite, avec état
+visible ; aucun démarrage automatique à l'ouverture de Lullaby n'est décidé.
+Le premier diagnostic pourra réutiliser un relais lancé manuellement. Ne pas arrêter
+un processus démarré hors de Lullaby. Voir les relevés dans
 [la checklist professionnelle](poste-pro.md).
 
 ### Exécutables du poste personnel
