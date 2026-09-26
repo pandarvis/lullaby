@@ -17,7 +17,9 @@ develop local `facb08a`. Le commit Iris a été repris depuis `feature/iris-wind
 logo Iris conservé et décliné pour l'icône de la fenêtre et de l'exécutable Windows.
 Paquet reconstruit, huit tailles embarquées vérifiées, aucune dépendance ajoutée.
 L'aperçu local est mis à jour ; l'icône Iris est observée dans la barre de titre.
-Cette branche n'est pas encore intégrée à develop ni poussée.
+L'utilisateur autorise maintenant son intégration locale à develop, avec un commit
+de merge Gitflow. Aucune publication distante demandée. Le worktree est conservé
+pour ses dépendances et le paquet de développement.
 
 La tranche Git V1 G1–G3 est implémentée : graphe commits/branches/tags/merges,
 sélection d'un parent, groupes index/dossier de travail/non suivis/conflits et
@@ -70,11 +72,14 @@ professionnelle n'a été inventée ni aucun réglage global modifié.
 
 ## Suite
 
-Faire accepter la tranche Git disponible dans l'aperçu local, puis intégrer sa
-branche selon le choix de l'utilisateur. Terminer les essais ouverts de la
+Intégration locale de la tranche Git autorisée ; ouvrir `C:\Sources\lullaby`
+dans l'application permet de tester le vrai dépôt du produit. Les projets de
+recette restent séparés : une conversation Claude terminée et un dépôt Git
+synthétique ; aucun agent n'y travaille en arrière-plan au moment de la passation.
+Terminer les essais ouverts de la
 [recette du paquet](validation/v0-windows.md) et les contrôles du poste professionnel.
-La V0 a déjà été intégrée localement à develop ; cette nouvelle tranche reste
-sur sa branche, sans publication de release.
+La V0 a déjà été intégrée localement à develop ; cette nouvelle tranche suit
+la même intégration locale, sans publication de release.
 Chronos par projet/session, distinction humain/agent, supervision avancée et alertes
 internes appartiennent aux jalons suivants. Notifications Windows non prioritaires,
 espace documentaire spécialisé envisagé en V2.

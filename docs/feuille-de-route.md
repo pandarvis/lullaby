@@ -33,7 +33,8 @@ figés : ils conservent les besoins exprimés sans gonfler la première tranche.
 La PR documentaire #1 est fusionnée dans `develop` avec autorisation. Le socle
 rejoint `develop` sur demande explicite depuis `feature/windows-agent-foundation`.
 La branche `feature/git-inspector` est créée depuis cette base locale et reprend
-l'icône Iris. Elle reste distincte de develop, sans publication de release automatique.
+l'icône Iris. Son intégration locale à develop est autorisée par l'utilisateur,
+sans publication de release automatique.
 
 ## Lecture et validation
 
