@@ -12,13 +12,13 @@ depuis `feature/windows-agent-foundation`. Le worktree
 ses dépendances et son paquet Windows. Cette intégration ne vaut pas validation
 complète de la recette V0.
 
-Suite locale sur `feature/git-inspector`, dans le même worktree libre, depuis
-develop local `facb08a`. Le commit Iris a été repris depuis `feature/iris-windows-icon` :
+La tranche `feature/git-inspector` a rejoint develop local par le merge `391b780`.
+Le commit Iris avait été repris depuis `feature/iris-windows-icon` :
 logo Iris conservé et décliné pour l'icône de la fenêtre et de l'exécutable Windows.
 Paquet reconstruit, huit tailles embarquées vérifiées, aucune dépendance ajoutée.
 L'aperçu local est mis à jour ; l'icône Iris est observée dans la barre de titre.
-L'utilisateur autorise maintenant son intégration locale à develop, avec un commit
-de merge Gitflow. Aucune publication distante demandée. Le worktree est conservé
+La fusion conserve les branches conformément à Gitflow. Aucune publication distante
+demandée. Le worktree est conservé
 pour ses dépendances et le paquet de développement.
 
 La tranche Git V1 G1–G3 est implémentée : graphe commits/branches/tags/merges,
@@ -27,6 +27,13 @@ diffs en consultation. Git installé fournit les données sans fetch, appel mod�
 ni nouvelle dépendance. L'onglet Conversations garde son chat et son brouillon.
 Les changements produit vont de `4965b4b` à `83cbad6` ; les validations et les
 arbitrages sont dans la [recette Git](validation/git-v1.md).
+
+Suite sur `feature/git-hover`, depuis develop `391b780`, dans ce même worktree :
+fiches Iris au survol des lignes, points et liens du graphe, avec auteur, date locale,
+OID court, références exactes et parents. Focus clavier et Échap sont pris en charge.
+Les traits survolés mettent leurs extrémités en évidence. Aucun nom de branche
+d'origine n'est inféré. Aucun appel Git supplémentaire, aucune dépendance ajoutée.
+L'aperçu Windows contient cette amélioration ; la branche reste locale et non fusionnée.
 
 Implémenté : shell Electron Windows, Iris et logo SVG validés, menu repliable,
 projets par dossier, conversations Claude/Codex, chat assistant-ui, Markdown/code,
@@ -60,6 +67,9 @@ professionnelle n'a été inventée ni aucun réglage global modifié.
 - Avec Git V1 : 63 tests réussis, 5 essais fournisseurs opt-in ignorés, TypeScript
   et build réussis. Deux problèmes importants de relecture et un défaut graphique
   corrigés avec tests de régression. Aucun problème mineur différé.
+- Avec les fiches Git : 67 tests réussis, 5 essais fournisseurs ignorés ; build et
+  TypeScript réussis. Fiche de merge, références, navigation clavier et fermeture
+  Échap observées dans l'aperçu Electron sur le dépôt Lullaby.
 - Paquet Windows construit et aperçu hors checkout actualisé. Graphe, merge,
   changements locaux et actualisation d'un diff observés. Fenêtre sous 850 px et
   recette V0 complète restent à vérifier. Paquet non signé.
@@ -72,14 +82,15 @@ professionnelle n'a été inventée ni aucun réglage global modifié.
 
 ## Suite
 
-Intégration locale de la tranche Git autorisée ; ouvrir `C:\Sources\lullaby`
+Intégration locale de la tranche Git effectuée ; ouvrir `C:\Sources\lullaby`
 dans l'application permet de tester le vrai dépôt du produit. Les projets de
 recette restent séparés : une conversation Claude terminée et un dépôt Git
 synthétique ; aucun agent n'y travaille en arrière-plan au moment de la passation.
 Terminer les essais ouverts de la
 [recette du paquet](validation/v0-windows.md) et les contrôles du poste professionnel.
 La V0 a déjà été intégrée localement à develop ; cette nouvelle tranche suit
-la même intégration locale, sans publication de release.
+la même intégration locale, sans publication de release. Les fiches au survol
+restent sur `feature/git-hover` pour validation avant intégration.
 Chronos par projet/session, distinction humain/agent, supervision avancée et alertes
 internes appartiennent aux jalons suivants. Notifications Windows non prioritaires,
 espace documentaire spécialisé envisagé en V2.
