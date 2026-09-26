@@ -16,18 +16,13 @@ sans conteneur ni environnement Linux requis.
 Le poste professionnel devra être évalué séparément : logiciels autorisés, proxy,
 certificats et connexion aux comptes. Son fonctionnement n'est pas encore vérifié.
 
-## Choix de réutilisation
+## Direction retenue pour la réutilisation
 
-| Option | Intérêt | Travail et limites |
-| --- | --- | --- |
-| Évaluer CloudCLI local et son système de plugins | Chat, projets et sessions Claude/Codex déjà annoncés ; compagnon desktop disponible | Vérifier les interactions et événements accessibles aux plugins pour le tableau de bord et les chronos |
-| Electron + React + assistant-ui + intégrations officielles | Identité et fonctionnement propres à Lullaby ; composants du chat réutilisés | Maintenir deux adaptateurs, le stockage et la gestion des processus |
-| Fork complet de CloudCLI | Permet de modifier tout le produit | Reprises des mises à jour et divergences à maintenir ; licence AGPL-3.0-or-later à examiner avant adoption |
-
-Recommandation révisée : application Electron indépendante, avec les bibliothèques
-du chat embarquées et les intégrations officielles. CloudCLI reste une référence
-fonctionnelle, pas un socle recommandé : son serveur et son cycle de maintenance
-ajouteraient une couche au déploiement. Il n'a pas été testé ici.
+Application Electron indépendante, avec React, les composants du chat embarqués
+et les intégrations officielles Claude/Codex. Réutiliser une bibliothèque graphique
+comme assistant-ui ; maintenir les deux adaptateurs, le stockage et la gestion
+des processus dans Lullaby. Aucune application tierce complète ni serveur séparé
+n'est prévu comme socle.
 
 Distinguer les dépendances de développement (outils de compilation), les
 bibliothèques embarquées (sans installation individuelle) et les exécutables
@@ -35,9 +30,7 @@ externes (susceptibles de nécessiter une autorisation). Réduire aussi le nombr
 de bibliothèques pour limiter maintenance et surface à auditer. Un seul paquet
 distribué ne signifie pas un seul processus ou exécutable autorisé.
 
-Sources : [CloudCLI](https://github.com/siteboon/claudecodeui/blob/main/README.md),
-[starter de plugin](https://github.com/cloudcli-ai/cloudcli-plugin-starter),
-[assistant-ui ExternalStoreRuntime](https://www.assistant-ui.com/docs/runtimes/custom/external-store).
+Source : [assistant-ui ExternalStoreRuntime](https://www.assistant-ui.com/docs/runtimes/custom/external-store).
 
 assistant-ui reste le candidat pour le chat, à condition de vérifier ses dépendances
 et son fonctionnement dans le paquet final. AI Elements est une alternative,
