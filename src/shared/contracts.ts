@@ -33,6 +33,8 @@ export type Diagnostic = {
   provider: Provider; available: boolean; version?: string;
   auth: 'subscription' | 'missing' | 'ambiguous'; issues: string[];
   skills: { name: string; available: boolean; evidence: string }[];
+  configuredModel?: string;
+  models?: {id:string;name:string;efforts:string[];default:boolean}[];
 };
 export type NetworkProfile = {
   provider: Provider; proxyUrl?: string; certificatePath?: string;

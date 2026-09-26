@@ -19,6 +19,7 @@ export class ClaudeAdapter implements ProviderAdapter {
       runtime=query({prompt:input,options:{cwd,systemPrompt:{type:'preset',preset:'claude_code'},settingSources:['user','project','local'],abortController:controller}});
       const account=await runtime.accountInfo();diagnostic.available=true;assertClaudeSubscription(account);diagnostic.auth='subscription';
       diagnostic.skills=(await runtime.supportedCommands()).map(skill=>({name:skill.name,available:true,evidence:'Commande annoncée par le moteur natif ; invocation à vérifier.'}));
+      diagnostic.models=(await runtime.supportedModels()).map(model=>({id:model.value,name:model.displayName,efforts:model.supportedEffortLevels??[],default:false}));
     } catch(error) {diagnostic.auth=error instanceof Error&&error.message==='AUTH_CONFIGURATION_AMBIGUOUS'?'ambiguous':'missing';diagnostic.issues.push('Connexion Claude par abonnement non confirmée. Vérifiez la connexion officielle et la configuration.');}
     finally {clearTimeout(timeout);input.end();controller.abort();runtime?.close();}
     return diagnostic;

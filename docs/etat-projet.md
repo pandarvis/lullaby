@@ -130,3 +130,5 @@ natif, brouillons et fermeture pendant lancement couverts. Les tests utilisent u
 moteur factice et ne prouvent pas encore une connexion aux abonnements.
 
 T3 : SDK Claude 0.3.283 intégré. Essais réels Max réussis : skill, fichier, refus, interruption, reprise SDK et CLI. Voir validation/claude-local.md. Suite hors réseau : 21 tests passants. Chat graphique encore à raccorder ; Codex suit en T4.
+
+T4 : App Server Codex intégré, diagnostic ChatGPT confirmé. Essai réel skill/AGENTS.md, fichier et reprise réussi avec modèle choisi dans le catalogue natif. Ancien modèle local refusé sans bascule automatique. Suite : 30 tests passants, 5 essais réels ignorés par défaut. Refus/interruption Codex testés avec serveur factice, recette réelle encore partielle. Voir validation/codex-local.md.
