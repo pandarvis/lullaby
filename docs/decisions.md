@@ -46,6 +46,8 @@ Date : 26 septembre 2026. Statut : **retenu** pour la référence et le niveau d
 déclinaison graphique **proposée**, à valider visuellement.
 
 L'utilisateur apprécie les interfaces Ankama/Dofus 3 et souhaite une direction
-artistique forte, une excellente UX et des animations légères. Les principes sont
+artistique forte, une excellente UX et des animations légères. Il confirme une app
+colorée avec une palette maîtrisée et des icônes d'identité un peu « sharp » ; les
+ambiances entièrement noires ou blanches et l'effet arc-en-ciel sont écartés. Les principes sont
 décrits dans `direction-artistique.md`. La V0 doit déjà exprimer cette intention ;
 palette, thème, composants et compositions ne sont pas encore approuvés.

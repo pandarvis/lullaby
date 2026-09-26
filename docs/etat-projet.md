@@ -12,6 +12,8 @@ Dernière mise à jour : 26 septembre 2026, Codex.
 - Références artistiques Ankama/Dofus 3 documentées dans `direction-artistique.md`,
   avec sources, observations et transpositions proposées ; aucune maquette visuelle
   produite ou validée à ce stade.
+- Préférence précisée : app colorée, palette maîtrisée et icônes un peu « sharp » ;
+  teintes et formes exactes à valider. Référence Figs retenue comme inspiration ancienne.
 - Le périmètre écrit de la V0 n'a pas encore reçu de validation explicite complète.
   Aucun plan d'implémentation détaillé ni exécution de ce plan n'a commencé.
 

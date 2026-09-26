@@ -2,8 +2,10 @@
 
 Date : 26 septembre 2026. Référence exprimée par l'utilisateur : interfaces
 Ankama / Dofus 3, direction artistique soignée, excellente UX et animations légères.
-Cette préférence est retenue ; les couleurs, formes et compositions ci-dessous
-sont des pistes à valider visuellement, pas une maquette approuvée.
+Préférences confirmées : présence de couleur, palette maîtrisée et icônes avec une
+identité marquée, un peu « sharp ». Éviter une application toute noire ou toute blanche,
+ainsi qu'une accumulation de couleurs façon arc-en-ciel. Les teintes exactes, formes
+et compositions restent à valider visuellement ; aucune maquette n'est approuvée.
 
 ## Intention
 
@@ -17,6 +19,8 @@ Recherche du 26 septembre 2026. Les recherches de devblogs ont surtout donné de
 comptes rendus ; aucun devblog original consacré à la refonte 3.1 n'a été consulté
 directement. Les références ci-dessous permettent néanmoins de travailler sur des
 sources de conception et des exemples concrets, sans attendre des captures de l'utilisateur.
+L'utilisateur juge la référence Figs ancienne, mais apprécie les idées de couleurs
+et d'identité des icônes. Elle sert de point d'inspiration pour ces aspects.
 
 | Source | Nature et apport | Limite |
 | --- | --- | --- |
@@ -53,9 +57,11 @@ un choix pour Lullaby : leur durée n'a pas été mesurée dans Dofus.
 ## Pistes proposées pour Lullaby
 
 - Panneaux clairement délimités, relief discret et contrastes soignés.
-- Palette resserrée ; explorer des surfaces sombres chaleureuses, du texte ivoire
-  et un accent lumineux. Le choix clair/sombre et l'accent restent ouverts.
-- Icônes cohérentes et formes expressives dans la navigation ; typographie très
+- Palette resserrée avec des surfaces teintées pour porter la couleur dans l'ensemble
+  de l'interface. La proposition antérieure de surfaces sombres et de texte ivoire
+  n'est pas une décision ; luminosité, teintes et accents restent à explorer.
+- Icônes cohérentes et expressives. Interprétation à valider de « sharp » : silhouettes
+  nettes, angles ou facettes, reconnaissables en petite taille. Typographie très
   lisible dans les conversations et le code.
 - Cartes de sessions reconnaissables, avec état textuel et icône ; la couleur seule
   ne suffit pas à distinguer une attente, une erreur ou un travail terminé.
