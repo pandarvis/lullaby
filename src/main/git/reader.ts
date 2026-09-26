@@ -20,7 +20,7 @@ export class GitReader implements GitApi {
     const key=`${projectId}:${slot}`;this.tasks.get(key)?.abort();const controller=new AbortController();this.tasks.set(key,controller);
     try{return await fn(controller.signal);}finally{if(this.tasks.get(key)===controller)this.tasks.delete(key);}
   }
-  async cancel(projectId:string){for(const [key,controller]of this.tasks)if(key.startsWith(`${projectId}:`))controller.abort();}
+  async cancel(projectId:string,scope?:'detail'){for(const [key,controller]of this.tasks)if(scope?key===`${projectId}:detail`:key.startsWith(`${projectId}:`))controller.abort();}
   private entry(id:string) {const entry=this.snapshots.get(id);if(!entry)throw new Error('STALE_SNAPSHOT');return entry;}
   private async optional(cwd:string,args:string[],signal:AbortSignal,codes:number[]) {
     try{return (await this.run(cwd,args,signal)).toString('utf8').trim();}catch(error){if(error instanceof GitError&&codes.includes(error.exitCode!))return null;throw error;}
@@ -93,7 +93,7 @@ export class GitReader implements GitApi {
       const stat=await handle.stat();if(!stat.isFile())throw new Error('INVALID_TARGET');
       const buffer=Buffer.alloc(Math.min(stat.size,MAX_DIFF+1));const {bytesRead}=await handle.read(buffer,0,buffer.length,0);const content=buffer.subarray(0,bytesRead);
       if(content.includes(0))return {kind:'binary',text:'Fichier binaire non suivi.',truncated:stat.size>MAX_DIFF};
-      return {kind:'text',text:content.subarray(0,MAX_DIFF).toString('utf8'),truncated:stat.size>MAX_DIFF};
+      return {kind:'text',format:'file',text:content.subarray(0,MAX_DIFF).toString('utf8'),truncated:stat.size>MAX_DIFF};
     }finally{await handle.close();}
   }
   async diff(snapshotId:string,target:DiffTarget):Promise<GitDiff> {

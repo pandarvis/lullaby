@@ -7,7 +7,7 @@ const api: LullabyApi = {
     loadMore:snapshotId=>ipcRenderer.invoke(channels.gitMore,snapshotId),
     commitFiles:(snapshotId,oid,parent)=>ipcRenderer.invoke(channels.gitFiles,snapshotId,oid,parent),
     diff:(snapshotId,target)=>ipcRenderer.invoke(channels.gitDiff,snapshotId,target),
-    cancel:projectId=>ipcRenderer.invoke(channels.gitCancel,projectId),
+    cancel:(projectId,scope)=>ipcRenderer.invoke(channels.gitCancel,projectId,scope),
   },
   pickProject: () => ipcRenderer.invoke(channels.pickProject),
   snapshot: () => ipcRenderer.invoke(channels.snapshot),
