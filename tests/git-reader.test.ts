@@ -42,6 +42,7 @@ test('untracked binary, long diff and replaced directory symlink do not escape t
   await writeFile(join(cwd,'tracked.txt'),'b'.repeat(1100000));s=await r.read('p');expect((await r.diff(s.id,{kind:'local',changeId:s.changes.find(c=>c.path==='tracked.txt')!.id})).truncated).toBe(true);
   const outside=await mkdtemp(join(tmpdir(),'lullaby-outside-'));await writeFile(join(outside,'secret.txt'),'DO_NOT_READ');
   await symlink(outside,join(cwd,'external'),'junction');s=await r.read('p');
+  expect(s.changes.some(c=>c.path.startsWith('external'))).toBe(true);
   for(const change of s.changes.filter(c=>c.path.startsWith('external'))){const diff=await r.diff(s.id,{kind:'local',changeId:change.id});expect(diff.kind).toBe('symlink');expect(diff.text).not.toContain('DO_NOT_READ');}
 },20000);
 test('pages pin tips and detect moved refs without duplicating history',async()=>{
@@ -53,3 +54,10 @@ test('pages pin tips and detect moved refs without duplicating history',async()=
   const moved=await git(cwd,'commit-tree',tree,'-p',tip,'-m','new tip');await git(cwd,'update-ref','refs/heads/main',moved);
   const more=await r.loadMore(s.id);expect(more.commits).toHaveLength(203);expect(more.commits[0].oid).toBe(tip);expect(more.changedDuringRead).toBe(true);expect(new Set(more.commits.map(c=>c.oid)).size).toBe(203);
 },60000);
+test('actual conflict and gitlink are exposed without changing the index',async()=>{
+  const cwd=await repository();const root=await commit(cwd,'shared.txt','base\n','root');await git(cwd,'checkout','-b','other');await commit(cwd,'shared.txt','other\n','other');
+  await git(cwd,'checkout','main');await commit(cwd,'shared.txt','main\n','main');await expect(git(cwd,'merge','other')).rejects.toThrow();
+  const r=reader(cwd);const s=await r.read('p');const conflict=s.changes.find(c=>c.path==='shared.txt')!;expect(conflict.area).toBe('conflict');
+  const before=await readFile(join(cwd,'.git/index'));expect((await r.diff(s.id,{kind:'local',changeId:conflict.id})).text).toContain('shared.txt');expect(await readFile(join(cwd,'.git/index'))).toEqual(before);
+  await git(cwd,'merge','--abort');await git(cwd,'update-index','--add','--cacheinfo',`160000,${root},module`);const withModule=await r.read('p');const module=withModule.changes.find(c=>c.path==='module')!;expect((await r.diff(withModule.id,{kind:'local',changeId:module.id})).kind).toBe('submodule');
+},20000);

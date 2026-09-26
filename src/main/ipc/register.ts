@@ -27,7 +27,7 @@ export function registerIpc(window: BrowserWindow, manager: SessionManager, netw
   handle(channels.gitMore,snapshotId=>git.loadMore(id(snapshotId)));
   handle(channels.gitFiles,(snapshotId,oid,parent)=>git.commitFiles(id(snapshotId),text(oid,64),parent===null?null:text(parent,64)));
   handle(channels.gitDiff,(snapshotId,target)=>git.diff(id(snapshotId),target));
-  handle(channels.gitCancel,(projectId,scope)=>{if(scope!==undefined&&scope!=='detail')throw new Error('INVALID_TARGET');return git.cancel(id(projectId),scope);});
+  handle(channels.gitCancel,(projectId,scope)=>{if(scope!==undefined&&scope!=='files'&&scope!=='diff')throw new Error('INVALID_TARGET');return git.cancel(id(projectId),scope);});
   function idleProvider(value:unknown){const selected=provider(value);if(manager.snapshot().sessions.some(s=>s.provider===selected&&['running','waiting'].includes(s.phase)))throw new Error('SESSION_RUNNING');return selected;}
   handle(channels.networkSettings,()=>network.snapshot());
   handle(channels.saveNetworkProfile,value=>{const profile=validateNetworkProfile(value);idleProvider(profile.provider);return network.save(profile);});

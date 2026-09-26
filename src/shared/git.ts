@@ -11,5 +11,5 @@ export interface GitApi {
   loadMore(snapshotId:string):Promise<GitSnapshot>;
   commitFiles(snapshotId:string,oid:string,parent:string|null):Promise<CommitChange[]>;
   diff(snapshotId:string,target:DiffTarget):Promise<GitDiff>;
-  cancel(projectId:string,scope?:'detail'):Promise<void>;
+  cancel(projectId:string,scope?:'files'|'diff'):Promise<void>;
 }

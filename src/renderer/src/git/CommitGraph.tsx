@@ -8,7 +8,7 @@ export function CommitGraph({snapshot,selected,onSelect}:{snapshot:GitSnapshot;s
   const width=Math.max(58,32+Math.max(0,...graph.nodes.map(n=>n.lane))*20);const height=snapshot.commits.length*rowHeight;
   if(!snapshot.commits.length)return <div className="git-empty">Aucun commit pour le moment.</div>;
   return <div className="git-history-scroll" aria-label="Historique des commits"><div className="git-history-content" style={{minWidth:width+430}}>
-    <svg className="git-graph" width={width} height={height} aria-hidden="true">
+    <svg className="git-graph" width={width} height={height} style={{width,height}} aria-hidden="true">
       {graph.edges.map((edge,index)=>{const from=positions.get(edge.from)!;const to=positions.get(edge.to);const x1=16+from.lane*20,y1=from.row*rowHeight+29,x2=to?16+to.lane*20:x1,y2=to?to.row*rowHeight+29:height-5;
         return <g key={`${edge.from}-${edge.to}`} className={`git-lane lane-${from.lane%4}`}><path d={x1===x2?`M${x1},${y1}V${y2}`:`M${x1},${y1} C${x1},${y1+30} ${x2},${y2-30} ${x2},${y2}`} fill="none" strokeWidth="2" strokeDasharray={edge.outside?'4 4':undefined}/>{edge.outside&&<path d={`m${x2-3},${y2-4} 3,4 3,-4`} fill="none"/>}</g>;
       })}

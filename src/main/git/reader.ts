@@ -20,7 +20,7 @@ export class GitReader implements GitApi {
     const key=`${projectId}:${slot}`;this.tasks.get(key)?.abort();const controller=new AbortController();this.tasks.set(key,controller);
     try{return await fn(controller.signal);}finally{if(this.tasks.get(key)===controller)this.tasks.delete(key);}
   }
-  async cancel(projectId:string,scope?:'detail'){for(const [key,controller]of this.tasks)if(scope?key===`${projectId}:detail`:key.startsWith(`${projectId}:`))controller.abort();}
+  async cancel(projectId:string,scope?:'files'|'diff'){for(const [key,controller]of this.tasks)if(scope?key===`${projectId}:${scope}`:key.startsWith(`${projectId}:`))controller.abort();}
   private entry(id:string) {const entry=this.snapshots.get(id);if(!entry)throw new Error('STALE_SNAPSHOT');return entry;}
   private async optional(cwd:string,args:string[],signal:AbortSignal,codes:number[]) {
     try{return (await this.run(cwd,args,signal)).toString('utf8').trim();}catch(error){if(error instanceof GitError&&codes.includes(error.exitCode!))return null;throw error;}
@@ -79,9 +79,9 @@ export class GitReader implements GitApi {
   private comparison(oid:string,parent:string|null) {return parent?['diff-tree','-r','--no-commit-id',...diffFlags,parent,oid]:['diff-tree','--root','-r','--no-commit-id',...diffFlags,oid];}
   async commitFiles(snapshotId:string,oid:string,parent:string|null) {
     const entry=this.entry(snapshotId);this.commit(entry,oid,parent);
-    return this.task(entry.snapshot.projectId,'detail',async signal=>{
+    return this.task(entry.snapshot.projectId,'files',async signal=>{
       const key=`${oid}:${parent??''}`;const files=parseCommitFiles(await this.run(entry.snapshot.root!,[...this.comparison(oid,parent),'--name-status','-z','-M','--'],signal),key);
-      entry.files.clear();entry.files.set(key,files);return structuredClone(files);
+      if(signal.aborted)throw new Error('GIT_CANCELLED');entry.files.clear();entry.files.set(key,files);return structuredClone(files);
     });
   }
   private async untracked(root:string,path:string):Promise<GitDiff> {
@@ -107,7 +107,7 @@ export class GitReader implements GitApi {
       args=[...this.comparison(target.oid,target.parent),'-p','--',file.path,...(file.oldPath?[file.oldPath]:[])];
     }else throw new Error('INVALID_TARGET');
     const selected=file;
-    return this.task(entry.snapshot.projectId,'detail',async signal=>{
+    return this.task(entry.snapshot.projectId,'diff',async signal=>{
       const root=entry.snapshot.root!;const before=target.kind==='local'?await this.capture(root,signal):undefined;
       let diff:GitDiff;
       if('area'in selected&&selected.area==='untracked')diff=await this.untracked(root,selected.path);

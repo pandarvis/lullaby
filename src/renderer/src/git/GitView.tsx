@@ -6,14 +6,17 @@ import { CommitDetails } from './CommitDetails';
 import { ChangesTree } from './ChangesTree';
 import { DiffView } from './DiffView';
 import './git.css';
+const noFiles:CommitChange[]=[];
 export function GitView({projectId,active=true}:{projectId:string;active?:boolean}) {
   const [snapshot,setSnapshot]=useState<GitSnapshot>();const [tab,setTab]=useState<'history'|'changes'>('history');
   const [oid,setOid]=useState<string>();const [parent,setParent]=useState<string|null>(null);
-  const [files,setFiles]=useState<CommitChange[]>([]);const [selection,setSelection]=useState<GitChange>();
+  const [listing,setListing]=useState<{key:string;files:CommitChange[]}>();const [selection,setSelection]=useState<GitChange>();
   const [diff,setDiff]=useState<GitDiff>();const [error,setError]=useState('');const [loading,setLoading]=useState(false);const [detailLoading,setDetailLoading]=useState(false);
   const [refresh,setRefresh]=useState(0);const readSerial=useRef(0);const currentProject=useRef(projectId);currentProject.current=projectId;
   const visible=snapshot?.projectId===projectId?snapshot:undefined;const commit=visible?.commits.find(c=>c.oid===oid);
   const comparison=commit?.parents.includes(parent??'')?parent:commit?.parents[0]??null;
+  const listingKey=`${visible?.id}:${commit?.oid}:${comparison}`;
+  const files=listing?.key===listingKey?listing.files:noFiles;
   const agentState=useContext(SnapshotContext);const phases=agentState.sessions.filter(s=>s.projectId===projectId).map(s=>`${s.id}:${s.phase}`).join('|');
   const previousPhases=useRef(phases);
   useEffect(()=>{
@@ -26,7 +29,7 @@ export function GitView({projectId,active=true}:{projectId:string;active?:boolea
   },[phases,active]);
   useEffect(()=>{
     if(!active)return;let disposed=false;const serial=++readSerial.current;
-    setLoading(true);setError('');setDiff(undefined);
+    setLoading(true);setListing(undefined);setError('');setDiff(undefined);
     void window.lullaby.git.read(projectId).then(result=>{
       if(disposed||serial!==readSerial.current||currentProject.current!==projectId)return;
       if(result.ok){setSnapshot(result.value);setOid(previous=>result.value.commits.some(c=>c.oid===previous)?previous:result.value.commits[0]?.oid);}
@@ -36,11 +39,11 @@ export function GitView({projectId,active=true}:{projectId:string;active?:boolea
   },[projectId,refresh,active]);
   useEffect(()=>{
     if(!active||loading||!visible||tab!=='history'||!commit)return;
-    let disposed=false;setDetailLoading(true);setFiles([]);setDiff(undefined);
+    let disposed=false;setDetailLoading(true);setListing(undefined);setDiff(undefined);
     void window.lullaby.git.commitFiles(visible.id,commit.oid,comparison).then(result=>{
-      if(disposed)return;if(result.ok){setFiles(result.value);setSelection(previous=>result.value.some(file=>file.id===previous?.id)?previous:undefined);}else if(result.code!=='GIT_CANCELLED')setError(result.message);
+      if(disposed)return;if(result.ok){setListing({key:listingKey,files:result.value});setSelection(previous=>result.value.some(file=>file.id===previous?.id)?previous:undefined);}else if(result.code!=='GIT_CANCELLED')setError(result.message);
     }).catch(()=>{if(!disposed)setError('Impossible de lire les fichiers du commit.');}).finally(()=>{if(!disposed)setDetailLoading(false);});
-    return()=>{disposed=true;void window.lullaby.git.cancel(projectId,'detail');};
+    return()=>{disposed=true;void window.lullaby.git.cancel(projectId,'files');};
   },[active,loading,visible?.id,commit?.oid,comparison,tab]);
   useEffect(()=>{
     if(!active||loading||!visible||!selection)return;
@@ -49,9 +52,9 @@ export function GitView({projectId,active=true}:{projectId:string;active?:boolea
     let disposed=false;setDiff(undefined);setDetailLoading(true);
     const target=tab==='history'?{kind:'commit' as const,oid:commit!.oid,parent:comparison,changeId:selection.id}:{kind:'local' as const,changeId:selection.id};
     void window.lullaby.git.diff(visible.id,target).then(result=>{if(disposed)return;if(result.ok)setDiff(result.value);else if(result.code!=='GIT_CANCELLED')setError(result.message);}).catch(()=>{if(!disposed)setError('Impossible de lire cette différence.');}).finally(()=>{if(!disposed)setDetailLoading(false);});
-    return()=>{disposed=true;void window.lullaby.git.cancel(projectId,'detail');};
+    return()=>{disposed=true;void window.lullaby.git.cancel(projectId,'diff');};
   },[active,loading,visible?.id,selection?.id,tab,commit?.oid,comparison,files]);
-  async function loadMore(){if(!visible)return;const serial=++readSerial.current;setLoading(true);setError('');try{const result=await window.lullaby.git.loadMore(visible.id);if(serial!==readSerial.current||currentProject.current!==projectId)return;if(result.ok)setSnapshot(result.value);else if(result.code!=='GIT_CANCELLED')setError(result.message);}catch{setError('Chargement de l’historique impossible.');}finally{if(serial===readSerial.current)setLoading(false);}}
+  async function loadMore(){if(!visible)return;const serial=++readSerial.current;setLoading(true);setListing(undefined);setError('');try{const result=await window.lullaby.git.loadMore(visible.id);if(serial!==readSerial.current||currentProject.current!==projectId)return;if(result.ok)setSnapshot(result.value);else if(result.code!=='GIT_CANCELLED')setError(result.message);}catch{setError('Chargement de l’historique impossible.');}finally{if(serial===readSerial.current)setLoading(false);}}
   function switchTab(next:'history'|'changes'){setTab(next);setSelection(undefined);setDiff(undefined);setError('');}
   const empty=visible?.state==='not-repository'?'Ce dossier ne fait pas partie d’un dépôt Git.':visible?.state==='git-unavailable'?'Git est introuvable sur ce poste. Installez Git for Windows pour consulter cette vue.':undefined;
   return <section className="git-view" aria-label="Vue Git">
