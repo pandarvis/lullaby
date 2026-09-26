@@ -56,3 +56,23 @@ test('refresh waits for the replacement commit listing before fetching its selec
   expect(git.diff.mock.calls.filter((args:unknown[])=>args[0]==='replacement')).toHaveLength(0);
   finishFiles({ok:true,value:[{id:'committed',path:'src/commit.ts',status:'M'}]});await waitFor(()=>expect(git.diff).toHaveBeenLastCalledWith('replacement',{kind:'commit',oid:'merge',parent:'parent-a',changeId:'committed'}));expect(screen.getByRole('button',{name:/commit.ts/})).toBeTruthy();
 });
+
+test('clean local changes lead to history and refresh between clean and changed files',async()=>{
+  const git=api();const clean={...snapshot(),changes:[]};git.read.mockResolvedValueOnce({ok:true,value:clean});
+  render(<GitView projectId="p"/>);await screen.findByRole('heading',{name:'Merge fixture'});
+  fireEvent.click(screen.getByRole('tab',{name:/Modifications/}));
+  expect(screen.getByRole('heading',{name:'Aucune modification locale'})).toBeTruthy();
+  expect(screen.queryByText(/Sélectionnez un fichier/)).toBeNull();
+  fireEvent.click(screen.getByRole('button',{name:'Voir l’historique'}));
+  expect(await screen.findByRole('heading',{name:'Merge fixture'})).toBeTruthy();
+  expect(screen.getByRole('tab',{name:'Historique'}).getAttribute('aria-selected')).toBe('true');
+  fireEvent.click(screen.getByRole('tab',{name:/Modifications/}));
+  fireEvent.click(screen.getByRole('button',{name:'Actualiser'}));
+  fireEvent.click(await screen.findByRole('button',{name:/deleted.txt/}));await screen.findByText('+after');
+  expect(screen.queryByRole('heading',{name:'Aucune modification locale'})).toBeNull();
+  git.read.mockResolvedValueOnce({ok:true,value:{...clean,id:'clean-again'}});
+  fireEvent.click(screen.getByRole('button',{name:'Actualiser'}));
+  expect(await screen.findByRole('heading',{name:'Aucune modification locale'})).toBeTruthy();
+  expect(screen.queryByRole('button',{name:/deleted.txt/})).toBeNull();
+  expect(screen.queryByText('+after')).toBeNull();expect(screen.queryByText(/Sélectionnez un fichier/)).toBeNull();
+});

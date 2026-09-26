@@ -14,6 +14,24 @@ test('empty repository, non-repository, missing Git and detached worktree are ex
   const worktree=join(await mkdtemp(join(tmpdir(),'lullaby-worktree-')),'checkout');await git(cwd,'worktree','add','--detach',worktree,oid);
   expect((await reader(worktree).read('p')).head).toBe(oid);
 },20000);
+
+test('linked worktrees report their own local changes independently of the main checkout',async()=>{
+  const cwd=await repository();const oid=await commit(cwd,'tracked.txt','committed\n','root');
+  const worktree=join(await mkdtemp(join(tmpdir(),'lullaby-worktree-changes-')),'checkout');
+  await git(cwd,'worktree','add','-b','feature/fixture',worktree,oid);
+  await writeFile(join(worktree,'tracked.txt'),'worktree only\n');
+  await writeFile(join(worktree,'new.txt'),'untracked only\n');
+  const r=new GitReader(id=>id==='main'?cwd:id==='linked'?worktree:undefined);
+  const main=await r.read('main');const linked=await r.read('linked');
+  expect(main.changes).toEqual([]);expect(main.branch).toBe('main');
+  expect(linked.branch).toBe('feature/fixture');expect(linked.root).toBe(worktree.replaceAll('\\','/'));
+  expect(linked.changes.map(({path,area})=>({path,area}))).toEqual([
+    {path:'tracked.txt',area:'worktree'},{path:'new.txt',area:'untracked'},
+  ]);
+  const change=linked.changes.find(file=>file.path==='tracked.txt')!;
+  expect((await r.diff(linked.id,{kind:'local',changeId:change.id})).text).toContain('+worktree only');
+  expect(await readFile(join(cwd,'tracked.txt'),'utf8')).toBe('committed\n');
+},20000);
 test('merge parents, annotated tags and literal local/commit diffs preserve repository bytes',async()=>{
   const cwd=await repository();const root=await commit(cwd,'docs/ancien été.md','base\n','root');
   await git(cwd,'checkout','-b','feature');const feature=await commit(cwd,'feature.txt','feature\n','feature');
