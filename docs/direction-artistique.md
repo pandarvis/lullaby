@@ -4,8 +4,20 @@ Date : 26 septembre 2026. Référence exprimée par l'utilisateur : interfaces
 Ankama / Dofus 3, direction artistique soignée, excellente UX et animations légères.
 Préférences confirmées : présence de couleur, palette maîtrisée et icônes avec une
 identité marquée, un peu « sharp ». Éviter une application toute noire ou toute blanche,
-ainsi qu'une accumulation de couleurs façon arc-en-ciel. Les teintes exactes, formes
-et compositions restent à valider visuellement ; aucune maquette n'est approuvée.
+ainsi qu'une accumulation de couleurs façon arc-en-ciel. Le 26 septembre 2026,
+l'utilisateur valide explicitement la direction Iris et le logo de la maquette.
+
+## Direction validée — Iris
+
+Conserver les surfaces lavande, la navigation indigo, les accents menthe et ambre
+et le logo facetté en forme de L. La référence est la
+[maquette Atelier](mockups/atelier.html), version du commit `3d33a82` : variables
+CSS de `:root` et symbole SVG `em-lullaby`. Réutiliser ces valeurs et ce dessin
+lors de l'intégration, plutôt que de les recréer approximativement.
+
+Iris est la direction du produit. Lagon reste une exploration consultable dans
+la maquette, sans engagement à livrer plusieurs thèmes. Les ajustements de lisibilité,
+d'accessibilité et de densité resteront possibles en préservant cette identité.
 
 ## Intention
 
@@ -37,7 +49,8 @@ bandeaux distincts, icônes illustrées colorées, accents dorés, groupes de co
 compacts et panneaux de détail superposés. Le centre du HUD reste largement disponible
 pour le jeu. Ces observations concernent ces images, pas l'ensemble de Dofus 3.
 
-Pour Lullaby, les pistes suivantes sont notre interprétation à valider en maquette :
+Les pistes de composition suivantes ont guidé la maquette ; les fonctionnalités
+et leur priorité restent à préciser dans le périmètre produit :
 
 - Une identité de projet reconnaissable (emblème, nom, accent) et des cartes de sessions
   indiquant immédiatement l'agent, sa tâche et son état.
@@ -54,14 +67,14 @@ La densité d'un HUD de jeu et la superposition de nombreuses fenêtres demanden
 adaptation à la lecture prolongée de code. Les animations proposées plus bas sont
 un choix pour Lullaby : leur durée n'a pas été mesurée dans Dofus.
 
-## Pistes proposées pour Lullaby
+## Principes pour la déclinaison
 
 - Panneaux clairement délimités, relief discret et contrastes soignés.
-- Palette resserrée avec des surfaces teintées pour porter la couleur dans l'ensemble
-  de l'interface. La proposition antérieure de surfaces sombres et de texte ivoire
-  n'est pas une décision ; luminosité, teintes et accents restent à explorer.
-- Icônes cohérentes et expressives. Interprétation à valider de « sharp » : silhouettes
-  nettes, angles ou facettes, reconnaissables en petite taille. Typographie très
+- Palette Iris resserrée avec des surfaces teintées pour porter la couleur dans
+  l'ensemble de l'interface. Elle remplace l'exploration initiale de surfaces sombres
+  avec texte ivoire.
+- Icônes cohérentes et expressives, dans la continuité du logo facetté validé :
+  silhouettes nettes, angles ou facettes, reconnaissables en petite taille. Typographie très
   lisible dans les conversations et le code.
 - Cartes de sessions reconnaissables, avec état textuel et icône ; la couleur seule
   ne suffit pas à distinguer une attente, une erreur ou un travail terminé.
@@ -85,14 +98,13 @@ rayons, ombres, typographie et mouvements. La bibliothèque ne fixe pas notre id
 visuelle. Garder ces réglages centralisés pour maintenir la cohérence et limiter les
 retouches dispersées.
 
-## Validation visuelle à venir
+## Validation et vérifications restantes
 
-Une [première maquette interactive](mockups/README.md) propose les palettes Iris
-et Lagon, des emblèmes facettés et les deux vues. Elle est disponible pour revue,
-sans validation graphique acquise. Les interactions sont simulées en HTML ;
-l'intégration réelle utilisera assistant-ui.
+La [première maquette interactive](mockups/README.md) présente deux vues, supervision
+et conversation. Iris et le logo sont validés ; les interactions restent simulées
+en HTML. L'intégration réelle utilisera assistant-ui.
 
-Avant de décliner tous les écrans, présenter une vue de supervision et un détail
-de conversation avec états vide, actif, attente et erreur. Valider lisibilité du code,
-navigation clavier, contraste, densité et mouvements. L'expression « UI/UX++ » ne
+Les vues présentent les états vide, actif, attente et erreur. Approfondir la validation
+de la lisibilité du code, navigation clavier, contraste, densité et mouvements
+pendant l'intégration. L'expression « UI/UX++ » ne
 constitue pas à elle seule un critère de recette : ces écrans serviront de référence.

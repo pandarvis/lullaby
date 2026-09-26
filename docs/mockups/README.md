@@ -1,6 +1,7 @@
 # Maquette interactive — Atelier
 
-Support de conception du 26 septembre 2026, en attente de retour visuel.
+Support de conception du 26 septembre 2026. Direction Iris et logo facetté validés
+par l'utilisateur le même jour.
 Cette maquette explore la cible produit ; elle ne change pas le périmètre technique
 de la V0 et ne constitue pas son implémentation.
 
@@ -19,13 +20,13 @@ Il s'agit d'un outil de revue, pas d'un serveur requis par la future application
 
 ## Piste visuelle
 
-- Iris : surfaces lavande, navigation indigo, accents menthe et ambre.
-- Lagon : variante de surfaces et d'accent accessible dans le sélecteur supérieur.
+- Iris, retenue : surfaces lavande, navigation indigo, accents menthe et ambre.
+- Lagon : exploration non retenue, toujours accessible dans le sélecteur supérieur.
 - Emblèmes SVG originaux, facettés ; pas d'assets Ankama ni de police distante.
 - Deux vues : supervision et conversation avec activité, fichiers et approbation.
 
-Les thèmes et emblèmes sont des propositions. Le HTML simule le chat pour valider
-la composition sans installer de dépendances. L'application utilisera assistant-ui
+Iris et le logo Lullaby sont les références à préserver. Le HTML simule le chat pour
+explorer la composition sans installer de dépendances. L'application utilisera assistant-ui
 comme prévu ; ni React, ni assistant-ui, ni les moteurs ne sont intégrés ici.
 
 ## Parcours à essayer
@@ -42,8 +43,8 @@ Les conversations et brouillons restent en mémoire par session ; actualiser la 
 réinitialise la démonstration. Aucun abonnement n'est appelé, aucune commande exécutée,
 aucun fichier de projet modifié. Les durées affichées sont des exemples fixes.
 
-## Revue attendue
+## Suite de la revue
 
-Évaluer présence de couleur, caractère des icônes, densité, confort de lecture et
-visibilité des demandes d'attention. L'approbation de cette composition ne vaut pas
+Conserver Iris et le logo ; affiner densité, confort de lecture et visibilité des
+demandes d'attention pendant l'intégration. La validation graphique ne vaut pas
 validation des intégrations ni de la spécification complète de la V0.
