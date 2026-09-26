@@ -6,7 +6,7 @@ export async function runGit(cwd:string,args:string[],options:GitRunOptions={}):
   if(['status','diff','diff-tree'].includes(args[0])) {
     // Even a diff/status may invoke a clean filter when hashing working files.
     // Disable declared filters for this child only; never rewrite repository config.
-    let names=Buffer.alloc(0);
+    let names:Buffer=Buffer.alloc(0);
     try {names=await executeGit(cwd,['config','--null','--name-only','--get-regexp','^filter\\..*\\.(clean|smudge|process|required)$'],options);}
     catch(error){if(!(error instanceof GitError&&error.exitCode===1))throw error;}
     for(const name of names.toString('utf8').split('\0').filter(Boolean))overrides.push('-c',`${name}=${name.endsWith('.required')?'false':''}`);
