@@ -2,6 +2,13 @@ import { contextBridge, ipcRenderer } from 'electron';
 import { channels, type LullabyApi } from '../shared/api';
 import type { Snapshot } from '../shared/contracts';
 const api: LullabyApi = {
+  git:{
+    read:projectId=>ipcRenderer.invoke(channels.gitRead,projectId),
+    loadMore:snapshotId=>ipcRenderer.invoke(channels.gitMore,snapshotId),
+    commitFiles:(snapshotId,oid,parent)=>ipcRenderer.invoke(channels.gitFiles,snapshotId,oid,parent),
+    diff:(snapshotId,target)=>ipcRenderer.invoke(channels.gitDiff,snapshotId,target),
+    cancel:(projectId,scope)=>ipcRenderer.invoke(channels.gitCancel,projectId,scope),
+  },
   pickProject: () => ipcRenderer.invoke(channels.pickProject),
   snapshot: () => ipcRenderer.invoke(channels.snapshot),
   createSession: (projectId, provider,nativeId) => ipcRenderer.invoke(channels.createSession,projectId,provider,nativeId),

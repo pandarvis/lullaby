@@ -1,0 +1,12 @@
+import type { ChangeArea,GitChange } from '../../../shared/git';
+import { buildChangeTree,type ChangeTreeNode } from './tree';
+export const areaLabels:Record<ChangeArea,string>={index:'Index',worktree:'Dossier de travail',untracked:'Non suivis',conflict:'Conflits'};
+const statusLabels:Record<string,string>={M:'Modifié',A:'Ajouté',D:'Supprimé',R:'Renommé',C:'Copié','?':'Non suivi',UU:'Conflit'};
+export function ChangesTree({changes,selected,onSelect,grouped=true}:{changes:GitChange[];selected?:string;onSelect(change:GitChange):void;grouped?:boolean}) {
+  function nodes(items:ChangeTreeNode[]){return <ul className="git-tree">{items.map(node=><li key={node.path}>
+    {node.changes.map(change=><button key={change.id} title={`${change.oldPath?change.oldPath+' → ':''}${change.path}`} aria-pressed={change.id===selected} className={`git-file ${change.id===selected?'selected':''}`} onClick={()=>onSelect(change)}><span aria-hidden="true" className={`git-file-status status-${change.status[0]}`}>{change.status}</span><span className="git-file-name">{node.name}{change.oldPath&&<small>depuis {change.oldPath}</small>}</span><span className="sr-only"> · {statusLabels[change.status[0]]??change.status}</span></button>)}
+    {node.children.length>0&&<details open><summary><span aria-hidden="true">▱</span> {node.name}</summary>{nodes(node.children)}</details>}
+  </li>)}</ul>;}
+  if(!changes.length)return <div className="git-empty">Aucun fichier modifié.</div>;
+  return <div className="git-changes-tree">{grouped?(['index','worktree','untracked','conflict']as const).map(area=>{const items=changes.filter(c=>c.area===area);return items.length>0&&<section key={area} className="git-change-group" aria-label={areaLabels[area]}><h3>{areaLabels[area]} <span className="git-count">{items.length}</span></h3>{nodes(buildChangeTree(items))}</section>;}):nodes(buildChangeTree(changes))}</div>;
+}

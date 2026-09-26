@@ -1,7 +1,8 @@
 # Feuille de route d'implémentation
 
 Date : 26 septembre 2026. Plans validés par l'utilisateur ; socle Windows
-implémenté et relu, recette du paquet encore partielle. La vue Git suit son acceptation.
+implémenté et relu, recette globale encore partielle. La consultation Git est
+implémentée et vérifiée sur fixtures locales ; sa recette est liée depuis l'état du projet.
 
 | Jalon | Résultat utilisable | Document d'exécution |
 | --- | --- | --- |
@@ -31,8 +32,9 @@ figés : ils conservent les besoins exprimés sans gonfler la première tranche.
 
 La PR documentaire #1 est fusionnée dans `develop` avec autorisation. Le socle
 rejoint `develop` sur demande explicite depuis `feature/windows-agent-foundation`.
-Après sa recette et son acceptation, créer `feature/git-inspector` depuis la
-base intégrée. Aucune publication de release automatique.
+La branche `feature/git-inspector` est créée depuis cette base locale et reprend
+l'icône Iris. Son intégration locale à develop est autorisée par l'utilisateur,
+sans publication de release automatique.
 
 ## Lecture et validation
 

@@ -1,5 +1,8 @@
 import type { Diagnostic, Project, Provider, PromptRequest, ReplyRequest, Result, Session, Snapshot, LaunchChoices, NetworkProfile, NetworkSnapshot, ProxyState } from './contracts';
+import type { GitApi } from './git';
+export type GitBridge={ [K in keyof GitApi]: (...args:Parameters<GitApi[K]>)=>Promise<Result<Awaited<ReturnType<GitApi[K]>>>> };
 export interface LullabyApi {
+  git:GitBridge;
   pickProject(): Promise<Result<Project | null>>;
   snapshot(): Promise<Result<Snapshot>>;
   createSession(projectId: string, provider: Provider, nativeId?:string): Promise<Result<Session>>;
@@ -16,6 +19,7 @@ export interface LullabyApi {
   subscribe(listener: (snapshot: Snapshot) => void): () => void;
 }
 export const channels = {
+  gitRead:'lullaby:git-read',gitMore:'lullaby:git-more',gitFiles:'lullaby:git-files',gitDiff:'lullaby:git-diff',gitCancel:'lullaby:git-cancel',
   pickProject:'lullaby:pick-project', snapshot:'lullaby:snapshot',
   createSession:'lullaby:create-session', send:'lullaby:send', reply:'lullaby:reply',
   interrupt:'lullaby:interrupt', saveDraft:'lullaby:save-draft', diagnose:'lullaby:diagnose',

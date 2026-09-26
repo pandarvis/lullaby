@@ -12,6 +12,22 @@ depuis `feature/windows-agent-foundation`. Le worktree
 ses dépendances et son paquet Windows. Cette intégration ne vaut pas validation
 complète de la recette V0.
 
+Suite locale sur `feature/git-inspector`, dans le même worktree libre, depuis
+develop local `facb08a`. Le commit Iris a été repris depuis `feature/iris-windows-icon` :
+logo Iris conservé et décliné pour l'icône de la fenêtre et de l'exécutable Windows.
+Paquet reconstruit, huit tailles embarquées vérifiées, aucune dépendance ajoutée.
+L'aperçu local est mis à jour ; l'icône Iris est observée dans la barre de titre.
+L'utilisateur autorise maintenant son intégration locale à develop, avec un commit
+de merge Gitflow. Aucune publication distante demandée. Le worktree est conservé
+pour ses dépendances et le paquet de développement.
+
+La tranche Git V1 G1–G3 est implémentée : graphe commits/branches/tags/merges,
+sélection d'un parent, groupes index/dossier de travail/non suivis/conflits et
+diffs en consultation. Git installé fournit les données sans fetch, appel modèle
+ni nouvelle dépendance. L'onglet Conversations garde son chat et son brouillon.
+Les changements produit vont de `4965b4b` à `83cbad6` ; les validations et les
+arbitrages sont dans la [recette Git](validation/git-v1.md).
+
 Implémenté : shell Electron Windows, Iris et logo SVG validés, menu repliable,
 projets par dossier, conversations Claude/Codex, chat assistant-ui, Markdown/code,
 actions, questions, autorisations, arrêt et reprise par identifiant natif.
@@ -38,11 +54,15 @@ professionnelle n'a été inventée ni aucun réglage global modifié.
   espaces/accents, chat Claude réel, brouillons/routage testés.
 - Tests hors réseau : stockage, crash simulé, sessions, IPC, flux moteurs, transport,
   UI et relais local. Les appels modèles sont opt-in.
-- 42 tests hors réseau réussis, TypeScript et paquet Windows vérifiés après relecture.
+- Socle V0 : 42 tests hors réseau réussis, TypeScript et paquet Windows vérifiés après relecture.
   Trois corrections : permissions Claude natives, état des sessions concurrentes
   et identifiant de reprise conservé lors d'un arrêt au démarrage.
-- Paquet Windows construit ; lancement hors checkout observé sur le paquet précédent.
-  La recette graphique complète du paquet final reste à terminer. Paquet non signé.
+- Avec Git V1 : 63 tests réussis, 5 essais fournisseurs opt-in ignorés, TypeScript
+  et build réussis. Deux problèmes importants de relecture et un défaut graphique
+  corrigés avec tests de régression. Aucun problème mineur différé.
+- Paquet Windows construit et aperçu hors checkout actualisé. Graphe, merge,
+  changements locaux et actualisation d'un diff observés. Fenêtre sous 850 px et
+  recette V0 complète restent à vérifier. Paquet non signé.
 - Poste professionnel, véritable Px/certificat et règles d'entreprise non testés.
 - Parité globale non démontrée : outils de l'application hôte non automatiquement
   disponibles, contexte long non testé. L'historique externe reste dans le moteur ;
@@ -52,11 +72,14 @@ professionnelle n'a été inventée ni aucun réglage global modifié.
 
 ## Suite
 
-Terminer la [recette du paquet](validation/v0-windows.md). La relecture du socle
-et les corrections associées sont terminées ; l'intégration locale à develop
-est demandée explicitement, sans publication de release.
-Après acceptation du premier jalon, exécuter le plan Git : graphe des commits,
-branches et merges, arbre des fichiers modifiés et diffs en consultation.
+Intégration locale de la tranche Git autorisée ; ouvrir `C:\Sources\lullaby`
+dans l'application permet de tester le vrai dépôt du produit. Les projets de
+recette restent séparés : une conversation Claude terminée et un dépôt Git
+synthétique ; aucun agent n'y travaille en arrière-plan au moment de la passation.
+Terminer les essais ouverts de la
+[recette du paquet](validation/v0-windows.md) et les contrôles du poste professionnel.
+La V0 a déjà été intégrée localement à develop ; cette nouvelle tranche suit
+la même intégration locale, sans publication de release.
 Chronos par projet/session, distinction humain/agent, supervision avancée et alertes
 internes appartiennent aux jalons suivants. Notifications Windows non prioritaires,
 espace documentaire spécialisé envisagé en V2.
