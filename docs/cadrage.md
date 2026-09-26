@@ -62,6 +62,10 @@ Source : [sessions du SDK Claude](https://code.claude.com/docs/en/agent-sdk/sess
 
 Nous intégrons des moteurs d'agents, pas uniquement les API de modèles.
 
+L'exigence de [fidélité aux moteurs](fidelite-moteurs.md) précise le chargement des
+instructions et skills, la reprise native et les critères de comparaison avec les
+clients officiels. Les catégories de sessions n'imposent aucun rôle restrictif.
+
 - Claude Agent SDK : flux de messages et d'événements via une bibliothèque TypeScript.
 - Codex App Server : commandes et événements JSON-RPC ; transport local possible via stdio.
 

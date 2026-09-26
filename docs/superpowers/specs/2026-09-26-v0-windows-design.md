@@ -117,6 +117,10 @@ poste pro. La signature et l'autorisation d'exécution ne sont pas présumées a
 
 ## Validation de la V0
 
+Appliquer le contrat de [fidélité aux moteurs](../../fidelite-moteurs.md) :
+instructions natives, découverte et invocation d'un skill témoin, puis maintien
+des capacités après reprise. Documenter les écarts avec la CLI/client officiel.
+
 - Application et paquet démarrent nativement sur Windows.
 - Un échange réel puis une relance fonctionnent avec chaque abonnement.
 - Essai complémentaire : reprise d'une session Claude CLI arrêtée, par identifiant,

@@ -33,7 +33,15 @@ Dernière mise à jour : 26 septembre 2026, Codex.
   et dans le détail, cumuls par projet dans la maquette. Valeurs fictives fixes,
   pas de chronométrage réel ; filtres de sessions sans effet sur les cumuls projet.
 
+- Exigence de fidélité aux moteurs et SVG confirmée ; contrat dans
+  `fidelite-moteurs.md`. Catégories de session sans rôle restrictif implicite.
+  Configuration native, skills et reprise documentés, toujours sans intégration.
+
 ## Vérifications effectuées
+
+- Documentation officielle consultée : preset Claude Code distinct du prompt SDK
+  minimal, découverte des skills, reprise native Claude/Codex. Ces informations
+  restent à confronter aux versions réellement utilisées par le prototype.
 
 - Exécutables accessibles sur le poste personnel : Git 2.49.0.windows.1,
   Node 22.16.0, npm 10.9.2, Claude Code 2.1.220, Codex CLI 0.158.0-alpha.2.1.

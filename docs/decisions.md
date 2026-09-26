@@ -53,3 +53,17 @@ décrits dans `direction-artistique.md`. La V0 doit reprendre Iris et le logo de
 maquette : surfaces lavande, navigation indigo, accents menthe et ambre.
 Lagon reste une exploration non retenue. Cette validation visuelle ne modifie pas
 le périmètre fonctionnel de la V0 et ne vaut pas vérification des intégrations.
+
+Les emblèmes et icônes Lullaby seront en SVG, préférence explicitement confirmée.
+Une bibliothèque locale réutilisable est envisagée ; elle n'est pas encore créée.
+
+## D006 — Préserver les capacités des agents natifs
+
+Date : 26 septembre 2026. Statut : **retenu** pour l'exigence utilisateur ;
+configuration et parité effective **à vérifier**.
+
+Lullaby vise l'usage principal sans perte de capacités de développement par rapport
+aux moteurs officiels. Préserver leurs instructions, outils, skills et sessions.
+La [fidélité aux moteurs](fidelite-moteurs.md) décrit les mécanismes proposés et la
+recette. Les catégories visuelles ne restreignent pas implicitement les agents.
+Vérifier la disponibilité des skills et respecter leur chargement à la demande.

@@ -81,7 +81,15 @@ un choix pour Lullaby : leur durée n'a pas été mesurée dans Dofus.
 - Détails de personnalité dans les espaces libres et les transitions, avec un chat
   calme et stable pendant la lecture. Aucun ajout de gamification n'est décidé.
 
-## Mouvement
+## Bibliothèque d'emblèmes et icônes
+
+Format SVG confirmé par l'utilisateur pour les emblèmes et icônes Lullaby.
+Prévoir une bibliothèque locale réutilisable, sans génération à chaque session.
+L'emblème identifie durablement le projet ; fournisseur, catégorie de tâche et état
+restent distincts. Les catégories ne modifient pas les capacités de l'agent.
+Le nombre d'emblèmes et leur sélecteur restent à concevoir ; bibliothèque non créée.
+
+## Navigation et mouvement
 
 Navigation repliable demandée par l'utilisateur : conserver une barre compacte avec
 logo Lullaby, emblèmes de projets, indicateurs d'attention et accès au proxy Claude.

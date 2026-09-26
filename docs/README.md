@@ -7,6 +7,7 @@ dans la même PR. Éviter les comptes rendus redondants et les copies de convers
 | --- | --- |
 | [État du projet](etat-projet.md) | Ce qui existe, ce qui est vérifié et la prochaine action |
 | [Cadrage](cadrage.md) | Besoin, contraintes et architecture envisagée |
+| [Fidélité aux moteurs](fidelite-moteurs.md) | Instructions natives, skills, reprise et critères de comparaison avec les clients officiels |
 | [Direction artistique](direction-artistique.md) | Référence Ankama/Dofus 3, principes UX et mouvement |
 | [Maquette interactive](mockups/README.md) | Exploration de la supervision et du chat, parcours fictifs et ouverture locale |
 | [Décisions](decisions.md) | Choix structurants, justification et statut |
