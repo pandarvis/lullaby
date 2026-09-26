@@ -15,6 +15,8 @@ Contrainte confirmée : Docker et WSL sont bloqués. La cible est Windows natif,
 sans conteneur ni environnement Linux requis.
 Le poste professionnel devra être évalué séparément : logiciels autorisés, proxy,
 certificats et connexion aux comptes. Son fonctionnement n'est pas encore vérifié.
+La [direction artistique](direction-artistique.md) prend pour référence les interfaces
+Ankama/Dofus 3 : identité soignée, UX exigeante et animations discrètes.
 
 ## Direction retenue pour la réutilisation
 

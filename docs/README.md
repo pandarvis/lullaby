@@ -7,6 +7,7 @@ dans la même PR. Éviter les comptes rendus redondants et les copies de convers
 | --- | --- |
 | [État du projet](etat-projet.md) | Ce qui existe, ce qui est vérifié et la prochaine action |
 | [Cadrage](cadrage.md) | Besoin, contraintes et architecture envisagée |
+| [Direction artistique](direction-artistique.md) | Référence Ankama/Dofus 3, principes UX et mouvement |
 | [Décisions](decisions.md) | Choix structurants, justification et statut |
 | [V0 Windows](superpowers/specs/2026-09-26-v0-windows-design.md) | Périmètre proposé et critères de validation du prototype |
 | [Poste professionnel](poste-pro.md) | Prérequis et contrôles à effectuer sur la machine cible |

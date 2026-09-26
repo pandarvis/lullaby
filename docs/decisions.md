@@ -39,3 +39,13 @@ Appliquer Gitflow selon `CONTRIBUTING.md`. `AGENTS.md` porte les règles commune
 et `CLAUDE.md` les importe. Mettre à jour la documentation dans chaque PR et tenir
 un état de passation. Les agents simultanés utilisent des branches et répertoires
 distincts. Cette décision n'autorise pas à lancer ou contacter d'autres agents.
+
+## D005 — Qualité visuelle et référence Ankama/Dofus 3
+
+Date : 26 septembre 2026. Statut : **retenu** pour la référence et le niveau de soin ;
+déclinaison graphique **proposée**, à valider visuellement.
+
+L'utilisateur apprécie les interfaces Ankama/Dofus 3 et souhaite une direction
+artistique forte, une excellente UX et des animations légères. Les principes sont
+décrits dans `direction-artistique.md`. La V0 doit déjà exprimer cette intention ;
+palette, thème, composants et compositions ne sont pas encore approuvés.

@@ -34,8 +34,10 @@ petit panneau de diagnostic. Afficher le dossier et le fournisseur de la convers
 erreur et quota atteint lorsque le moteur permet de l'identifier.
 Les messages d'erreur précisent l'étape concernée sans révéler de secret.
 
-Pas de maquette avancée nécessaire pour ce premier test. Réutiliser les composants
-assistant-ui ; CSS simple pour la structure, sans ajouter un deuxième kit graphique.
+La [direction artistique](../../direction-artistique.md) doit guider la V0 : référence
+Ankama/Dofus 3, identité soignée et animations légères. Réutiliser les composants
+assistant-ui avec des styles et réglages visuels communs, sans ajouter un deuxième
+kit graphique. Valider une première composition avant de décliner tous les écrans.
 Masquer les opérations de chat non implémentées (édition, régénération, pièces jointes).
 
 ## Architecture et dépendances
