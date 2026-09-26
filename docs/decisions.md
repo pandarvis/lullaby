@@ -67,3 +67,15 @@ aux moteurs officiels. Préserver leurs instructions, outils, skills et sessions
 La [fidélité aux moteurs](fidelite-moteurs.md) décrit les mécanismes proposés et la
 recette. Les catégories visuelles ne restreignent pas implicitement les agents.
 Vérifier la disponibilité des skills et respecter leur chargement à la demande.
+
+## D007 — Développement V1, double vue Git et alertes internes
+
+Date : 26 septembre 2026. Statut : **retenu** pour les priorités exprimées ;
+découpage technique **proposé** dans la feuille de route.
+
+La V1 vise le développement. L'utilisateur confirme son intérêt pour le graphe
+des commits/branches/merges ET l'arborescence des fichiers modifiés. Première
+tranche de consultation avec diffs proposée après une session fiable. Les opérations
+Git d'écriture ne sont pas encore cadrées. Les notifications Windows sont exclues
+des premiers jalons ; alertes internes et sons envisagés ensuite. L'espace
+documentaire spécialisé reste une piste V2.

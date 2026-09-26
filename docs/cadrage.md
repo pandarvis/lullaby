@@ -167,6 +167,15 @@ et n'ajoute aucune dépendance pour le moment.
 
 ### Cible fonctionnelle
 
+Le besoin Git est confirmé : **graphe commits/branches/merges et arborescence des
+fichiers modifiés**, tous les deux. La [spécification Git V1](superpowers/specs/2026-09-26-v1-git-design.md)
+propose une première tranche de consultation avec diffs, après le socle fiable.
+Les [plans d'implémentation](feuille-de-route.md) détaillent ces deux jalons.
+
+Notifications Windows explicitement écartées pour le moment. Les alertes internes,
+badges et petits sons réglables restent une piste de confort, sans dépendance au
+centre de notifications du système ; leur intégration suit les jalons socle et Git.
+
 Le premier livrable sera la [V0 de validation locale](superpowers/specs/2026-09-26-v0-windows-design.md)
 sur le poste personnel, puis son paquet sera testé sur le poste professionnel.
 Les éléments ci-dessous décrivent la cible fonctionnelle plus large après cette V0.

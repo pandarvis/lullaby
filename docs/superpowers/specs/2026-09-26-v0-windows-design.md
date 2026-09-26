@@ -2,6 +2,10 @@
 
 Date : 26 septembre 2026. Spécification proposée pour revue avant implémentation.
 
+Un [plan d'implémentation](../plans/2026-09-26-v0-windows.md) a été demandé et rédigé.
+Aucune exécution commencée. La demande de préparation du plan ne vaut pas validation
+de chaque choix technique ci-dessous.
+
 ## Objectif
 
 Obtenir sur le poste personnel une première application graphique utilisable avec
@@ -137,6 +141,11 @@ Les appels réels consommeront les quotas des abonnements. Ils utiliseront un do
 d'essai dédié, sans modifier les autres projets de la machine.
 
 ## Après la V0
+
+La prochaine tranche de développement planifiée est la
+[vue Git V1](2026-09-26-v1-git-design.md) : graphe de commits et fichiers modifiés,
+tous deux souhaités par l'utilisateur. Les notifications Windows sont hors priorité.
+Voir la [feuille de route](../../feuille-de-route.md) pour les autres jalons.
 
 Tableau de bord multi-projets, parallélisme isolé, temps humains et agents par session
 avec cumuls par projet, export

@@ -18,7 +18,8 @@ Dernière mise à jour : 26 septembre 2026, Codex.
 - Préférence précisée : app colorée, palette maîtrisée et icônes un peu « sharp » ;
   référence concrète désormais fixée par Iris. Figs reste une inspiration ancienne.
 - Le périmètre écrit de la V0 n'a pas encore reçu de validation explicite complète.
-  Aucun plan d'implémentation détaillé ni exécution de ce plan n'a commencé.
+  Plans d'implémentation demandés et rédigés pour le socle Windows puis la vue Git ;
+  documents à relire, aucune exécution commencée. Voir `feuille-de-route.md`.
 - Usage CLI précisé : dossier de projet puis reprise de session Claude. Parcours
   projet/conversations et essai de reprise CLI ajoutés au cadrage, non implémentés.
 - Proxy local requis pour Claude sur le poste pro, probablement Px d'après une
@@ -40,8 +41,16 @@ Dernière mise à jour : 26 septembre 2026, Codex.
 - Trajectoire précisée : V1 centrée développement ; outil documentaire spécialisé
   envisagé en V2, sans périmètre ni choix technique arrêté. La documentation du dépôt
   reste une tâche des agents en V1. Pistes UX conservées dans le cadrage.
+- Git : graphe commits/branches/merges et arborescence des fichiers modifiés confirmés
+  tous les deux. Spécification et plan de consultation/diffs rédigés, non implémentés.
+- Notifications Windows explicitement hors priorité ; alertes internes et sons
+  restent une piste de confort après le socle et Git, sans intégration réelle.
 
 ## Vérifications effectuées
+
+- Plans relus pour couverture de la V0 et de la vue Git, contrats communs,
+  distinction tests simulés/essais réels et limites proposées. Contrôle des liens
+  Markdown locaux et du diff ; aucun test produit exécuté (code encore absent).
 
 - Documentation officielle consultée : preset Claude Code distinct du prompt SDK
   minimal, découverte des skills, reprise native Claude/Codex. Ces informations
@@ -86,7 +95,10 @@ ce fichier ne remplace pas l'état réel du checkout.
 Préserver Iris et le logo validés lors du passage de la maquette au produit.
 Confirmer sur le poste pro le relais Px et les réglages transmis à Claude ; tester
 Codex séparément. Intégrer le parcours dossier puis sélection/reprise de conversation.
-Terminer la revue du périmètre V0, puis rédiger son plan d'implémentation. Le premier
+Relire la V0, la spécification Git et les deux plans liés depuis la feuille de route,
+puis choisir l'exécution. Les plans recommandent une progression séquentielle.
+Préparer une branche d'implémentation selon Gitflow une fois les documents intégrés
+dans `develop` avec l'autorisation correspondante ; aucune fusion effectuée ici. Le premier
 jalon reste une application Windows sur le poste personnel avec les deux abonnements,
 puis un paquet à vérifier sur le poste professionnel. Chronos et supervision avancée
 restent dans la cible produit après ce jalon.

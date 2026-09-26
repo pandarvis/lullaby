@@ -12,10 +12,12 @@ dans la même PR. Éviter les comptes rendus redondants et les copies de convers
 | [Maquette interactive](mockups/README.md) | Exploration de la supervision et du chat, parcours fictifs et ouverture locale |
 | [Décisions](decisions.md) | Choix structurants, justification et statut |
 | [V0 Windows](superpowers/specs/2026-09-26-v0-windows-design.md) | Périmètre proposé et critères de validation du prototype |
+| [Feuille de route](feuille-de-route.md) | Ordre des jalons et accès aux plans d'implémentation |
+| [Vue Git V1](superpowers/specs/2026-09-26-v1-git-design.md) | Graphe des commits, arborescence des changements et différences |
 | [Poste professionnel](poste-pro.md) | Prérequis et contrôles à effectuer sur la machine cible |
 | [Contribution](../CONTRIBUTING.md) | Gitflow, PR et mise à jour des documents |
 | [Consignes communes](../AGENTS.md) | Règles partagées par Codex et Claude |
 
 Ordre conseillé à la reprise : état du projet, contribution, puis les documents
-touchés par la tâche. Les plans d'implémentation seront ajoutés lorsqu'ils seront
-préparés ; leur existence ne prouvera pas à elle seule que leur exécution est autorisée.
+touchés par la tâche. Les plans du socle Windows et de la vue Git sont disponibles
+depuis la feuille de route ; leur existence ne vaut pas démarrage de leur exécution.
