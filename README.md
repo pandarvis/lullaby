@@ -1,5 +1,8 @@
 # Lullaby
 
+Le socle Electron Windows est en cours de développement. Voir les
+[commandes locales](docs/developpement.md) et la [feuille de route](docs/feuille-de-route.md).
+
 Projet en cours de préparation.
 
 Lullaby vise à réunir les projets, les sessions Claude/Codex et le suivi du temps

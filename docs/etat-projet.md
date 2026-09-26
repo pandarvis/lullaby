@@ -4,7 +4,12 @@ Dernière mise à jour : 26 septembre 2026, Codex.
 
 ## État réel
 
-- Dépôt initialisé avec un README ; aucune application ni dépendance produit installée.
+- Plan validé et PR documentaire #1 fusionnée dans `develop` (`bef0ae1`).
+- Implémentation démarrée dans le worktree `C:\Sources\lullaby-worktrees\windows-agent-foundation`,
+  branche `feature/windows-agent-foundation`. Le checkout initial reste sur `develop`.
+- T1 : socle Electron/React/TypeScript installé ; fenêtre Iris, preload limité,
+  sélection de dossier et menu repliable. Tests IPC et build passent ; les moteurs
+  ne sont pas encore branchés. Commandes dans `docs/developpement.md`.
 - Cadrage, proposition de V0 et checklist du poste professionnel rédigés.
 - Choix assistant-ui confirmé comme base du chat ; parité complète avec les clients
   officiels non validée et périmètre détaillé encore à préciser.
@@ -17,9 +22,8 @@ Dernière mise à jour : 26 septembre 2026, Codex.
   aucune intégration assistant-ui ou moteur.
 - Préférence précisée : app colorée, palette maîtrisée et icônes un peu « sharp » ;
   référence concrète désormais fixée par Iris. Figs reste une inspiration ancienne.
-- Le périmètre écrit de la V0 n'a pas encore reçu de validation explicite complète.
-  Plans d'implémentation demandés et rédigés pour le socle Windows puis la vue Git ;
-  documents à relire, aucune exécution commencée. Voir `feuille-de-route.md`.
+- Les plans du socle Windows et de la vue Git sont validés ; exécution séquentielle
+  du socle commencée. Voir `feuille-de-route.md`.
 - Usage CLI précisé : dossier de projet puis reprise de session Claude. Parcours
   projet/conversations et essai de reprise CLI ajoutés au cadrage, non implémentés.
 - Proxy local requis pour Claude sur le poste pro, probablement Px d'après une
@@ -109,3 +113,12 @@ Lire `AGENTS.md`, `CONTRIBUTING.md`, le cadrage et la V0. Relever la branche et 
 Ne pas réinstaller une autre interface complète ni introduire Docker/WSL. Ne pas
 présenter les propositions comme déjà testées. Actualiser ce document à la prochaine
 passation en remplaçant les informations devenues obsolètes.
+
+## Exécution en cours — socle Windows
+
+La PR documentaire #1 est fusionnée dans develop. Le produit se développe sur
+feature/windows-agent-foundation dans le worktree séparé. T1 compile et les quatre
+tests IPC passent. Fenêtre Iris observée sous Windows ; menu repliable et ouverture/
+annulation du sélecteur natif vérifiés. La sélection finale doit être retestée :
+le pilote UI cible mal le dialogue secondaire sur cette configuration d'écran.
+T2 (sessions et stockage) est la prochaine tâche. Aucun moteur réellement connecté.
