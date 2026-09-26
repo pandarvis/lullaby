@@ -1,4 +1,4 @@
-import type { PromptRequest, ReplyRequest, Provider } from '../../shared/contracts';
+import type { PromptRequest, ReplyRequest, Provider, LaunchChoices } from '../../shared/contracts';
 export function object(value: unknown, keys: string[]): Record<string, unknown> {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('INVALID_REQUEST');
   if (Object.keys(value).some(key => !keys.includes(key))) throw new Error('INVALID_REQUEST');
@@ -9,6 +9,13 @@ export function text(value: unknown, max = 200000, allowEmpty = false): string {
   return value;
 }
 export function id(value: unknown): string { return text(value, 200); }
+export function nativeId(value:unknown):string|undefined {if(value===undefined)return undefined;const result=text(value,100);if(!/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(result))throw new Error('INVALID_NATIVE_ID');return result;}
+export function launchChoices(value:unknown):LaunchChoices {
+  const data=object(value,['model','effort']);const choices:LaunchChoices={};
+  if(data.model!==undefined)choices.model=text(data.model,200);
+  if(data.effort!==undefined)choices.effort=text(data.effort,30);
+  return choices;
+}
 export function provider(value: unknown): Provider {
   if (value !== 'claude' && value !== 'codex') throw new Error('INVALID_PROVIDER');
   return value;

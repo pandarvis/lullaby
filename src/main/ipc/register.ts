@@ -2,14 +2,19 @@ import { ipcMain, dialog, type BrowserWindow } from 'electron';
 import { channels } from '../../shared/api';
 import type { Result } from '../../shared/contracts';
 import type { SessionManager } from '../sessions/manager';
-import { id, provider, text, validateSend, validateReply } from './validation';
+import { id, provider, text, nativeId, launchChoices, validateSend, validateReply } from './validation';
 
 export function registerIpc(window: BrowserWindow, manager: SessionManager): void {
   function handle(channel: string, fn: (...args: any[]) => unknown) {
     ipcMain.handle(channel, async (event, ...args): Promise<Result<unknown>> => {
       if (event.sender !== window.webContents || event.senderFrame !== window.webContents.mainFrame) return {ok:false,code:'INVALID_SENDER',message:'Requête refusée.'};
       try { return {ok:true,value:await fn(...args)}; }
-      catch (error) { const code = error instanceof Error ? error.message : 'UNKNOWN'; return {ok:false,code,message:code === 'NOT_READY' ? 'Ce moteur sera connecté à la prochaine étape.' : 'La demande ne peut pas être traitée.'}; }
+      catch (error) {
+        const candidate=error instanceof Error?error.message:'';
+        const code=/^[A-Z_]{3,64}$/.test(candidate)?candidate:'OPERATION_FAILED';
+        const messages:Record<string,string>={FOLDER_BUSY:'Un agent travaille déjà dans ce dossier. Arrêtez-le ou attendez sa fin.',STALE_REQUEST:'Cette demande est périmée. Elle ne peut plus être approuvée.',AUTH_CONFIGURATION_AMBIGUOUS:'La configuration peut sélectionner une API facturée. Vérifiez le diagnostic du moteur.',SUBSCRIPTION_NOT_CONFIRMED:'La connexion par abonnement n’est pas confirmée. Connectez-vous dans le client officiel.',INVALID_NATIVE_ID:'L’identifiant natif doit être un UUID de session.',SESSION_ALREADY_IMPORTED:'Cette session native est déjà présente dans Lullaby.',NATIVE_FOLDER_MISMATCH:'Cette session native appartient à un autre dossier.',CODEX_PROCESS_FAILED:'Le moteur Codex ne peut pas être lancé. Vérifiez son installation ou son chemin.',CODEX_RPC_REJECTED:'Codex a refusé la demande. Vérifiez le modèle sélectionné et la configuration native.'};
+        return {ok:false,code,message:messages[code]??'La demande ne peut pas être traitée. Vérifiez le diagnostic et le dossier du projet.'};
+      }
     });
   }
   handle(channels.snapshot, () => manager.snapshot());
@@ -18,7 +23,8 @@ export function registerIpc(window: BrowserWindow, manager: SessionManager): voi
     if (choice.canceled || !choice.filePaths[0]) return null;
     return manager.addProject(choice.filePaths[0]);
   });
-  handle(channels.createSession, (projectId, selectedProvider) => manager.createSession(id(projectId),provider(selectedProvider)));
+  handle(channels.createSession, (projectId, selectedProvider, native) => manager.createSession(id(projectId),provider(selectedProvider),nativeId(native)));
+  handle(channels.configureSession,(sessionId,choices)=>manager.configureSession(id(sessionId),launchChoices(choices)));
   handle(channels.send, input => manager.send(validateSend(input)));
   handle(channels.reply, input => manager.reply(validateReply(input)));
   handle(channels.interrupt, sessionId => manager.interrupt(id(sessionId)));

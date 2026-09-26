@@ -1,8 +1,9 @@
-import type { Diagnostic, Project, Provider, PromptRequest, ReplyRequest, Result, Session, Snapshot } from './contracts';
+import type { Diagnostic, Project, Provider, PromptRequest, ReplyRequest, Result, Session, Snapshot, LaunchChoices } from './contracts';
 export interface LullabyApi {
   pickProject(): Promise<Result<Project | null>>;
   snapshot(): Promise<Result<Snapshot>>;
-  createSession(projectId: string, provider: Provider): Promise<Result<Session>>;
+  createSession(projectId: string, provider: Provider, nativeId?:string): Promise<Result<Session>>;
+  configureSession(sessionId:string,choices:LaunchChoices):Promise<Result<void>>;
   send(input: PromptRequest): Promise<Result<{runId: string}>>;
   reply(input: ReplyRequest): Promise<Result<void>>;
   interrupt(sessionId: string): Promise<Result<void>>;
@@ -15,4 +16,5 @@ export const channels = {
   createSession:'lullaby:create-session', send:'lullaby:send', reply:'lullaby:reply',
   interrupt:'lullaby:interrupt', saveDraft:'lullaby:save-draft', diagnose:'lullaby:diagnose',
   changed:'lullaby:changed',
+  configureSession:'lullaby:configure-session',
 } as const;

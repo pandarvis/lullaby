@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { basename } from 'node:path';
-import type { Snapshot, Session, Provider, PromptRequest, ReplyRequest } from '../../shared/contracts';
+import type { Snapshot, Session, Provider, PromptRequest, ReplyRequest, LaunchChoices } from '../../shared/contracts';
 import type { ProviderAdapter, ProviderRun } from '../providers/types';
 import { canonicalizeFolder } from '../projects/registry';
 import { emptySnapshot } from '../storage/store';
@@ -29,10 +29,17 @@ export class SessionManager {
     if(!project) { project={id:randomUUID(),name:basename(canonical.cwd),...canonical}; this.state.projects.push(project);this.publish();await this.save(); }
     return structuredClone(project);
   }
-  async createSession(projectId:string,provider:Provider) {
+  async createSession(projectId:string,provider:Provider,nativeId?:string) {
     if(!this.state.projects.some(p=>p.id===projectId)) throw new Error('PROJECT_NOT_FOUND');
     const session:Session = {id:randomUUID(),projectId,provider,title:'Nouvelle conversation',phase:'idle',draft:'',choices:{}};
+    if(nativeId){
+      if(this.state.sessions.some(s=>s.provider===provider&&s.nativeId===nativeId))throw new Error('SESSION_ALREADY_IMPORTED');
+      session.nativeId=nativeId;session.title='Session reprise';
+    }
     this.state.sessions.push(session);this.state.messages[session.id]=[];this.publish();await this.save(); return structuredClone(session);
+  }
+  async configureSession(sessionId:string,choices:LaunchChoices){
+    if(this.active.has(sessionId))throw new Error('SESSION_RUNNING');this.session(sessionId).choices=structuredClone(choices);this.publish();await this.save();
   }
   async send(input:PromptRequest): Promise<{runId:string}> {
     if(this.closing) throw new Error('CLOSING');
