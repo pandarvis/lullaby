@@ -1,7 +1,7 @@
 # Feuille de route d'implémentation
 
-Date : 26 septembre 2026. Plans demandés par l'utilisateur ; exécution non commencée.
-La demande de plan ne vaut pas validation de tous les détails techniques proposés.
+Date : 26 septembre 2026. Plans validés par l'utilisateur ; socle Windows
+implémenté et relu, recette du paquet encore partielle. La vue Git suit son acceptation.
 
 | Jalon | Résultat utilisable | Document d'exécution |
 | --- | --- | --- |
@@ -29,15 +29,10 @@ figés : ils conservent les besoins exprimés sans gonfler la première tranche.
 
 ## Gitflow pour exécuter
 
-Ces documents poursuivent la branche de cadrage `feature/gitflow-documentation`
-et la PR en brouillon vers `develop`. Aucune fusion n'est effectuée par le plan.
-Après intégration autorisée des documents dans `develop`, créer
-`feature/windows-agent-foundation`, puis `feature/git-inspector` depuis la base
-intégrée correspondante. Si les documents ne sont pas encore intégrés au début
-de l'exécution, terminer leur revue puis obtenir l'autorisation de fusion avant
-de créer la branche produit depuis `develop`. La branche de cadrage reste destinée
-aux documents et maquettes ; ne pas y commencer le produit ni démarrer depuis un
-`develop` vide. Aucun merge automatique n'est prévu.
+La PR documentaire #1 est fusionnée dans `develop` avec autorisation. Le socle
+rejoint `develop` sur demande explicite depuis `feature/windows-agent-foundation`.
+Après sa recette et son acceptation, créer `feature/git-inspector` depuis la
+base intégrée. Aucune publication de release automatique.
 
 ## Lecture et validation
 

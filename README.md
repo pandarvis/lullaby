@@ -1,16 +1,37 @@
 # Lullaby
 
-Le socle Electron Windows est en cours de développement. Voir les
-[commandes locales](docs/developpement.md) et la [feuille de route](docs/feuille-de-route.md).
+Un atelier Windows pour vos projets et agents de développement : Electron,
+interface Iris, chat assistant-ui, Claude Code et Codex via les abonnements existants.
 
-Projet en cours de préparation.
+Le premier socle est intégré à `develop`. Il permet
+plusieurs projets et conversations, les autorisations, l'arrêt, la reprise native
+et des réglages réseau par moteur. La recette et les limites sont dans
+[l'état du projet](docs/etat-projet.md). Le poste professionnel reste à vérifier.
 
-Lullaby vise à réunir les projets, les sessions Claude/Codex et le suivi du temps
-dans un espace de travail personnel, en utilisant les abonnements existants.
+## Développer
 
-- [Cadrage et options techniques](docs/cadrage.md)
+Avec Node compatible (22.16 testé) et Git for Windows :
+
+```powershell
+npm ci
+node node_modules/electron/install.js
+npm run dev
+```
+
+```powershell
+npm test
+npm run typecheck
+npm run package:win
+```
+
+Le paquet se trouve dans `dist/win-unpacked` : conserver tout ce dossier avec
+`Lullaby.exe`. Il embarque Electron et le moteur Claude du SDK ; Codex reste un
+exécutable officiel externe. Aucun Docker, WSL, serveur ni clé API requis.
+Les connexions officielles Claude/ChatGPT doivent déjà être présentes.
+
+- [Commandes et prérequis de développement](docs/developpement.md)
+- [Documentation du projet](docs/README.md)
 - [Vérifications sur le poste professionnel](docs/poste-pro.md)
-- [Documentation et état du projet](docs/README.md)
-- [Contribuer : Gitflow et travail entre agents](CONTRIBUTING.md)
+- [Contribuer : Gitflow et cohabitation entre agents](CONTRIBUTING.md)
 
-À ce stade : documentation et propositions, aucune application installée ou implémentée.
+La vue Git, les chronos et les alertes internes appartiennent aux jalons suivants.
