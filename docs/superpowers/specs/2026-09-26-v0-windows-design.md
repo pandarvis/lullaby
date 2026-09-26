@@ -134,7 +134,8 @@ d'essai dédié, sans modifier les autres projets de la machine.
 
 ## Après la V0
 
-Tableau de bord multi-projets, parallélisme isolé, chronos humains et agents, export
+Tableau de bord multi-projets, parallélisme isolé, temps humains et agents par session
+avec cumuls par projet, export
 de reporting, gestion avancée des profils réseau et éventuelle passation Claude/Codex. Ces besoins restent
 dans l'objectif Lullaby, mais ne retardent pas le premier test des deux connexions.
 

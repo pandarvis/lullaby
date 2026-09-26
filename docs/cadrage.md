@@ -151,8 +151,15 @@ Les éléments ci-dessous décrivent la cible fonctionnelle plus large après ce
 3. Voir plusieurs sessions et conserver leur activité en changeant de vue.
 4. Rouvrir l'application et retrouver les sessions persistées ; une exécution
    interrompue par l'arrêt de l'application est signalée, pas annoncée comme active.
-5. Ajouter un chrono humain par projet, pause, correction, note et export CSV.
-   Mesurer séparément la durée des exécutions des agents.
+5. Suivre le temps par session, avec cumul par projet, pause, correction, note et
+   export CSV. Afficher séparément le temps humain et la durée des exécutions des
+   agents. Un total global seul ne répond pas au besoin de reporting.
+
+Chaque entrée de temps se rattache à une session et à son projet. Le total projet
+agrège ses sessions sur la période choisie. Ne pas compter une même plage de temps
+humain dans plusieurs sessions simultanées ; le cumul des agents peut en revanche
+dépasser le temps écoulé si plusieurs agents travaillent en parallèle. La méthode
+de saisie/chronométrage et le traitement d'une activité hors session restent à cadrer.
 
 Hypothèses à confirmer : fournisseur choisi par session ; reprise par un autre
 fournisseur reportée ; un seul chrono humain actif. Le premier essai crée ses propres

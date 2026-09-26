@@ -27,6 +27,8 @@ Il s'agit d'un outil de revue, pas d'un serveur requis par la future application
 - Menu repliable : barre compacte de 76 px, emblèmes de projets, noms accessibles
   et infobulles. Le bouton se trouve à gauche du fil de navigation supérieur.
 - Accès « Proxy Claude » en bas du menu : démarrage/arrêt de Px simulés, état visible.
+- Temps par session sur les cartes et dans le chat ; cumuls par projet dans un
+  récapitulatif dédié. Votre temps et celui des agents sont affichés séparément.
 
 Iris et le logo Lullaby sont les références à préserver. Le HTML simule le chat pour
 explorer la composition sans installer de dépendances. L'application utilisera assistant-ui
@@ -44,6 +46,9 @@ comme prévu ; ni React, ni assistant-ui, ni les moteurs ne sont intégrés ici.
 7. Replier/déplier le menu et naviguer avec les emblèmes ; actualiser pour vérifier
    que la préférence est mémorisée quand le stockage du navigateur est disponible.
 8. Ouvrir « Proxy Claude », démarrer puis arrêter le relais fictif.
+9. Comparer les durées des deux sessions Lullaby à leur cumul projet : 50 min
+   de temps humain et 1 h 02 de temps agent. Les filtres d'état et de recherche
+   réduisent les cartes visibles, pas le cumul complet du projet.
 
 Les conversations et brouillons restent en mémoire par session ; actualiser la page
 réinitialise la démonstration, sauf la préférence de menu enregistrée localement.

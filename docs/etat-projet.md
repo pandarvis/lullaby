@@ -29,6 +29,9 @@ Dernière mise à jour : 26 septembre 2026, Codex.
   Aucun processus Px réel lancé ; commande à confirmer sur le poste pro.
 - Vrais logos Anthropic/Codex demandés pour la prochaine retouche ; les pictogrammes
   de fournisseurs de la maquette restent provisoires.
+- Temps demandé par projet/session : durées humain/agent séparées sur les cartes
+  et dans le détail, cumuls par projet dans la maquette. Valeurs fictives fixes,
+  pas de chronométrage réel ; filtres de sessions sans effet sur les cumuls projet.
 
 ## Vérifications effectuées
 
@@ -37,6 +40,9 @@ Dernière mise à jour : 26 septembre 2026, Codex.
 - Syntaxe des deux blocs PowerShell de la checklist vérifiée, sans les exécuter
   sur le poste professionnel.
 - Les checks de documentation accompagnent la PR (espaces et liens locaux).
+- Temps de la maquette : cumul Lullaby vérifié (35 + 15 = 50 min humain,
+  42 + 20 = 62 min agent), conservation du cumul lors d'une recherche, affichage
+  dans le chat et nouvelle session à zéro vérifiés. Pas de débordement à 390 px.
 - Menu compact vérifié au clavier : repli, dépli, mémorisation après actualisation,
   sélection de projet et ouverture du chat. Démarrage/arrêt Px simulés vérifiés.
   Aucun débordement horizontal à 390 px en modes compact et déplié.
