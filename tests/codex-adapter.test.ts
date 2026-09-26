@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import { mkdtemp, mkdir, rm, writeFile, utimes } from 'node:fs/promises';
 import { delimiter, join } from 'node:path';
-const state=vi.hoisted(()=>({rpc:undefined as any,cwd:'',nativeCwd:'',executable:'',failure:undefined as string|undefined,methods:[] as string[],params:[] as {method:string;params:any}[],replies:[] as unknown[]}));
+const state=vi.hoisted(()=>({rpc:undefined as any,cwd:'',nativeCwd:'',executable:'',failure:undefined as string|undefined,config:{} as any,probeSandbox:'readOnly',storedApproval:'never',methods:[] as string[],params:[] as {method:string;params:any}[],replies:[] as unknown[]}));
 vi.mock('../src/main/providers/codex/transport',()=>({RpcProcess:class {
   onMessage:any;onFailure:any;constructor(executable:string){state.executable=executable;state.rpc=this;state.methods=[];state.params=[];state.replies=[];}
   notify(){}reject(id:unknown){state.replies.push({id,rejected:true});}respond(id:unknown,result:unknown){state.replies.push({id,result});}
@@ -10,9 +10,11 @@ vi.mock('../src/main/providers/codex/transport',()=>({RpcProcess:class {
     if(state.failure&&method==='account/read')throw new Error(state.failure);
     if(method==='initialize')return {};
     if(method==='account/read')return {account:{type:'chatgpt'},requiresOpenaiAuth:true};
-    if(method==='config/read')return {config:{model_provider:'openai'}};
+    if(method==='config/read')return {config:{model_provider:'openai',...state.config}};
     if(method==='model/list'||method==='skills/list')return {data:[]};
     if(method==='thread/read')return {thread:{cwd:state.nativeCwd}};
+    if(method==='thread/start'&&params.ephemeral)return {thread:{id:'probe'},modelProvider:'openai',cwd:state.cwd,approvalPolicy:'on-request',sandbox:{type:state.probeSandbox}};
+    if(method==='thread/resume')return {thread:{id:'native'},modelProvider:'openai',cwd:state.cwd,approvalPolicy:params.approvalPolicy??state.storedApproval};
     if(method.startsWith('thread/'))return {thread:{id:'native'},modelProvider:'openai',cwd:state.cwd};
     return {turn:{id:'turn'}};
   }
@@ -20,7 +22,7 @@ vi.mock('../src/main/providers/codex/transport',()=>({RpcProcess:class {
 import { CodexAdapter } from '../src/main/providers/codex/adapter';
 import { tmpdir } from 'node:os';
 const folders:string[]=[];
-beforeEach(()=>{state.cwd=process.cwd();state.nativeCwd=state.cwd;state.failure=undefined;state.methods=[];});
+beforeEach(()=>{state.cwd=process.cwd();state.nativeCwd=state.cwd;state.failure=undefined;state.methods=[];state.config={};state.probeSandbox='readOnly';state.storedApproval='never';});
 afterEach(async()=>{await Promise.all(folders.splice(0).map(path=>rm(path,{recursive:true,force:true})));});
 async function fixture(){const folder=await mkdtemp(join(tmpdir(),'lullaby-codex-resolver-'));folders.push(folder);return folder;}
 async function executable(folder:string){await mkdir(folder,{recursive:true});const path=join(folder,'codex.exe');await writeFile(path,'fixture, never executed');return path;}
@@ -96,4 +98,29 @@ test.each([undefined,'native'])('Codex %s preserves native permission defaults',
 test('unknown permission profiles fail before a native connection is opened',async()=>{
   await expect(new CodexAdapter(process.execPath).run({cwd:state.cwd,text:'test',choices:{permissionProfile:'bypass'},env:{}})).rejects.toThrow('UNSUPPORTED_PERMISSION_PROFILE');
   expect(state.methods).toEqual([]);
+});
+test.each([undefined,'native'])('resuming %s explicitly restores configured permissions instead of retaining the prior auto override',async(permissionProfile)=>{
+  state.config={approval_policy:'on-request',sandbox_mode:'read-only'};
+  const run=await new CodexAdapter(process.execPath).run({cwd:state.cwd,nativeId:'native',text:'test',choices:{permissionProfile},env:{}});
+  const events=run.events[Symbol.asyncIterator]();await events.next();const nativeConfig=(await events.next()).value!.body;
+  expect(nativeConfig).toMatchObject({kind:'action',detail:expect.stringContaining('"approvalPolicy": "on-request"')});
+  expect(state.params.find(item=>item.method==='thread/resume')?.params).toMatchObject({approvalPolicy:'on-request',sandbox:'read-only'});
+  expect(state.params.some(item=>item.method==='thread/start')).toBe(false);await run.close();
+});
+test('unset native config is resolved by an ephemeral native thread before resuming',async()=>{
+  state.config={approval_policy:null,sandbox_mode:null};
+  const run=await new CodexAdapter(process.execPath).run({cwd:state.cwd,nativeId:'native',text:'test',choices:{permissionProfile:'native'},env:{}});
+  expect(state.params.find(item=>item.method==='thread/start')?.params).toEqual({cwd:state.cwd,ephemeral:true});
+  expect(state.params.find(item=>item.method==='thread/resume')?.params).toMatchObject({approvalPolicy:'on-request',sandbox:'read-only'});
+  expect(state.params.find(item=>item.method==='thread/unsubscribe')?.params).toEqual({threadId:'probe'});await run.close();
+});
+test('native resume refuses permissions that cannot be restored faithfully',async()=>{
+  state.probeSandbox='externalSandbox';
+  await expect(new CodexAdapter(process.execPath).run({cwd:state.cwd,nativeId:'native',text:'test',choices:{permissionProfile:'native'},env:{}})).rejects.toThrow('CODEX_NATIVE_PERMISSIONS_UNAVAILABLE');
+  expect(state.methods).not.toContain('thread/resume');expect(state.methods).not.toContain('turn/start');
+});
+test('an unavailable native model is reported as a flag so a selected session model can clear the warning',async()=>{
+  state.config={model:'retired-model'};const result=await new CodexAdapter(process.execPath).diagnose(state.cwd,{});
+  expect(result).toMatchObject({configuredModel:'retired-model',configuredModelUnavailable:true});
+  expect(result.issues).toEqual([]);
 });

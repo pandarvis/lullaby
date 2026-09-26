@@ -16,6 +16,7 @@ const diagnosticIssues:Record<string,string>={
   CODEX_PROCESS_CLOSED:'Codex s’est fermé pendant la connexion. Vérifiez que l’exécutable choisi prend en charge App Server.',
   CODEX_RPC_TIMEOUT:'Codex ne répond pas à temps. Vérifiez son démarrage et les paramètres réseau du moteur.',
   CODEX_RPC_REJECTED:'Codex a refusé le diagnostic. Vérifiez la compatibilité App Server et la configuration du moteur.',
+  CODEX_NATIVE_PERMISSIONS_UNAVAILABLE:'Les permissions natives ne peuvent pas être rétablies fidèlement pour cette reprise. Choisissez un profil explicite ou reprenez dans le client officiel.',
   SUBSCRIPTION_NOT_CONFIRMED:'Codex répond, mais la connexion ChatGPT n’est pas confirmée. Connectez-vous avec ChatGPT dans le client ou la CLI officielle, puis relancez la vérification.',
   AUTH_CONFIGURATION_AMBIGUOUS:'La configuration Codex peut sélectionner une API facturée. Vérifiez le fournisseur natif et les variables de configuration ; aucune bascule payante n’a été effectuée.',
 };
@@ -34,8 +35,29 @@ export class CodexAdapter implements ProviderAdapter {
       onInitialized?.({executablePath,version:initialized.userAgent as string|undefined});
       const [account,config]=await Promise.all([rpc.request('account/read',{refreshToken:false}),rpc.request('config/read',{cwd,includeLayers:false})]);
       assertCodexSubscription(account,config.config);
-      return {rpc,version:initialized.userAgent as string|undefined,configuredModel:config.config.model as string|undefined};
+      return {rpc,version:initialized.userAgent as string|undefined,configuredModel:config.config.model as string|undefined,nativeConfig:config.config};
     }catch(error){await rpc.close();throw error;}
+  }
+  private async resumeNativePermissions(rpc:RpcProcess,cwd:string,config:any):Promise<Record<string,unknown>> {
+    const approvalSupported=(value:unknown)=>['untrusted','on-request','never'].includes(value as string)
+      ||(!!value&&typeof value==='object'&&!Array.isArray(value)&&'granular' in value);
+    const sandboxes=['read-only','workspace-write','danger-full-access'];
+    // Named beta profiles can carry finer boundaries than a legacy sandbox enum.
+    if(config.default_permissions)throw new Error('CODEX_NATIVE_PERMISSIONS_UNAVAILABLE');
+    if(approvalSupported(config.approval_policy)&&sandboxes.includes(config.sandbox_mode))return {
+      approvalPolicy:config.approval_policy,sandbox:config.sandbox_mode,
+    };
+    // config/read returns null for unset values. Let the engine resolve trust,
+    // managed requirements and platform defaults; never guess them from a preset.
+    const probe=await rpc.request('thread/start',{cwd,ephemeral:true});
+    try {
+      const modes:Record<string,string>={readOnly:'read-only',workspaceWrite:'workspace-write',dangerFullAccess:'danger-full-access'};
+      const sandbox=modes[probe.sandbox?.type];
+      if(!sandbox||!approvalSupported(probe.approvalPolicy))throw new Error('CODEX_NATIVE_PERMISSIONS_UNAVAILABLE');
+      return {approvalPolicy:probe.approvalPolicy,sandbox};
+    } finally {
+      if(probe.thread?.id)await rpc.request('thread/unsubscribe',{threadId:probe.thread.id}).catch(()=>{});
+    }
   }
   async diagnose(cwd:string,env:NodeJS.ProcessEnv=process.env):Promise<Diagnostic>{
     const result:Diagnostic={provider:'codex',available:false,auth:'missing',issues:[],skills:[]};let rpc:RpcProcess|undefined;
@@ -45,7 +67,7 @@ export class CodexAdapter implements ProviderAdapter {
       result.configuredModel=connected.configuredModel;
       const catalog=await rpc.request('model/list',{});
       result.models=(catalog.data??[]).filter((model:any)=>!model.hidden).map((model:any)=>({id:model.model,name:model.displayName,default:model.isDefault,efforts:model.supportedReasoningEfforts.map((item:any)=>item.reasoningEffort)}));
-      if(result.configuredModel&&!result.models?.some(model=>model.id===result.configuredModel))result.issues.push('Le modèle configuré n’est pas dans le catalogue disponible. Choisissez explicitement un modèle avant l’envoi.');
+      if(result.configuredModel&&!result.models?.some(model=>model.id===result.configuredModel))Object.assign(result,{configuredModelUnavailable:true});
       const skills=await rpc.request('skills/list',{cwds:[cwd],forceReload:false});
       result.skills=(skills.data??[]).flatMap((entry:any)=>(entry.skills??[]).map((skill:any)=>({name:skill.name,available:skill.enabled,evidence:'Skill annoncé par le moteur natif ; invocation à vérifier.'})));
       if(skills.data?.some((entry:any)=>entry.errors?.length))result.issues.push('Certains skills natifs n’ont pas pu être chargés.');
@@ -57,8 +79,8 @@ export class CodexAdapter implements ProviderAdapter {
     finally{await rpc?.close();}return result;
   }
   async run(input:RunInput):Promise<ProviderRun>{
-    const permissions=codexPermissions(input.choices.permissionProfile);
-    const {rpc}=await this.connect(input.cwd,input.env);
+    let permissions:Record<string,unknown>=codexPermissions(input.choices.permissionProfile);
+    const {rpc,nativeConfig}=await this.connect(input.cwd,input.env);
     const outgoing=new AsyncQueue<{eventId:string;body:EventBody}>();
     const pending=new Map<string,{serverId:string|number;question?:{questions:any[];index:number;answers:Record<string,{answers:string[]}>}}>();
     let threadId='',turnId:string|undefined,stopped=false,closed=false;
@@ -91,6 +113,7 @@ export class CodexAdapter implements ProviderAdapter {
         const native=await rpc.request('thread/read',{threadId:input.nativeId,includeTurns:false});
         const original=await canonicalizeFolder(native.thread.cwd);const selected=await canonicalizeFolder(input.cwd);
         if(original.folderKey!==selected.folderKey)throw new Error('NATIVE_FOLDER_MISMATCH');
+        if(input.choices.permissionProfile===undefined||input.choices.permissionProfile==='native')permissions=await this.resumeNativePermissions(rpc,input.cwd,nativeConfig);
       }
       const params:any={cwd:input.cwd,...permissions};if(input.choices.model)params.model=input.choices.model;
       const result=await rpc.request(input.nativeId?'thread/resume':'thread/start',input.nativeId?{...params,threadId:input.nativeId}:params);
