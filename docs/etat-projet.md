@@ -47,6 +47,8 @@ visible dès l'envoi. Les commandes sont identifiables dans des cartes dépliabl
 Une bibliothèque de coloration embarquée (highlight.js) a été ajoutée ; Radix était
 déjà installé transitivement. Voir la [recette Iris](validation/iris-feedback.md).
 
+Les menus « … » utilisent des points discrets ; le menu de conversation est aligné sur sa carte, avec un libellé centré.
+
 Chaque conversation dispose désormais d’un menu « … » pour supprimer son historique
 et son brouillon locaux après confirmation. Les fichiers du projet et la session
 native restent intacts. Un agent actif doit être arrêté avant la suppression.

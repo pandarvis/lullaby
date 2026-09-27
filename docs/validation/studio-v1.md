@@ -103,3 +103,9 @@ isolés est une évolution future, sans orchestration automatique actuellement.
 Recette native : menu, confirmation et bouton Annuler observés dans l’aperçu Windows ;
 les conversations existantes ont été conservées. La suppression effective a été testée
 sur des fixtures automatisées. Relecture indépendante sans anomalie bloquante.
+
+Ajustement du menu après retour visuel : points de suspension circulaires discrets,
+menu aligné sur la largeur de la carte, libellé centré et ombre réduite. Aucun changement
+de comportement. Build/TypeScript et les deux tests des actions de conversation réussis.
+Aperçu et fichiers du paquet local actualisés ; contrôle visuel final laissé à
+l’utilisateur, qui interagissait avec la fenêtre pendant la recette.
