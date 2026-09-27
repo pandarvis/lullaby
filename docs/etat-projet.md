@@ -8,7 +8,7 @@ Le checkout initial `C:\Sources\lullaby` reste sur `develop`, au merge local
 `391b780` de la consultation Git. Documentation, socle Windows et icône Iris
 intégrés. Aucun push supplémentaire ni release publié pendant cette tranche.
 
-Le travail courant est sur `feature/project-overview`, depuis `6d78fd7`, dans
+Le travail courant est sur `feature/compact-chat`, depuis `059742c`, dans
 `C:\Sources\lullaby-worktrees\windows-agent-foundation`. Cette branche contient
 les évolutions locales `feature/git-hover` et `feature/iris-workspace` : fiches Git
 au survol, huit emblèmes SVG facettés et interface compacte. Elle n'est pas fusionnée
@@ -63,9 +63,16 @@ pas après redémarrage). Depuis l’accueil, priorité à une demande de répon
 exécution, une erreur ou une interruption. Les paramètres généraux restent uniquement
 en bas à gauche ; Réseau conserve son raccourci dans le bandeau.
 
+Le chat est plus large (maximum 1120 px) avec des contrôles de compositeur compacts,
+des chevrons SVG centrés et une gouttière de pictogrammes pour code et outils.
+Les extraits de commandes restent distincts des exécutions réelles. Les blocs
+`diff`/`patch` colorent les ajouts/suppressions ; deux blocs avant/après restent
+séparés, sans comparateur côte à côte automatique.
+
 ## Vérifications
 
-- Suite complète : **116 tests réussis, 5 essais fournisseurs opt-in ignorés**, puis un test ciblé de navigation réussi (117 tests au total).
+- Tranche chat compact : 11 tests du chat réussis, TypeScript/build réussis ; aucun nouvel appel fournisseur.
+- Dernière suite complète : **116 tests réussis, 5 essais fournisseurs opt-in ignorés**, puis un test ciblé de navigation réussi (117 tests au total).
   TypeScript, build et `npm run package:win` réussis ; paquet Windows non signé.
 - Diagnostic ChatGPT réel et échange Codex avec GPT-6-Luna dans un projet
   temporaire : liste Markdown et bloc HTML reçus. Compteur de l'aperçu cliqué 0 → 1.
@@ -100,7 +107,7 @@ demandes d'aperçu concurrentes ; le document affiché reste protégé par son i
 Chronos par projet/session, supervision avancée et alertes internes restent des
 jalons suivants. Notifications Windows hors priorité ; espace documentaire en V2.
 La prochaine étape est l'essai utilisateur du paquet puis, sur demande, l'intégration
-de `feature/project-overview` (qui contient Iris, Studio et la suppression des conversations) vers `develop`. Les maquettes ne sont pas une preuve
+de `feature/compact-chat` (qui contient les évolutions précédentes) vers `develop`. Les maquettes ne sont pas une preuve
 d'implémentation des fonctions futures.
 
 ## Reprise par un autre agent

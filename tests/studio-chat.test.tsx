@@ -70,3 +70,20 @@ test.each(['constructor','__proto__'])('unknown fence %s stays plain text instea
   api();const rendered=render(view({...state,messages:{studio:[{id:'unknown',role:'assistant',text:'```'+language+'\nplain code\n```',actions:[]}]}}));
   await waitFor(()=>expect(rendered.container.querySelector('pre code')?.textContent).toBe('plain code\n'));
 });
+
+test.each(['diff','patch'])('renders %s additions and removals while preserving copyable source',async language=>{
+  api();const code='@@ -1 +1 @@\n-old <tag>\n+new <tag>\n';
+  const rendered=render(view({...state,messages:{studio:[{id:'diff',role:'assistant',text:'```'+language+'\n'+code+'```',actions:[]}]}}));
+  await waitFor(()=>expect(rendered.container.querySelector('.hljs-addition')?.textContent).toContain('+new'));
+  expect(rendered.container.querySelector('.hljs-deletion')?.textContent).toContain('-old');
+  expect(rendered.container.querySelector('pre code')?.textContent).toBe(code);
+  expect(rendered.container.querySelector('tag')).toBeNull();
+});
+
+test('command snippets have a gutter and stay separate from executed tools',async()=>{
+  api();const rendered=render(view({...state,messages:{studio:[{id:'cmd-snippet',role:'assistant',text:'```powershell\ndotnet run\n```',actions:[{id:'tool',label:'PowerShell',state:'done',detail:'{"command":"dotnet test"}'}]}]}}));
+  await waitFor(()=>expect(rendered.container.querySelector('.code-gutter')?.getAttribute('title')).toBe('Extrait de commande · non exécuté'));
+  expect(rendered.container.querySelector('.action-gutter svg')).toBeTruthy();
+  expect(screen.getByText('Commande')).toBeTruthy();
+  expect(rendered.container.querySelector('pre code')?.textContent).toBe('dotnet run\n');
+});

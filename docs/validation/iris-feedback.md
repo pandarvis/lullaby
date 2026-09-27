@@ -56,3 +56,24 @@ Le composant garde assistant-ui pour Markdown, copie et aperçu HTML.
 Les résumés de réflexion ne sont pas un journal de pensée détaillé. Les capacités
 observables dépendent des événements transmis par chaque moteur ; les outils non
 reconnus gardent leur nom natif et leurs détails consultables.
+
+## Chat compact — 27 septembre 2026
+
+Chevrons Unicode remplacés par des SVG centrés. Options à 11 px, envoi à 30 px,
+ajout avec fond et bordure discrets. Largeur maximale des réponses portée de 850 à
+1120 px, marges réduites. Une gouttière de 32 px identifie les extraits de code et
+commandes ; les outils exécutés gardent état et détails dépliables, en lignes compactes.
+Les blocs bash/PowerShell sont des extraits et ne deviennent pas des boutons d’exécution.
+
+Coloration `diff` et `patch` vérifiée : ajouts verts, suppressions roses, code inchangé
+et texte HTML échappé. Des blocs « avant » et « après » distincts restent deux blocs ;
+aucune comparaison automatique ni interface d’application de patch n’est ajoutée.
+
+Validation : 11 tests du chat réussis (modèles, permissions, aperçu, pièces jointes,
+activité, coloration et gouttières), TypeScript/build réussis. Aperçu et ressources du
+paquet local actualisés. Aucune dépendance ajoutée et aucun appel fournisseur de recette.
+
+Recette native : réponse C# existante inspectée après rechargement, bloc bash « dotnet run »
+compact avec pictogramme CLI, conversation élargie, options et chevrons alignés au bas.
+Les sorties d’outils d’édition restent des détails textuels dépliables : cette tranche
+n’introduit pas de rendu structuré old/new des outils ni de diff côte à côte.
