@@ -109,3 +109,23 @@ menu aligné sur la largeur de la carte, libellé centré et ombre réduite. Auc
 de comportement. Build/TypeScript et les deux tests des actions de conversation réussis.
 Aperçu et fichiers du paquet local actualisés ; contrôle visuel final laissé à
 l’utilisateur, qui interagissait avec la fenêtre pendant la recette.
+
+## Accueil de supervision — 27 septembre 2026
+
+Les projets sont présentés en lignes, avec état actualisé depuis le snapshot partagé,
+conversation ciblée et compteurs globaux. Ordre des lignes inchangé pendant le streaming.
+Priorité au clic : attente de réponse, exécution, erreur, interruption, puis sélection
+mémorisée ou conversation terminée/disponible. « Terminé » décrit la conversation,
+sans attester que tout le projet est achevé. Aucun horodatage récent n’est inventé :
+le contrat de session actuel n’en contient pas.
+
+La sélection est mémorisée séparément par projet pendant l’ouverture de l’app ; elle
+ne persiste pas après redémarrage. Paramètres n’est plus dupliqué dans le bandeau.
+Tests : priorité, mise à jour des états, projet vide, aller-retour A/B/Atelier et accès
+unique aux paramètres. Suite existante enrichie : 116 réussis, 5 opt-in ignorés, puis
+un test ciblé de navigation réussi. TypeScript/build/paquet réussis, zéro dépendance ajoutée.
+
+Recette Windows : accueil en lignes observé dans l’aperçu avec trois projets et les états
+Terminé, À démarrer et Prêt ; un seul bouton Paramètres, en bas à gauche. Les phases
+actives/attente sont couvertes par les snapshots des tests, sans nouvel appel facturé.
+Relecture indépendante statique sans anomalie importante.

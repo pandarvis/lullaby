@@ -156,3 +156,15 @@ les menus système. Conversations/Git rejoint l'en-tête pour rendre la hauteur 
 La coloration du code utilise des teintes lavande, menthe, bleu et ambre contrastées.
 Le cristal d'activité respire doucement ; le réglage sans animations et la préférence
 système de mouvement réduit restent respectés. Voir la [recette](validation/iris-feedback.md).
+
+## Accueil de supervision
+
+L’Atelier présente les projets en lignes compactes, dans un ordre stable, avec leur
+emblème, dossier, conversation représentative et état. Les compteurs résument les
+conversations en cours et celles à traiter (attente, erreur ou interruption).
+Un clic rejoint la conversation prioritaire ; les raccourcis de gauche retrouvent
+la dernière conversation sélectionnée dans chaque projet pendant la session de l’app.
+L’accueil remplace les grandes cartes et leur seconde liste d’activité redondante.
+Les états reposent sur le snapshot réel, sans pourcentage d’avancement inventé.
+Les paramètres généraux ont un seul accès, en bas à gauche. Les points de suspension
+restent sobres ; les emblèmes gardent le relief le plus marqué.
