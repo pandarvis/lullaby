@@ -8,7 +8,7 @@ Le checkout initial `C:\Sources\lullaby` reste sur `develop`, au merge local
 `391b780` de la consultation Git. Documentation, socle Windows et icône Iris
 intégrés. Aucun push supplémentaire ni release publié pendant cette tranche.
 
-Le travail courant est sur `feature/compact-chat`, depuis `059742c`, dans
+Le travail courant est sur `feature/turn-review`, depuis `51168d0`, dans
 `C:\Sources\lullaby-worktrees\windows-agent-foundation`. Cette branche contient
 les évolutions locales `feature/git-hover` et `feature/iris-workspace` : fiches Git
 au survol, huit emblèmes SVG facettés et interface compacte. Elle n'est pas fusionnée
@@ -69,11 +69,19 @@ Les extraits de commandes restent distincts des exécutions réelles. Les blocs
 `diff`/`patch` colorent les ajouts/suppressions ; deux blocs avant/après restent
 séparés, sans comparateur côte à côte automatique.
 
+Les nouvelles interventions disposent d’un récapitulatif des fichiers modifiés et
+compteurs textuels, avec Examiner vers un panneau de différences. La comparaison
+porte sur les fichiers avant/après l’intervention, même après un commit, et reste
+conservée avec la conversation. Git requis ; limites et exclusions explicites.
+Aucun bouton Annuler, aucun appel LLM supplémentaire. Voir la [recette dédiée](validation/turn-review.md).
+
 ## Vérifications
 
 - Tranche chat compact : 11 tests du chat réussis, TypeScript/build réussis ; aucun nouvel appel fournisseur.
-- Dernière suite complète : **116 tests réussis, 5 essais fournisseurs opt-in ignorés**, puis un test ciblé de navigation réussi (117 tests au total).
+- Dernière suite complète : **126 tests réussis, 5 essais fournisseurs opt-in ignorés**.
   TypeScript, build et `npm run package:win` réussis ; paquet Windows non signé.
+- Récapitulatif : fixtures Git, faux moteur, persistance et ouverture du panneau
+  assistant-ui vérifiés ; aucun appel aux abonnements pour cette tranche.
 - Diagnostic ChatGPT réel et échange Codex avec GPT-6-Luna dans un projet
   temporaire : liste Markdown et bloc HTML reçus. Compteur de l'aperçu cliqué 0 → 1.
 - Réglage natif Codex après mode explicite vérifié par protocole sans appel modèle.
@@ -107,7 +115,7 @@ demandes d'aperçu concurrentes ; le document affiché reste protégé par son i
 Chronos par projet/session, supervision avancée et alertes internes restent des
 jalons suivants. Notifications Windows hors priorité ; espace documentaire en V2.
 La prochaine étape est l'essai utilisateur du paquet puis, sur demande, l'intégration
-de `feature/compact-chat` (qui contient les évolutions précédentes) vers `develop`. Les maquettes ne sont pas une preuve
+de `feature/turn-review` (qui contient les évolutions précédentes) vers `develop`. Les maquettes ne sont pas une preuve
 d'implémentation des fonctions futures.
 
 ## Reprise par un autre agent

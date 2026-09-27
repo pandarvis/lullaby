@@ -87,3 +87,15 @@ test('command snippets have a gutter and stay separate from executed tools',asyn
   expect(screen.getByText('Commande')).toBeTruthy();
   expect(rendered.container.querySelector('pre code')?.textContent).toBe('dotnet run\n');
 });
+
+test('final review opens the selected saved diff beside the chat and can be closed',async()=>{
+  api();const review={runId:'r',capturedAt:'2026-09-27T10:00:00Z',partial:false,files:[{path:'src/a.ts',change:'modified' as const,additions:1,deletions:1,diff:{kind:'text' as const,text:'@@ -1 +1 @@\n-old\n+new\n',truncated:false}},{path:'b.txt',change:'added' as const,additions:1,deletions:0,diff:{kind:'text' as const,text:'@@ -0,0 +1 @@\n+hello\n',truncated:false}}]};
+  render(view({...state,messages:{studio:[{id:'summary',role:'assistant',text:'',actions:[],review}]}}));
+  expect(await screen.findByRole('region',{name:'Récapitulatif des modifications'})).toBeTruthy();
+  fireEvent.click(screen.getByRole('button',{name:/b.txt/}));
+  expect(screen.getByRole('complementary',{name:'Examiner les modifications'})).toBeTruthy();
+  expect(screen.getByText('+hello')).toBeTruthy();
+  fireEvent.click(screen.getByRole('button',{name:'Fermer les modifications'}));
+  expect(screen.queryByRole('complementary',{name:'Examiner les modifications'})).toBeNull();
+  fireEvent.click(screen.getByRole('button',{name:'Examiner'}));expect(screen.getByText('-old')).toBeTruthy();
+});

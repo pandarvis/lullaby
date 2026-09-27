@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process';
 export class GitError extends Error {constructor(code:string,readonly exitCode?:number){super(code);}}
-export type GitRunOptions={signal?:AbortSignal;executable?:string;limit?:number;truncate?:boolean;timeoutMs?:number};
+export type GitRunOptions={signal?:AbortSignal;executable?:string;limit?:number;truncate?:boolean;timeoutMs?:number;acceptedExitCodes?:number[]};
 export async function runGit(cwd:string,args:string[],options:GitRunOptions={}):Promise<Buffer> {
   const overrides:string[]=[];
   if(['status','diff','diff-tree'].includes(args[0])) {
@@ -33,6 +33,6 @@ async function executeGit(cwd:string,args:string[],options:GitRunOptions):Promis
     });
     child.stderr.resume();
     child.on('error',(error:NodeJS.ErrnoException)=>finish(new GitError(error.code==='ENOENT'?'GIT_UNAVAILABLE':'GIT_FAILED')));
-    child.on('close',code=>finish(code===0?undefined:new GitError('GIT_FAILED',code??undefined)));
+    child.on('close',code=>finish(code===0||(code!==null&&options.acceptedExitCodes?.includes(code))?undefined:new GitError('GIT_FAILED',code??undefined)));
   });
 }

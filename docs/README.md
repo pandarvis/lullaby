@@ -29,3 +29,5 @@ dans la même PR. Éviter les comptes rendus redondants et les copies de convers
 Ordre conseillé à la reprise : état du projet, contribution, puis les documents
 touchés par la tâche. Les plans du socle Windows et de la vue Git sont disponibles
 depuis la feuille de route ; leur progression réelle est décrite dans l'état du projet.
+
+- [Récapitulatif d’intervention](validation/turn-review.md) : capture avant/après, carte des fichiers, Examiner, limites et validation.

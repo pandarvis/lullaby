@@ -5,8 +5,10 @@ import type { ProviderAdapter, ProviderRun } from '../providers/types';
 import { canonicalizeFolder } from '../projects/registry';
 import { emptySnapshot } from '../storage/store';
 import { applyEvent } from './projection';
-type Active = {id:string;folderKey:string;run?:ProviderRun;done?:Promise<void>;ready:Promise<void>;started:()=>void;stopped:boolean;seen:Set<string>;replying:Set<string>};
-type Options = {adapters:ProviderAdapter[];initial?:Snapshot;persist?:(s:Snapshot)=>Promise<void>;onChange?:(s:Snapshot)=>void;envFor?:(provider:Provider)=>NodeJS.ProcessEnv};
+import type { ReviewCapture,ReviewSource } from '../review/capture';
+import type { Phase,TurnReview } from '../../shared/contracts';
+type Active = {id:string;folderKey:string;run?:ProviderRun;review?:ReviewCapture;done?:Promise<void>;ready:Promise<void>;started:()=>void;stopped:boolean;seen:Set<string>;replying:Set<string>};
+type Options = {adapters:ProviderAdapter[];reviews?:ReviewSource;initial?:Snapshot;persist?:(s:Snapshot)=>Promise<void>;onChange?:(s:Snapshot)=>void;envFor?:(provider:Provider)=>NodeJS.ProcessEnv};
 export class SessionManager {
   private state: Snapshot;
   private active = new Map<string,Active>();
@@ -83,6 +85,7 @@ export class SessionManager {
       session.phase='running';session.draft='';
       if(session.title==='Nouvelle conversation') session.title=input.text.slice(0,72);
       this.state.messages[session.id].push({id:randomUUID(),role:'user',text:input.text,actions:[]});this.publish();await this.save();
+      try{active.review=await this.options.reviews?.begin(project.cwd);}catch{active.review={finish:async runId=>({runId,capturedAt:new Date().toISOString(),files:[],partial:true,notice:'Le relevé initial a échoué ; récapitulatif indisponible.'})};}
       active.run = await adapter.run({cwd:project.cwd,nativeId:session.nativeId,text:input.text,choices:session.choices,env:this.options.envFor?.(session.provider)??{...process.env}});
       active.done=this.consume(session.id,active);
       active.started();
@@ -93,23 +96,31 @@ export class SessionManager {
     }
   }
   private async consume(sessionId:string,active:Active) {
+    let finalPhase:Phase='done';
     try {
       for await(const event of active.run!.events) {
         if(this.active.get(sessionId)!==active || active.seen.has(event.eventId)) continue;
         // Preserve the native ID even when cancellation races with startup.
         if(active.stopped && event.body.kind!=='bound') continue;
         active.seen.add(event.eventId);
+        if(active.review&&event.body.kind==='state'&&['done','error','interrupted'].includes(event.body.phase)){finalPhase=event.body.phase;continue;}
         this.state=applyEvent(this.state,{...event,sessionId,runId:active.id});this.publish();
         if(event.body.kind==='text') this.scheduleSave();else await this.save();
       }
       const session=this.session(sessionId);
-      if(active.stopped) session.phase='interrupted';else if(['running','waiting'].includes(session.phase)) session.phase='done';
+      if(active.stopped)finalPhase='interrupted';else if(session.phase==='error'||session.phase==='interrupted')finalPhase=session.phase;
     } catch {
-      this.session(sessionId).phase=active.stopped?'interrupted':'error';
+      finalPhase=active.stopped?'interrupted':'error';
       if(!active.stopped) this.state.messages[sessionId].push({id:randomUUID(),role:'assistant',text:'Le moteur a interrompu la réponse. Consultez son diagnostic avant de reprendre.',actions:[]});
     } finally {
       try { await active.run?.close(); }
       finally {
+        if(active.review){
+          let review:TurnReview;
+          try{review=await active.review.finish(active.id);}catch{review={runId:active.id,capturedAt:new Date().toISOString(),files:[],partial:true,notice:'Le relevé final a échoué ; récapitulatif indisponible.'};}
+          if(review.files.length||review.notice)this.state.messages[sessionId].push({id:`${active.id}:review`,role:'assistant',text:'',actions:[],review});
+        }
+        this.session(sessionId).phase=active.stopped?'interrupted':finalPhase;
         this.state.pending=this.state.pending.filter(e=>e.runId!==active.id);
         this.active.delete(sessionId);this.folders.delete(active.folderKey);this.publish();
         await this.save().catch(()=>{this.session(sessionId).phase='error';this.publish();});
