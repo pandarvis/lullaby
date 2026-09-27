@@ -22,3 +22,19 @@ test('native init, tool results and failed results remain visible',()=>{
   expect(messages.convert({type:'user',message:{content:[{type:'tool_result',tool_use_id:'t',content:'denied',is_error:true}]}})[0]).toMatchObject({kind:'action',itemId:'t',state:'error'});
   expect(messages.convert({type:'result',subtype:'error_during_execution',errors:['quota']})).toContainEqual(expect.objectContaining({kind:'error'}));
 });
+
+test('reports native thinking boundaries without exposing thinking content',()=>{
+  const messages=new ClaudeMessages();
+  messages.convert({type:'stream_event',event:{type:'message_start',message:{id:'m'}}});
+  expect(messages.convert({type:'stream_event',event:{type:'content_block_start',index:0,content_block:{type:'thinking'}}})[0]).toMatchObject({kind:'action',label:'Réflexion',state:'running'});
+  expect(messages.convert({type:'stream_event',event:{type:'content_block_delta',index:0,delta:{type:'thinking_delta',thinking:'PRIVATE_REASONING'}}})).toEqual([]);
+  expect(messages.convert({type:'stream_event',event:{type:'content_block_stop',index:0}})[0]).toMatchObject({kind:'action',label:'Réflexion',state:'done'});
+});
+
+test('keeps command context when Claude reports tool output',()=>{
+  const messages=new ClaudeMessages();
+  messages.convert({type:'assistant',message:{id:'m',content:[{type:'tool_use',id:'t',name:'Bash',input:{command:'dotnet test'}}]}});
+  const result=messages.convert({type:'user',message:{content:[{type:'tool_result',tool_use_id:'t',content:'Tests passed'}]}})[0];
+  expect(result).toMatchObject({kind:'action',state:'done',label:'Bash'});
+  if(result.kind==='action'){expect(result.detail).toContain('dotnet test');expect(result.detail).toContain('Tests passed');}
+});

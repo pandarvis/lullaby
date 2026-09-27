@@ -118,3 +118,11 @@ empêchent l'accès aux capacités de Lullaby ; la copie externe est statique. L
 références de fichiers se joignent au brouillon sous forme de chemins explicites.
 Retirer un projet concerne son entrée et ses échanges locaux, jamais son dossier.
 Voir [utilisation et limites](validation/studio-v1.md).
+
+## D011 — Coloration et activité du chat (implémenté)
+
+Le slot SyntaxHighlighter d'assistant-ui utilise highlight.js embarqué avec un
+ensemble limité de grammaires. Il évite un moteur de coloration maison, les ressources
+externes et un éditeur lourd. Les contrôles utilisent Radix Select déjà présent.
+Les frontières de réflexion natives alimentent un indicateur générique ; leur texte
+privé n'est pas enregistré. Les actions conservent les données utiles au suivi visible.

@@ -7,14 +7,15 @@ import type { Snapshot } from '../src/shared/contracts';
 afterEach(cleanup);
 globalThis.ResizeObserver=class{observe(){}unobserve(){}disconnect(){}};
 Element.prototype.scrollTo=()=>{};
+Element.prototype.scrollIntoView=()=>{};
 const state:Snapshot={revision:1,projects:[],sessions:[{id:'studio',projectId:'p',provider:'codex',title:'Test',phase:'idle',draft:'',choices:{model:'one',effort:'high'}}],messages:{studio:[]},pending:[]};
 function view(snapshot=state){return <SnapshotContext.Provider value={snapshot}><SessionChat sessionId="studio" diagnostic={{provider:'codex',available:true,auth:'subscription',skills:[],issues:[],models:[{id:'one',name:'Un',efforts:['high'],default:true},{id:'two',name:'Deux',efforts:['low'],default:false}]}}/></SnapshotContext.Provider>;}
 function api(extra:Record<string,unknown>={}){window.lullaby={saveDraft:vi.fn().mockResolvedValue({ok:true}),configureSession:vi.fn().mockResolvedValue({ok:true}),releasePreview:vi.fn().mockResolvedValue({ok:true}),...extra}as any;}
 test('model change clears incompatible effort and composer can request bounded auto permissions',async()=>{
-  api();render(view());fireEvent.change(screen.getByRole('combobox',{name:'Modèle'}),{target:{value:'two'}});
+  api();render(view());fireEvent.keyDown(screen.getByRole('combobox',{name:'Modèle'}),{key:'ArrowDown'}); fireEvent.click(await screen.findByRole('option',{name:'Deux'}));
   await waitFor(()=>expect(window.lullaby.configureSession).toHaveBeenCalledWith('studio',{model:'two'}));
   await waitFor(()=>expect((screen.getByRole('combobox',{name:'Autorisations'})as HTMLSelectElement).disabled).toBe(false));
-  fireEvent.change(screen.getByRole('combobox',{name:'Autorisations'}),{target:{value:'auto'}});
+  fireEvent.keyDown(screen.getByRole('combobox',{name:'Autorisations'}),{key:'ArrowDown'}); fireEvent.click(await screen.findByRole('option',{name:/Auto · projet/}));
   await waitFor(()=>expect(window.lullaby.configureSession).toHaveBeenLastCalledWith('studio',{model:'one',effort:'high',permissionProfile:'auto'}));
 });
 test('HTML code opens an isolated side preview and releases it on close',async()=>{
@@ -40,4 +41,32 @@ test('Windows HTML links open previews while script links remain inert',async()=
   fireEvent.click(await screen.findByRole('button',{name:'Maquette'}));
   await waitFor(()=>expect(window.lullaby.previewHtml).toHaveBeenCalledWith('p',{path:'C:/projet/index.html'}));
   expect(screen.getByText('script').getAttribute('href')??'').not.toMatch(/^javascript:/);
+});
+
+test('shows activity from send until completion, with tools and approval feedback',async()=>{
+  let finish!:(value:any)=>void;api({send:vi.fn(()=>new Promise(done=>{finish=done;}))});
+  const rendered=render(view());fireEvent.change(screen.getByRole('textbox',{name:'Votre message'}),{target:{value:'Analyse le projet'}});
+  fireEvent.click(screen.getByRole('button',{name:'Envoyer'}));
+  expect((await screen.findByRole('status',{name:'Activité de l’agent'})).textContent).toContain('Envoi');
+  const running:Snapshot={...state,sessions:[{...state.sessions[0],phase:'running'}],messages:{studio:[{id:'u',role:'user',text:'Analyse le projet',actions:[]},{id:'a',role:'assistant',text:'',actions:[{id:'cmd',label:'commandExecution',detail:'{"command":"dotnet test"}',state:'running'}]}]}};
+  rendered.rerender(view(running));expect(screen.getByRole('status',{name:'Activité de l’agent'}).textContent).toContain('Commande');
+  expect(screen.getAllByText('dotnet test').length).toBeGreaterThan(0);
+  rendered.rerender(view({...running,sessions:[{...running.sessions[0],phase:'waiting'}]}));
+  expect(screen.getByRole('status',{name:'Activité de l’agent'}).textContent).toContain('réponse');
+  finish({ok:true,value:{runId:'r'}});
+  rendered.rerender(view({...running,sessions:[{...running.sessions[0],phase:'done'}]}));
+  await waitFor(()=>expect(screen.queryByRole('status',{name:'Activité de l’agent'})).toBeNull());
+});
+
+test('highlights C sharp without interpreting HTML and preserves code text',async()=>{
+  api();const code='public class Iris { string value = "<script>alert(1)</script>"; }';
+  const rendered=render(view({...state,messages:{studio:[{id:'code',role:'assistant',text:'```csharp\n'+code+'\n```',actions:[]}]}}));
+  await waitFor(()=>expect(rendered.container.querySelector('.hljs-keyword')?.textContent).toBe('public'));
+  expect(rendered.container.querySelector('pre code')?.textContent).toBe(code+'\n');
+  expect(rendered.container.querySelector('script')).toBeNull();
+});
+
+test.each(['constructor','__proto__'])('unknown fence %s stays plain text instead of crashing',async language=>{
+  api();const rendered=render(view({...state,messages:{studio:[{id:'unknown',role:'assistant',text:'```'+language+'\nplain code\n```',actions:[]}]}}));
+  await waitFor(()=>expect(rendered.container.querySelector('pre code')?.textContent).toBe('plain code\n'));
 });

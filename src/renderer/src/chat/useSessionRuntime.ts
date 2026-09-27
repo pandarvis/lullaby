@@ -27,5 +27,5 @@ export function useSessionRuntime(sessionId:string,configuring=false){
     });
     return ()=>{unsubscribe();if(timer)clearTimeout(timer);save();};
   },[runtime,sessionId]);
-  return {runtime,session,isRunning,error};
+  return {runtime,session,isRunning,sending,error};
 }

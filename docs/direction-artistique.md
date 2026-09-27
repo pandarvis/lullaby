@@ -146,3 +146,13 @@ Les vues présentent les états vide, actif, attente et erreur. Approfondir la v
 de la lisibilité du code, navigation clavier, contraste, densité et mouvements
 pendant l'intégration. L'expression « UI/UX++ » ne
 constitue pas à elle seule un critère de recette : ces écrans serviront de référence.
+
+## Ajustements après recette Studio
+
+Les icônes utilitaires adoptent les mêmes facettes que les emblèmes, à une échelle
+plus discrète. Les logos fournisseurs officiels gardent leur dessin. Les contrôles
+du compositeur utilisent des menus Iris au clavier, avec descriptions plutôt que
+les menus système. Conversations/Git rejoint l'en-tête pour rendre la hauteur au chat.
+La coloration du code utilise des teintes lavande, menthe, bleu et ambre contrastées.
+Le cristal d'activité respire doucement ; le réglage sans animations et la préférence
+système de mouvement réduit restent respectés. Voir la [recette](validation/iris-feedback.md).

@@ -22,6 +22,7 @@ dans la même PR. Éviter les comptes rendus redondants et les copies de convers
 | [Recette du paquet Windows](validation/v0-windows.md) | Vérifications finales, décisions de réalisation et réserves V0 |
 | [Recette Git V1](validation/git-v1.md) | Graphe, versions index/worktree, différences et limites de consultation |
 | [Recette Studio V1](validation/studio-v1.md) | Connexion Codex, permissions, aperçu HTML, fichiers, paramètres et gestion des projets |
+| [Recette Iris — retours](validation/iris-feedback.md) | Icônes, densité, menus, coloration du code et activité visible |
 | [Contribution](../CONTRIBUTING.md) | Gitflow, PR et mise à jour des documents |
 | [Consignes communes](../AGENTS.md) | Règles partagées par Codex et Claude |
 

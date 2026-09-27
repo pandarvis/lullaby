@@ -8,7 +8,7 @@ Le checkout initial `C:\Sources\lullaby` reste sur `develop`, au merge local
 `391b780` de la consultation Git. Documentation, socle Windows et icône Iris
 intégrés. Aucun push supplémentaire ni release publié pendant cette tranche.
 
-Le travail courant est sur `feature/studio-v1` dans
+Le travail courant est sur `feature/iris-feedback`, depuis Studio `56aea89`, dans
 `C:\Sources\lullaby-worktrees\windows-agent-foundation`. Cette branche contient
 les évolutions locales `feature/git-hover` et `feature/iris-workspace` : fiches Git
 au survol, huit emblèmes SVG facettés et interface compacte. Elle n'est pas fusionnée
@@ -38,12 +38,18 @@ La tranche Studio ajoute :
 
 La [recette Studio](validation/studio-v1.md) précise les modes de permissions,
 les limites d'aperçu, la provenance des logos et les décisions de relecture.
-Aucune dépendance ajoutée, aucun accès API facturé introduit. Réseau/Px reste
+Studio ne comportait aucune dépendance supplémentaire ni accès API facturé. Réseau/Px reste
 configuré par moteur ; aucun réglage global ou proxy professionnel inventé.
+
+Les retours Iris ajoutent des icônes utilitaires facettées, les onglets dans
+l'en-tête, des menus Radix avec descriptions, la coloration du code et une activité
+visible dès l'envoi. Les commandes sont identifiables dans des cartes dépliables.
+Une bibliothèque de coloration embarquée (highlight.js) a été ajoutée ; Radix était
+déjà installé transitivement. Voir la [recette Iris](validation/iris-feedback.md).
 
 ## Vérifications
 
-- Suite complète : **103 tests réussis, 5 essais fournisseurs opt-in ignorés**.
+- Suite complète : **110 tests réussis, 5 essais fournisseurs opt-in ignorés**.
   TypeScript, build et `npm run package:win` réussis ; paquet Windows non signé.
 - Diagnostic ChatGPT réel et échange Codex avec GPT-6-Luna dans un projet
   temporaire : liste Markdown et bloc HTML reçus. Compteur de l'aperçu cliqué 0 → 1.
@@ -78,7 +84,7 @@ demandes d'aperçu concurrentes ; le document affiché reste protégé par son i
 Chronos par projet/session, supervision avancée et alertes internes restent des
 jalons suivants. Notifications Windows hors priorité ; espace documentaire en V2.
 La prochaine étape est l'essai utilisateur du paquet puis, sur demande, l'intégration
-de `feature/studio-v1` vers `develop`. Les maquettes ne sont pas une preuve
+de `feature/iris-feedback` (qui contient Studio) vers `develop`. Les maquettes ne sont pas une preuve
 d'implémentation des fonctions futures.
 
 ## Reprise par un autre agent

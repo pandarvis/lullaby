@@ -7,7 +7,8 @@ export function codexEvents(message:RpcMessage,threadId:string,turnId?:string):E
   if(message.method==='item/started'||message.method==='item/completed'){
     const i=p.item;const done=message.method==='item/completed';
     if(i.type==='agentMessage')return done?[{kind:'text',itemId:i.id,mode:'replace',text:i.text}]:[];
-    if(['userMessage','reasoning'].includes(i.type))return [];
+    if(i.type==='userMessage')return [];
+    if(i.type==='reasoning')return [{kind:'action',itemId:i.id,label:'Réflexion',state:done?'done':'running',detail:'Phase de réflexion signalée par Codex.'}];
     return [{kind:'action',itemId:i.id,label:i.type,state:i.status==='failed'?'error':done?'done':'running',detail:JSON.stringify(i,null,2)}];
   }
   if(message.method==='turn/completed')return p.turn.status==='failed'
