@@ -6,13 +6,17 @@ Dernière mise à jour : 27 septembre 2026, Codex.
 
 Le checkout initial `C:\Sources\lullaby` reste sur `develop`, au merge local
 `391b780` de la consultation Git. Documentation, socle Windows et icône Iris
-intégrés. Aucun push supplémentaire ni release publié pendant cette tranche.
+intégrés. Publication des branches sur `origin` demandée pour la reprise sur poste
+professionnel ; aucune release publiée.
 
 Le travail courant est sur `feature/turn-review`, depuis `51168d0`, dans
 `C:\Sources\lullaby-worktrees\windows-agent-foundation`. Cette branche contient
 les évolutions locales `feature/git-hover` et `feature/iris-workspace` : fiches Git
 au survol, huit emblèmes SVG facettés et interface compacte. Elle n'est pas fusionnée
 dans `develop`.
+
+Pour reprendre la version complète sur un autre poste, utiliser
+`feature/turn-review` et les commandes de [reprise professionnelle](poste-pro.md).
 
 L'application ouvre des dossiers, y compris vides et sans Git, puis crée des
 conversations Claude/Codex. assistant-ui affiche Markdown, outils, questions et
