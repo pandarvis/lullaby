@@ -5,6 +5,7 @@ export type GitBridge={ [K in keyof GitApi]: (...args:Parameters<GitApi[K]>)=>Pr
 export interface LullabyApi {
   renameProject(id:string,name:string):Promise<Result<void>>;
   removeProject(id:string):Promise<Result<void>>;
+  removeSession(id:string):Promise<Result<void>>;
   pickAttachments(kind:'files'|'folder'):Promise<Result<string[]>>;
   previewHtml(projectId:string,input:PreviewInput):Promise<Result<PreviewDocument>>;
   pickPreview(projectId:string):Promise<Result<PreviewDocument|null>>;
@@ -30,6 +31,7 @@ export interface LullabyApi {
   subscribe(listener: (snapshot: Snapshot) => void): () => void;
 }
 export const channels = {
+  removeSession:'lullaby:remove-session',
   renameProject:'lullaby:rename-project',removeProject:'lullaby:remove-project',pickAttachments:'lullaby:pick-attachments',
   previewHtml:'lullaby:preview-html',pickPreview:'lullaby:pick-preview',openPreview:'lullaby:open-preview',releasePreview:'lullaby:release-preview',
   engineSettings:'lullaby:engine-settings',saveEngineSettings:'lullaby:save-engines',pickCodexExecutable:'lullaby:pick-codex',

@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { useExternalStoreRuntime, type ThreadMessageLike } from '@assistant-ui/react';
 import { SnapshotContext } from './sessionStore';
 const drafts=new Map<string,string>();
+export function forgetSessionDraft(sessionId:string){drafts.delete(sessionId);}
 export function useSessionRuntime(sessionId:string,configuring=false){
   const snapshot=useContext(SnapshotContext);const session=snapshot.sessions.find(s=>s.id===sessionId)!;
   const [error,setError]=useState('');const [sending,setSending]=useState(false);

@@ -8,7 +8,7 @@ Le checkout initial `C:\Sources\lullaby` reste sur `develop`, au merge local
 `391b780` de la consultation Git. Documentation, socle Windows et icône Iris
 intégrés. Aucun push supplémentaire ni release publié pendant cette tranche.
 
-Le travail courant est sur `feature/iris-feedback`, depuis Studio `56aea89`, dans
+Le travail courant est sur `feature/conversation-removal`, depuis Iris `ad77abf`, dans
 `C:\Sources\lullaby-worktrees\windows-agent-foundation`. Cette branche contient
 les évolutions locales `feature/git-hover` et `feature/iris-workspace` : fiches Git
 au survol, huit emblèmes SVG facettés et interface compacte. Elle n'est pas fusionnée
@@ -47,9 +47,16 @@ visible dès l'envoi. Les commandes sont identifiables dans des cartes dépliabl
 Une bibliothèque de coloration embarquée (highlight.js) a été ajoutée ; Radix était
 déjà installé transitivement. Voir la [recette Iris](validation/iris-feedback.md).
 
+Chaque conversation dispose désormais d’un menu « … » pour supprimer son historique
+et son brouillon locaux après confirmation. Les fichiers du projet et la session
+native restent intacts. Un agent actif doit être arrêté avant la suppression.
+Plusieurs conversations peuvent appartenir au même projet ; elles travaillent à tour
+de rôle dans son dossier. Des projets distincts peuvent exécuter leurs agents en parallèle.
+L’isolation automatique par worktree pour un même projet reste à implémenter.
+
 ## Vérifications
 
-- Suite complète : **110 tests réussis, 5 essais fournisseurs opt-in ignorés**.
+- Suite complète : **114 tests réussis, 5 essais fournisseurs opt-in ignorés**.
   TypeScript, build et `npm run package:win` réussis ; paquet Windows non signé.
 - Diagnostic ChatGPT réel et échange Codex avec GPT-6-Luna dans un projet
   temporaire : liste Markdown et bloc HTML reçus. Compteur de l'aperçu cliqué 0 → 1.
@@ -84,7 +91,7 @@ demandes d'aperçu concurrentes ; le document affiché reste protégé par son i
 Chronos par projet/session, supervision avancée et alertes internes restent des
 jalons suivants. Notifications Windows hors priorité ; espace documentaire en V2.
 La prochaine étape est l'essai utilisateur du paquet puis, sur demande, l'intégration
-de `feature/iris-feedback` (qui contient Studio) vers `develop`. Les maquettes ne sont pas une preuve
+de `feature/conversation-removal` (qui contient Iris et Studio) vers `develop`. Les maquettes ne sont pas une preuve
 d'implémentation des fonctions futures.
 
 ## Reprise par un autre agent

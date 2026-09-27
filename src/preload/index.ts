@@ -4,6 +4,7 @@ import type { Snapshot } from '../shared/contracts';
 const api: LullabyApi = {
   renameProject:(id,name)=>ipcRenderer.invoke(channels.renameProject,id,name),
   removeProject:id=>ipcRenderer.invoke(channels.removeProject,id),
+  removeSession:id=>ipcRenderer.invoke(channels.removeSession,id),
   pickAttachments:kind=>ipcRenderer.invoke(channels.pickAttachments,kind),
   previewHtml:(id,input)=>ipcRenderer.invoke(channels.previewHtml,id,input),
   pickPreview:id=>ipcRenderer.invoke(channels.pickPreview,id),

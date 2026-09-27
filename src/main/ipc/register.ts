@@ -34,6 +34,7 @@ export function registerIpc(window: BrowserWindow, manager: SessionManager, netw
     });
   }
   handle(channels.snapshot, () => manager.snapshot());
+  handle(channels.removeSession,sessionId=>manager.removeSession(id(sessionId)));
   handle(channels.renameProject,(projectId,name)=>manager.renameProject(id(projectId),text(name,120)));
   handle(channels.removeProject,async projectId=>{await git.cancel(id(projectId));await manager.removeProject(id(projectId));});
   handle(channels.pickAttachments,async kind=>{

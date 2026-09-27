@@ -56,6 +56,15 @@ export class SessionManager {
   async configureSession(sessionId:string,choices:LaunchChoices){
     if(this.active.has(sessionId))throw new Error('SESSION_RUNNING');this.session(sessionId).choices=structuredClone(choices);this.publish();await this.save();
   }
+  async removeSession(sessionId:string){
+    this.session(sessionId);
+    // The reservation exists before asynchronous launch, including before phase=running.
+    if(this.active.has(sessionId))throw new Error('SESSION_RUNNING');
+    this.state.sessions=this.state.sessions.filter(session=>session.id!==sessionId);
+    delete this.state.messages[sessionId];
+    this.state.pending=this.state.pending.filter(event=>event.sessionId!==sessionId);
+    this.publish();await this.save();
+  }
   async send(input:PromptRequest): Promise<{runId:string}> {
     if(this.closing) throw new Error('CLOSING');
     let session=this.session(input.sessionId);

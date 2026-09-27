@@ -81,3 +81,25 @@ certains changements de permissions.
 - Deux remarques mineures différées : focus clavier non confiné dans les paramètres ;
   erreur d'une ancienne demande d'aperçu susceptible de remplacer la notice courante.
   Le choix du document et sa libération restent protégés contre les réponses périmées.
+
+## Suppression individuelle des conversations — 27 septembre 2026
+
+Menu « … » de chaque conversation → « Supprimer la conversation » → confirmation.
+Seuls les messages, le brouillon et la référence de session conservés par Lullaby
+sont retirés. Le dossier, les autres conversations et l’historique natif du moteur
+restent disponibles. Une conversation active (y compris en attente de permission)
+doit être arrêtée ; le main vérifie également la réservation pendant son lancement.
+Après suppression de la conversation sélectionnée, la première restante est affichée.
+
+Tests : persistance après rechargement, conservation des fichiers et de la conversation
+voisine, refus pendant le lancement/exécution, rejet d’une sauvegarde tardive de brouillon,
+confirmation/annulation et affichage d’un échec. Suite : 114 réussis, 5 opt-in ignorés ;
+TypeScript, build et paquet Windows réussis. Aucun ajout de dépendance.
+
+Plusieurs conversations sont possibles par projet, mais une seule exécution à la fois
+par dossier. Le travail simultané de plusieurs agents sur un projet via des worktrees
+isolés est une évolution future, sans orchestration automatique actuellement.
+
+Recette native : menu, confirmation et bouton Annuler observés dans l’aperçu Windows ;
+les conversations existantes ont été conservées. La suppression effective a été testée
+sur des fixtures automatisées. Relecture indépendante sans anomalie bloquante.

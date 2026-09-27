@@ -60,3 +60,28 @@ test('engine settings persist only a selected executable, empty resets to detect
   await loaded.save({});expect(loaded.snapshot().codexExecutable).toBeUndefined();
   await expect(loaded.save({codexExecutable:join(dir,'missing.exe')})).rejects.toThrow('INVALID_EXECUTABLE');
 });
+
+test('removing one conversation keeps its sibling, project and files after reload',async()=>{
+  const dir=await mkdtemp(join(tmpdir(),'lullaby-session-remove-'));await writeFile(join(dir,'keep.txt'),'keep');
+  const manager=new SessionManager({adapters:[new FakeProvider()]});const project=await manager.addProject(dir);
+  const removed=await manager.createSession(project.id,'claude','01234567-1234-4234-8234-123456789012');
+  const kept=await manager.createSession(project.id,'claude');await manager.saveDraft(removed.id,'draft');
+  const initial=manager.snapshot();initial.messages[removed.id]=[{id:'m',role:'assistant',text:'fixture',actions:[]}];
+  let saved=initial;const loaded=new SessionManager({adapters:[new FakeProvider()],initial,persist:async value=>{saved=value;}});
+  await loaded.removeSession(removed.id);
+  const reopened=new SessionManager({adapters:[],initial:saved}).snapshot();
+  expect(reopened.sessions.map(s=>s.id)).toEqual([kept.id]);expect(reopened.messages[removed.id]).toBeUndefined();
+  expect(reopened.projects[0]).toEqual(project);expect(await readFile(join(dir,'keep.txt'),'utf8')).toBe('keep');
+  await expect(loaded.saveDraft(removed.id,'late draft')).rejects.toThrow('SESSION_NOT_FOUND');
+});
+
+test('conversation removal refuses launch and active runs but permits an idle sibling',async()=>{
+  const dir=await mkdtemp(join(tmpdir(),'lullaby-session-active-'));const provider=new FakeProvider();
+  const manager=new SessionManager({adapters:[provider]});const project=await manager.addProject(dir);
+  const active=await manager.createSession(project.id,'claude');const idle=await manager.createSession(project.id,'claude');
+  const starting=manager.send({sessionId:active.id,text:'hello'});
+  await expect(manager.removeSession(active.id)).rejects.toThrow('SESSION_RUNNING');
+  await starting;await expect(manager.removeSession(active.id)).rejects.toThrow('SESSION_RUNNING');
+  await manager.removeSession(idle.id);expect(manager.snapshot().sessions.map(s=>s.id)).toEqual([active.id]);
+  await manager.close();
+});
