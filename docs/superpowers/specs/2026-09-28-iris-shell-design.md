@@ -91,11 +91,15 @@ ombres portées des panneaux (remplacées par une bordure fine).
 ## Comportement
 
 **Barre latérale.** Groupes dans l'ordre stable des projets ; conversations de la
-plus récente à la plus ancienne, cinq visibles puis « Afficher tout (n) ». Un clic
+plus récemment créée à la plus ancienne (le snapshot n'a pas d'horodatage : pas
+de date relative affichée), cinq visibles puis « Afficher tout (n) ». La
+conversation active reste visible même au-delà des cinq. Un clic
 sur le titre replie le groupe (mémorisé) ; un point ambre signale une attente
 même replié. La recherche filtre en direct titres et noms de projet, localement ;
-Échap la vide. Le + d'un groupe crée une conversation dans ce projet ; « Nouvelle »
-utilise le projet actif ou propose d'en choisir un. Le + de « Projets » ouvre un
+Échap la vide. Le + d'un groupe ouvre « Nouvelle conversation » dans ce projet :
+choix de Claude ou Codex (le moteur est fixé à la création) et reprise d'une
+session CLI. « Nouvelle conversation » en haut utilise le projet actif, sinon ouvre
+le sélecteur de projet de la barre de titre. Le + de « Projets » ouvre un
 dossier. Les actions de `SessionActions` et `ProjectActions` passent dans des menus
 « ⋯ » affichés au survol. Repli complet par `Ctrl+B` ou le bouton de la barre de
 titre, mémorisé sous `lullaby.rail` ; la barre compacte de 76 px disparaît.
@@ -115,8 +119,7 @@ et infobulle sur chaque bouton-icône, flèches pour parcourir la barre latéral
 
 **Erreurs.** Les avis existants (`notice`) s'affichent en bandeau fin sous la
 barre de titre. Un projet sans conversation montre une ligne « Aucune conversation »
-avec son +. Un projet dont le dossier est introuvable garde son groupe, grisé,
-avec l'action de retrait.
+avec son +.
 
 ## Tests et recette
 
