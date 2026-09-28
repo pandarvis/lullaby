@@ -137,9 +137,10 @@ utilisés seuls. Un écart mesuré devient une dette listée dans
 n'est pas la base du produit, car la supervision multi-sessions repose sur des
 événements structurés, mais elle reste une échappatoire possible par session.
 
-## D013 — Moteur Claude conservé entre les messages (implémenté)
+## D013 — Moteurs conservés entre les messages (implémenté)
 
-Date : 28 septembre 2026. Statut : **retenu**, Codex **à faire**.
+Date : 28 septembre 2026. Statut : **retenu** ; Claude vérifié en réel, Codex
+vérifié par tests simulés uniquement.
 
 Relancer le moteur à chaque message coûtait ~40 s par réponse sur le poste pro
 (hooks utilisateur au démarrage), contre 3 s une fois le moteur ouvert. Une
@@ -147,4 +148,6 @@ conversation garde son processus Claude entre les tours s'il est dans le même d
 avec les mêmes choix et le même environnement réseau, et si la session native n'a
 pas été modifiée ailleurs. Il est fermé en cas d'interruption ou d'erreur, après
 10 min d'inactivité, au-delà de trois moteurs inactifs, ou à la fermeture.
-Un doute sur la fraîcheur de la session impose un démarrage neuf.
+Un doute sur la fraîcheur de la session impose un démarrage neuf. Codex suit la même
+règle : le processus App Server garde son fil, contrôlé via le fichier `thread.path`
+(champ marqué instable : sans lui, pas de réutilisation).
