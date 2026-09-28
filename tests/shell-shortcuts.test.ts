@@ -31,3 +31,13 @@ test('panel width stays between 320 px and 60 % of the window',()=>{
   expect(clampPanelWidth(1000,1400)).toBe(840);
   expect(clampPanelWidth(600,400)).toBe(320);
 });
+test('useShortcuts ignores repeated and already handled key events',()=>{
+  const toggleSidebar=vi.fn();
+  const {unmount}=renderHook(()=>useShortcuts({toggleSidebar,togglePanel:vi.fn(),search:vi.fn(),newSession:vi.fn(),back:vi.fn(),forward:vi.fn()}));
+  fireEvent.keyDown(window,{key:'b',ctrlKey:true,repeat:true});
+  expect(toggleSidebar).not.toHaveBeenCalled();
+  const handled=new KeyboardEvent('keydown',{key:'b',ctrlKey:true,cancelable:true});handled.preventDefault();
+  window.dispatchEvent(handled);
+  expect(toggleSidebar).not.toHaveBeenCalled();
+  unmount();
+});

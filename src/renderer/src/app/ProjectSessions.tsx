@@ -1,19 +1,24 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import type { Diagnostic, Project, Provider, Session } from '../../../shared/contracts';
-import { SnapshotContext } from '../chat/sessionStore';
 import { SessionChat } from '../chat/SessionChat';
 import { ProviderLogo } from './UiIcon';
-import { SessionActions } from './SessionActions';
 export const phaseLabel={idle:'Prêt',running:'Travaille',waiting:'Votre réponse',done:'Terminé',interrupted:'Interrompu',error:'À vérifier'};
-export function ProjectSessions({project,selected,onSelect,diagnostics,onError}:{project:Project;selected?:string;onSelect:(id?:string)=>void;diagnostics:Diagnostic[];onError:(message:string)=>void}){
-  const snapshot=useContext(SnapshotContext);const sessions=snapshot.sessions.filter(s=>s.projectId===project.id);
-  const session=sessions.find(s=>s.id===selected);const [creating,setCreating]=useState(false);const [native,setNative]=useState('');const [provider,setProvider]=useState<Provider>('claude');
-  async function create(provider:Provider,nativeId?:string){setCreating(true);try{const result=await window.lullaby.createSession(project.id,provider,nativeId);if(result.ok){onSelect(result.value.id);setNative('');}else onError(result.message);}finally{setCreating(false);}}
-  return <div className="project-studio"><aside className="sessions-list"><div className="eyebrow">CONVERSATIONS <span>{sessions.length}</span></div><div className="new-session"><button className="secondary" disabled={creating} onClick={()=>void create('claude')} title="Nouvelle conversation Claude"><ProviderLogo provider="claude"/><span>Claude</span></button><button className="secondary" disabled={creating} onClick={()=>void create('codex')} title="Nouvelle conversation Codex · ChatGPT"><ProviderLogo provider="codex"/><span>Codex</span></button></div>
-    <nav aria-label="Conversations">{sessions.map(item=><div key={item.id} className="session-entry"><button className={`session-card ${selected===item.id?'selected':''}`} onClick={()=>onSelect(item.id)}><span className="session-provider">{item.provider==='claude'?'Claude Code':'Codex'}</span><strong>{item.title}</strong><span className={`phase ${item.phase}`}>{phaseLabel[item.phase]}</span></button><SessionActions session={item} onRemoved={id=>{if(selected===id)onSelect(sessions.find(s=>s.id!==id)?.id);}}/></div>)}</nav>
-    <details className="import-session"><summary>Reprendre depuis la CLI</summary><p>Utilisez le même dossier et fermez d’abord la session dans l’autre client. L’historique antérieur reste dans le moteur ; le chat affiche les nouveaux échanges.</p><form onSubmit={e=>{e.preventDefault();void create(provider,native.trim());}}><label>Moteur<select value={provider} onChange={e=>setProvider(e.target.value as Provider)}><option value="claude">Claude Code</option><option value="codex">Codex</option></select></label><label>Identifiant natif<input value={native} onChange={e=>setNative(e.target.value)} placeholder="UUID de la session" required/></label><button className="secondary" disabled={creating||!native.trim()}>Reprendre</button></form></details>
-  </aside><section className="conversation">{session?<><SessionHeader session={session} diagnostic={diagnostics.find(d=>d.provider===session.provider)} onError={onError}/><SessionChat key={session.id} sessionId={session.id} diagnostic={diagnostics.find(d=>d.provider===session.provider)}/></>:<div className="chat-empty"><h2>{sessions.length?'Sélectionnez une conversation':'Nouvelle conversation'}</h2><p>{sessions.length?'Retrouvez vos échanges dans la liste à gauche.':'Choisissez Claude ou Codex pour commencer.'}</p></div>}</section></div>;
+// The engine is fixed when a conversation is created; the CLI import keeps its native history.
+export function NewConversation({project,onCreated,onError}:{project:Project;onCreated:(sessionId:string)=>void;onError:(message:string)=>void}){
+  const [creating,setCreating]=useState(false);const [native,setNative]=useState('');const [provider,setProvider]=useState<Provider>('claude');
+  async function create(provider:Provider,nativeId?:string){setCreating(true);try{const result=await window.lullaby.createSession(project.id,provider,nativeId);if(result.ok){setNative('');onCreated(result.value.id);}else onError(result.message);}finally{setCreating(false);}}
+  return <section className="new-conversation" aria-label={`Nouvelle conversation dans ${project.name}`}>
+    <h1>Nouvelle conversation</h1><p className="muted">{project.name} · <span className="mono">{project.cwd}</span></p>
+    <div className="engine-choice">
+      <button className="engine-button" disabled={creating} onClick={()=>void create('claude')}><ProviderLogo provider="claude"/><span><strong>Claude Code</strong><small>Abonnement Claude</small></span></button>
+      <button className="engine-button" disabled={creating} onClick={()=>void create('codex')}><ProviderLogo provider="codex"/><span><strong>Codex</strong><small>Abonnement ChatGPT</small></span></button>
+    </div>
+    <details className="import-session"><summary>Reprendre depuis la CLI</summary><p>Utilisez le même dossier et fermez d’abord la session dans l’autre client. L’historique antérieur reste dans le moteur ; le chat affiche les nouveaux échanges.</p><form onSubmit={e=>{e.preventDefault();void create(provider,native.trim());}}><label>Moteur<select value={provider} onChange={e=>setProvider(e.target.value as Provider)}><option value="claude">Claude Code</option><option value="codex">Codex</option></select></label><label>Identifiant natif<input value={native} onChange={e=>setNative(e.target.value)} placeholder="UUID de la session" required/></label><button className="shell-button" disabled={creating||!native.trim()}>Reprendre</button></form></details>
+  </section>;
 }
-function SessionHeader({session,diagnostic}:{session:Session;diagnostic?:Diagnostic;onError:(message:string)=>void}){
-  return <header className="session-header"><ProviderLogo provider={session.provider}/><div><span className="session-provider">{session.provider==='claude'?'Claude Code':'Codex · ChatGPT'}</span><h2 title={session.title}>{session.title}</h2></div><span className={`phase ${session.phase}`}>{phaseLabel[session.phase]}</span>{diagnostic?.configuredModelUnavailable&&!session.choices.model&&<p className="model-notice">Le modèle configuré n’est plus disponible. Choisissez un modèle près du bouton d’envoi.</p>}{diagnostic?.issues.map(issue=><p className="model-notice" key={issue}>{issue}</p>)}</header>;
+export function SessionView({session,diagnostic}:{session:Session;diagnostic?:Diagnostic}){
+  return <section className="conversation"><SessionHeader session={session} diagnostic={diagnostic}/><SessionChat key={session.id} sessionId={session.id} diagnostic={diagnostic}/></section>;
+}
+function SessionHeader({session,diagnostic}:{session:Session;diagnostic?:Diagnostic}){
+  return <header className="session-header"><h2 title={session.title}>{session.title}</h2><span className={`phase ${session.phase}`}>{phaseLabel[session.phase]}</span><span className="session-engine"><ProviderLogo provider={session.provider}/>{session.provider==='claude'?'Claude Code':'Codex · ChatGPT'}</span>{diagnostic?.configuredModelUnavailable&&!session.choices.model&&<p className="model-notice">Le modèle configuré n’est plus disponible. Choisissez un modèle près du bouton d’envoi.</p>}{diagnostic?.issues.map(issue=><p className="model-notice" key={issue}>{issue}</p>)}</header>;
 }
