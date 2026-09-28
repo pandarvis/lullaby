@@ -3,8 +3,8 @@ import type { Diagnostic } from '../../../shared/contracts';
 import { Diagnostics } from './Diagnostics';
 import { NetworkSettings } from './NetworkSettings';
 import { UiIcon,ProviderLogo } from '../app/UiIcon';
-export function SettingsScreen({initial='engines',items,loading,onRefresh,onClose}:{initial?:'engines'|'network';items:Diagnostic[];loading:boolean;onRefresh:()=>void;onClose:()=>void}){
-  const [tab,setTab]=useState<'engines'|'network'|'appearance'>(initial);const [path,setPath]=useState('');const [message,setMessage]=useState('');const [busy,setBusy]=useState(false);
+export function SettingsScreen({items,loading,onRefresh,onClose}:{items:Diagnostic[];loading:boolean;onRefresh:()=>void;onClose:()=>void}){
+  const [tab,setTab]=useState<'engines'|'network'|'appearance'>('engines');const [path,setPath]=useState('');const [message,setMessage]=useState('');const [busy,setBusy]=useState(false);
   const [motion,setMotion]=useState(()=>localStorage.getItem('lullaby.motion')!=='off');
   const [size,setSize]=useState(()=>localStorage.getItem('lullaby.text-size')??'15');
   useEffect(()=>{void window.lullaby.engineSettings().then(result=>{if(result.ok)setPath(result.value.codexExecutable??'');else setMessage(result.message);});},[]);
