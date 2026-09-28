@@ -1,3 +1,19 @@
+# Maquettes interactives
+
+## Coquille Iris — densité et structure (28 septembre 2026)
+
+[iris-shell.html](iris-shell.html) illustre la
+[spec de la coquille Iris](../superpowers/specs/2026-09-28-iris-shell-design.md) :
+barre de titre de 40 px, conversations groupées par projet, chat centré, panneau
+droit Git/Aperçu. Fichier autonome, à ouvrir directement dans un navigateur.
+
+À essayer : `Ctrl+B` (barre latérale), `Ctrl+J` (panneau droit, bordure
+redimensionnable), `Ctrl+K` (recherche), `Ctrl+N`, `Alt+←/→`, repli d'un groupe
+(point ambre si une conversation attend), menu « Projet ▾ », Atelier, et les
+commandes « Maquette » en bas à gauche : avis, sans animations, fenêtre étroite
+(le panneau passe alors par-dessus le chat). Les boutons de fenêtre sont dessinés ;
+l'application utilisera les boutons natifs de `titleBarOverlay`.
+
 # Maquette interactive — Atelier
 
 Support de conception du 26 septembre 2026. Direction Iris et logo facetté validés
