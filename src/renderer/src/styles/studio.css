@@ -104,3 +104,7 @@
 .copy-button .copy-done,.copy-button[data-copied] .copy-idle{display:none}
 .copy-button[data-copied] .copy-done{display:grid;color:var(--mint-ink)}
 .copy-button span{display:grid}
+/* Icônes utilitaires au trait : engrenage des paramètres et bouclier des autorisations. */
+.permission-choice svg{color:var(--muted)}
+.rail-footer .rail-button svg{transition:transform .2s}
+.rail-footer .rail-button:hover svg{transform:rotate(12deg)}
