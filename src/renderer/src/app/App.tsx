@@ -31,7 +31,8 @@ export function App(){
   const project=snapshot.projects.find(item=>item.id===projectId);
   const session=view.kind==='session'?snapshot.sessions.find(item=>item.id===view.sessionId):undefined;
   // The open conversation must stay visible in the sidebar, whichever way it was reached.
-  useEffect(()=>{if(view.kind==='session'&&collapsed[view.projectId])setCollapsed(previous=>({...previous,[view.projectId]:false}));},[view,collapsed,setCollapsed]);
+  // Runs only when the view changes, so the user can still collapse the active group afterwards.
+  useEffect(()=>{if(view.kind==='session'&&collapsed[view.projectId])setCollapsed(previous=>({...previous,[view.projectId]:false}));},[view]);
   async function diagnose(id:string){setLoading(id);try{const result=await window.lullaby.diagnose(id);if(result.ok)setDiagnostics(previous=>({...previous,[id]:result.value}));else setNotice(result.message);}finally{setLoading(current=>current===id?undefined:current);}}
   useEffect(()=>{if(projectId&&!diagnostics[projectId])void diagnose(projectId);},[projectId]);
   function go(next:View){setNav(previous=>navigate(previous,next));if(next.kind==='session')setRemembered(previous=>({...previous,[next.projectId]:next.sessionId}));}

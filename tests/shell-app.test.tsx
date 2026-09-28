@@ -76,3 +76,10 @@ test('opening a conversation of a collapsed group expands it again',()=>{
   expect(sidebar().getByRole('button',{name:/Session A-2/})).toBeTruthy();
   expect(JSON.parse(localStorage.getItem('lullaby.sidebar-groups')!)).toEqual({A:false});
 });
+test('the group of the open conversation can still be collapsed by hand',()=>{
+  start();
+  fireEvent.click(sidebar().getByRole('button',{name:/Session A-2/}));
+  fireEvent.click(sidebar().getByRole('button',{name:'Projet A',expanded:true}));
+  expect(sidebar().getByRole('button',{name:'Projet A',expanded:false})).toBeTruthy();
+  expect(shown()).toBe('A-2');
+});
