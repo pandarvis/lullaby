@@ -4,6 +4,7 @@ import { cleanup,fireEvent,render,screen,waitFor } from '@testing-library/react'
 import { SessionChat } from '../src/renderer/src/chat/SessionChat';
 import { SnapshotContext } from '../src/renderer/src/chat/sessionStore';
 import type { Snapshot } from '../src/shared/contracts';
+import { ShellContext } from '../src/renderer/src/shell/ShellContext';
 afterEach(cleanup);
 globalThis.ResizeObserver=class{observe(){}unobserve(){}disconnect(){}};
 Element.prototype.scrollTo=()=>{};
@@ -98,4 +99,16 @@ test('final review opens the selected saved diff beside the chat and can be clos
   fireEvent.click(screen.getByRole('button',{name:'Fermer les modifications'}));
   expect(screen.queryByRole('complementary',{name:'Examiner les modifications'})).toBeNull();
   fireEvent.click(screen.getByRole('button',{name:'Examiner'}));expect(screen.getByText('-old')).toBeTruthy();
+});
+
+test('inside the shell, previews render in the right panel slot and open it',async()=>{
+  api({previewHtml:vi.fn().mockResolvedValue({ok:true,value:{id:'preview',title:'HTML',url:'http://127.0.0.1:1234/token'}})});
+  const slot=document.createElement('div');document.body.append(slot);const openPanel=vi.fn();
+  try{
+    const rendered=render(<ShellContext.Provider value={{openPanel,previewSlot:slot}}>{view({...state,messages:{studio:[{id:'html',role:'assistant',text:'```html\n<h1>Bonjour</h1>\n```',actions:[]}]}})}</ShellContext.Provider>);
+    fireEvent.click(await screen.findByRole('button',{name:'Aperçu'}));
+    await waitFor(()=>expect(slot.querySelector('iframe')).toBeTruthy());
+    expect(openPanel).toHaveBeenCalledWith('preview');
+    expect(rendered.container.querySelector('.chat-layout')!.classList.contains('has-preview')).toBe(false);
+  }finally{slot.remove();}
 });
