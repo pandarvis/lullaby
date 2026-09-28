@@ -1,4 +1,4 @@
-import { query, getSessionInfo, type Options, type Query, type SDKMessage, type SDKUserMessage, type PermissionResult } from '@anthropic-ai/claude-agent-sdk';
+import { query, getSessionInfo, resolveSettings, filterEscalatingDefaultMode, type Options, type Settings, type Query, type SDKMessage, type SDKUserMessage, type PermissionResult } from '@anthropic-ai/claude-agent-sdk';
 import { createHash, randomUUID } from 'node:crypto';
 import type { ProviderAdapter, ProviderRun, RunInput } from '../types';
 import type { Diagnostic, EventBody, ReplyRequest } from '../../../shared/contracts';
@@ -9,14 +9,17 @@ import { spawnNativeClaude } from './native';
 import { claudePermissionMode } from '../permissions';
 type Answer=ReplyRequest['answer'];
 type Stamp={lastModified:number;fileSize?:number};
-export type ClaudeDeps={query:typeof query;sessionInfo:(sessionId:string,cwd:string)=>Promise<Stamp|undefined>;idleMs:number;maxIdle:number};
+export type ClaudeDeps={query:typeof query;sessionInfo:(sessionId:string,cwd:string)=>Promise<Stamp|undefined>;settings:(cwd:string)=>Promise<Settings>;idleMs:number;maxIdle:number};
 // User plugins and hooks load before the engine answers; measured at ~32 s on a
 // managed Windows workstation (6 s without them), so 20 s aborted valid sessions.
 const STARTUP_TIMEOUT_MS=90000;
 // That startup cost is why a conversation keeps its engine between turns.
 // Each idle engine holds a native process, so their number and lifetime are bounded.
-const defaults:ClaudeDeps={query,// Looked up without `dir`: with a Windows folder the SDK 0.3.283 lookup finds nothing.
-  sessionInfo:sessionId=>getSessionInfo(sessionId),idleMs:10*60_000,maxIdle:3};
+const defaults:ClaudeDeps={query,
+  // Looked up without `dir`: with a Windows folder the SDK 0.3.283 lookup finds nothing.
+  sessionInfo:sessionId=>getSessionInfo(sessionId),
+  // Same cascade and trust filter as the CLI, without spawning it.
+  settings:async cwd=>filterEscalatingDefaultMode(await resolveSettings({cwd,settingSources:['user','project','local']})),idleMs:10*60_000,maxIdle:3};
 type Turn={
   onMessage(message:SDKMessage):void;onEnd():void;
   ask(requestKind:'approval'|'question',text:string,signal:AbortSignal):Promise<Answer>;
@@ -33,6 +36,15 @@ class ClaudeEngine {
   close(){this.dead=true;if(this.idle)clearTimeout(this.idle);this.incoming.end();this.controller.abort();this.runtime.close();}
 }
 // The SDK adds CLAUDE_AGENT_SDK_* to the host environment after its first launch.
+// Names what the native choices resolve to; the engine still applies its own configuration.
+export function describeNative(settings:Settings|undefined,models:NonNullable<Diagnostic['models']>):Pick<Diagnostic,'configuredModel'|'native'> {
+  const value=settings?.model??'default';
+  // Aliases such as `opus[1m]` select the long-context variant of a listed row.
+  const base=value.replace(/\[1m\]$/i,'');const listed=models.find(model=>model.id===value)??models.find(model=>model.id===base);
+  const row=listed&&{...listed,name:listed.id===value||base===value?listed.name:`${listed.name} (1M)`};
+  const effort=typeof settings?.effortLevel==='string'?settings.effortLevel:undefined;
+  return {configuredModel:row?.id,native:{modelName:row?.name??value,effort,permission:settings?.permissions?.defaultMode??'default'}};
+}
 function engineKey(input:RunInput){
   const env=createHash('sha256').update(JSON.stringify(Object.entries(input.env).filter(([name])=>!name.startsWith('CLAUDE_AGENT_SDK_')).sort(([a],[b])=>a.localeCompare(b)))).digest('hex');
   return JSON.stringify({cwd:input.cwd,choices:input.choices,env});
@@ -53,6 +65,7 @@ export class ClaudeAdapter implements ProviderAdapter {
       const account=await runtime.accountInfo();diagnostic.available=true;assertClaudeSubscription(account);diagnostic.auth='subscription';
       diagnostic.skills=(await runtime.supportedCommands()).map(skill=>({name:skill.name,available:true,evidence:'Commande annoncée par le moteur natif ; invocation à vérifier.'}));
       diagnostic.models=(await runtime.supportedModels()).map(model=>({id:model.value,name:model.displayName,efforts:model.supportedEffortLevels??[],default:false}));
+      Object.assign(diagnostic,describeNative(await this.deps.settings(cwd).catch(()=>undefined),diagnostic.models));
     } catch(error) {diagnostic.auth=error instanceof Error&&error.message==='AUTH_CONFIGURATION_AMBIGUOUS'?'ambiguous':'missing';diagnostic.issues.push('Connexion Claude par abonnement non confirmée. Vérifiez la connexion officielle et la configuration.');}
     finally {clearTimeout(timeout);input.end();controller.abort();runtime?.close();}
     return diagnostic;

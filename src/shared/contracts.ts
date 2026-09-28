@@ -43,6 +43,8 @@ export type Diagnostic = {
   skills: { name: string; available: boolean; evidence: string }[];
   configuredModel?: string;
   configuredModelUnavailable?:boolean;
+  // What "native" resolves to in the user's configuration, shown next to native choices.
+  native?: {modelName?:string;effort?:string;permission?:string};
   models?: {id:string;name:string;efforts:string[];default:boolean}[];
 };
 export type NetworkProfile = {
