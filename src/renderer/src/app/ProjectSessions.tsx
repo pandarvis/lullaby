@@ -6,7 +6,7 @@ export const phaseLabel={idle:'Prêt',running:'Travaille',waiting:'Votre répons
 // The engine is fixed when a conversation is created; the CLI import keeps its native history.
 export function NewConversation({project,onCreated,onError}:{project:Project;onCreated:(sessionId:string)=>void;onError:(message:string)=>void}){
   const [creating,setCreating]=useState(false);const [native,setNative]=useState('');const [provider,setProvider]=useState<Provider>('claude');
-  async function create(provider:Provider,nativeId?:string){setCreating(true);try{const result=await window.lullaby.createSession(project.id,provider,nativeId);if(result.ok){setNative('');onCreated(result.value.id);}else onError(result.message);}finally{setCreating(false);}}
+  async function create(provider:Provider,nativeId?:string){setCreating(true);try{const result=await window.lullaby.createSession(project.id,provider,nativeId);if(result.ok){setNative('');onCreated(result.value.id);}else onError(result.message);}catch{onError('La conversation n’a pas pu être créée. Réessayez.');}finally{setCreating(false);}}
   return <section className="new-conversation" aria-label={`Nouvelle conversation dans ${project.name}`}>
     <h1>Nouvelle conversation</h1><p className="muted">{project.name} · <span className="mono">{project.cwd}</span></p>
     <div className="engine-choice">

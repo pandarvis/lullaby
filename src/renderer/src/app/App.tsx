@@ -66,7 +66,7 @@ export function App(){
         <Sidebar projects={snapshot.projects} sessions={snapshot.sessions} view={view} query={query} collapsed={collapsed} hidden={sidebarHidden} searchRef={searchRef}
           onQuery={setQuery} onToggleGroup={id=>setCollapsed(previous=>({...previous,[id]:!previous[id]}))} onOpenSession={openSession} onNewSession={newSession}
           onAtelier={()=>go({kind:'atelier'})} onOpenFolder={()=>void openFolder()} onSettings={()=>setSettings(true)}
-          onProjectRemoved={()=>go({kind:'atelier'})} onSessionRemoved={()=>undefined} onError={setNotice}/>
+          onProjectRemoved={id=>{if(id===projectId)go({kind:'atelier'});}} onSessionRemoved={id=>{if(view.kind==='session'&&view.sessionId===id)go({kind:'project',projectId:view.projectId});}} onError={setNotice}/>
         <main className="main-area">
           {notice&&<div className="shell-notice" role="alert"><span>{notice}</span><button onClick={()=>setNotice('')}>Fermer</button></div>}
           {session&&project?<SessionView session={session} diagnostic={diagnostic}/>

@@ -5,8 +5,8 @@ vi.mock('../src/renderer/src/app/ProjectSessions',()=>({
   SessionView:({session}:any)=><output aria-label="Conversation affichée">{session.id}</output>,
   NewConversation:({project}:any)=><output aria-label="Nouvelle conversation">{project.id}</output>,
 }));
-vi.mock('../src/renderer/src/app/ProjectActions',()=>({ProjectActions:()=>null}));
-vi.mock('../src/renderer/src/app/SessionActions',()=>({SessionActions:()=>null}));
+vi.mock('../src/renderer/src/app/ProjectActions',()=>({ProjectActions:({project,onRemoved}:any)=><button aria-label={`Retirer ${project.id}`} onClick={onRemoved}/>}));
+vi.mock('../src/renderer/src/app/SessionActions',()=>({SessionActions:({session,onRemoved}:any)=><button aria-label={`Supprimer ${session.id}`} onClick={()=>onRemoved(session.id)}/>}));
 vi.mock('../src/renderer/src/settings/SettingsScreen',()=>({SettingsScreen:()=><div role="dialog" aria-label="Paramètres ouverts"/>}));
 vi.mock('../src/renderer/src/git/GitView',()=>({GitView:({projectId}:any)=><output aria-label="Git affiché">{projectId}</output>}));
 import { App } from '../src/renderer/src/app/App';
@@ -82,4 +82,19 @@ test('the group of the open conversation can still be collapsed by hand',()=>{
   fireEvent.click(sidebar().getByRole('button',{name:'Projet A',expanded:true}));
   expect(sidebar().getByRole('button',{name:'Projet A',expanded:false})).toBeTruthy();
   expect(shown()).toBe('A-2');
+});
+test('removing another project keeps the open conversation; removing the open one returns to its project',()=>{
+  start();
+  fireEvent.click(sidebar().getByRole('button',{name:/Session A-2/}));
+  fireEvent.click(screen.getByRole('button',{name:'Retirer B'}));
+  expect(shown()).toBe('A-2');
+  fireEvent.click(screen.getByRole('button',{name:'Supprimer A-1'}));
+  expect(shown()).toBe('A-2');
+  fireEvent.click(screen.getByRole('button',{name:'Supprimer A-2'}));
+  expect(screen.getByLabelText('Nouvelle conversation').textContent).toBe('A');
+});
+test('shortcuts stay inactive while a modal dialog is open',()=>{
+  const {container}=start();
+  const modal=document.createElement('div');modal.setAttribute('aria-modal','true');document.body.append(modal);
+  try{fireEvent.keyDown(window,{key:'b',ctrlKey:true});expect(container.querySelector('.iris-shell')!.classList.contains('sidebar-hidden')).toBe(false);}finally{modal.remove();}
 });

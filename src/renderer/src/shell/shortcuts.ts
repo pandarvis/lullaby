@@ -13,7 +13,7 @@ export function shortcutFor(event:Keys):keyof ShortcutHandlers|undefined{
 export function useShortcuts(handlers:ShortcutHandlers){
   const latest=useRef(handlers);latest.current=handlers;
   useEffect(()=>{
-    const listener=(event:KeyboardEvent)=>{if(event.defaultPrevented||event.repeat)return;const name=shortcutFor(event);if(!name)return;event.preventDefault();latest.current[name]();};
+    const listener=(event:KeyboardEvent)=>{if(event.defaultPrevented||event.repeat||document.querySelector('[aria-modal="true"],dialog[open]'))return;const name=shortcutFor(event);if(!name)return;event.preventDefault();latest.current[name]();};
     window.addEventListener('keydown',listener);return()=>window.removeEventListener('keydown',listener);
   },[]);
 }
