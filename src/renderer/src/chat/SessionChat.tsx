@@ -46,7 +46,7 @@ export function SessionChat({sessionId,diagnostic}:{sessionId:string;diagnostic?
   }
   function closePreview(){previewSerial.current++;if(previewId.current)void window.lullaby.releasePreview(previewId.current);previewId.current=undefined;setDocument(undefined);}
   return <AssistantRuntimeProvider runtime={runtime}><ReviewContext.Provider value={selection=>{closePreview();setReview(selection);}}><PreviewContext.Provider value={input=>void preview(input)}><div className={`chat-layout ${document?'has-preview':review?'has-review':''}`}><ThreadPrimitive.Root className="chat">
-    <ThreadPrimitive.Viewport className="chat-viewport">
+    <ThreadPrimitive.Viewport className="chat-viewport" turnAnchor="top">
       <ThreadPrimitive.Empty><div className="chat-empty"><h2>Nouvelle conversation</h2><p>Qu’allons-nous construire ?</p></div></ThreadPrimitive.Empty>
       <ThreadPrimitive.Messages components={{UserMessage:Message,AssistantMessage:Message}}/>
     </ThreadPrimitive.Viewport>
