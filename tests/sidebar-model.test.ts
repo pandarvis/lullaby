@@ -18,7 +18,8 @@ test('the active conversation stays visible beyond the limit',()=>{
 });
 test('collapsed groups hide rows but keep the attention signal',()=>{
   const group=sidebarGroups(projects,sessions,{collapsed:{b:true}})[1];
-  expect(group.collapsed).toBe(true);expect(group.sessions).toEqual([]);expect(group.attention).toBe(true);
+  expect(group.collapsed).toBe(true);expect(group.sessions).toEqual([]);expect(group.attention).toBe('waiting');
+  expect(sidebarGroups(projects,[...sessions,session('b1','b','Oups','error')],{collapsed:{b:true}})[1].attention).toBe('error');expect(sidebarGroups(projects,sessions)[0].attention).toBe(false);
 });
 test('search matches project names or titles, ignores case and expands everything',()=>{
   expect(sidebarGroups(projects,sessions,{query:'  COURSES ',collapsed:{b:true}}).map(g=>[g.project.id,g.collapsed,g.sessions.map(s=>s.id)])).toEqual([['b',false,['b0']]]);

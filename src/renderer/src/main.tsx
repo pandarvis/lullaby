@@ -6,5 +6,6 @@ import './styles/studio.css';
 import './styles/shell.css';
 document.documentElement.dataset.motion=localStorage.getItem('lullaby.motion')??'on';
 const textSize=localStorage.getItem('lullaby.text-size');
-if(textSize&&['13','15','17'].includes(textSize))document.documentElement.style.setProperty('--chat-font',`${textSize}px`);
+const size=({'15':'14','17':'16'} as Record<string,string>)[textSize??'']??textSize;
+if(size&&['13','14','16'].includes(size))document.documentElement.style.setProperty('--chat-font',`${size}px`);
 createRoot(document.getElementById('root')!).render(<React.StrictMode><App/></React.StrictMode>);

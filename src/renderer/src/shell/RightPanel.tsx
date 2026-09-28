@@ -19,7 +19,7 @@ export function RightPanel({tab,width,projectId,onTab,onClose,onResize,onSlot}:P
     event.preventDefault();onResize(clampPanelWidth(width+step,window.innerWidth));
   }
   return <aside className={`right-panel ${tab?'open':''} ${resizing?'resizing':''}`} aria-label="Panneau latéral" inert={!tab} style={{'--panel-width':`${width}px`} as CSSProperties}>
-    <div className="panel-resizer" role="separator" aria-orientation="vertical" aria-label="Redimensionner le panneau" aria-valuenow={width} aria-valuemin={minPanelWidth} tabIndex={0} onPointerDown={startResize} onKeyDown={keyResize}/>
+    <div className="panel-resizer" role="separator" aria-orientation="vertical" aria-label="Redimensionner le panneau" aria-valuenow={width} aria-valuemin={minPanelWidth} aria-valuemax={Math.round(window.innerWidth*.6)} tabIndex={0} onPointerDown={startResize} onKeyDown={keyResize}/>
     <div className="panel-tabs">
       <div className="panel-tablist" role="tablist" aria-label="Contenu du panneau">
       {panelTabs.map(([id,label])=><button key={id} role="tab" id={`panel-tab-${id}`} aria-controls={`panel-${id}`} className="panel-tab" aria-selected={tab===id} onClick={()=>onTab(id)}><ShellIcon name={id}/>{label}</button>)}

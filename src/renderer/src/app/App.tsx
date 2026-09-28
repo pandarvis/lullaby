@@ -20,6 +20,7 @@ export function App(){
   const [sidebarHidden,setSidebarHidden]=usePersistentState('lullaby.sidebar-hidden',false,isBoolean);
   const [collapsed,setCollapsed]=usePersistentState<Record<string,boolean>>('lullaby.sidebar-groups',{},isFlags);
   const [panelWidth,setPanelWidth]=usePersistentState('lullaby.panel-width',defaultPanelWidth,isNumber);
+  const [viewport,setViewport]=useState(()=>window.innerWidth);
   const [panel,setPanel]=useState<PanelTab>();const [previewSlot,setPreviewSlot]=useState<HTMLDivElement|null>(null);
   const [query,setQuery]=useState('');const [menuOpen,setMenuOpen]=useState(false);const [pendingNew,setPendingNew]=useState(false);
   const [notice,setNotice]=useState('');const [settings,setSettings]=useState(false);
@@ -54,7 +55,7 @@ export function App(){
   const toggleSidebar=()=>setSidebarHidden(hidden=>!hidden);
   useShortcuts({toggleSidebar,togglePanel:()=>togglePanel(),newSession:()=>newSession(),back:()=>setNav(back),forward:()=>setNav(forward),
     search:()=>{setSidebarHidden(false);requestAnimationFrame(()=>searchRef.current?.focus());}});
-  useEffect(()=>{const fit=()=>setPanelWidth(width=>clampPanelWidth(width,window.innerWidth));window.addEventListener('resize',fit);return()=>window.removeEventListener('resize',fit);},[setPanelWidth]);
+  useEffect(()=>{const fit=()=>setViewport(window.innerWidth);window.addEventListener('resize',fit);return()=>window.removeEventListener('resize',fit);},[]);
   const shell=useMemo(()=>({openPanel:(tab:PanelTab)=>setPanel(tab),previewSlot}),[previewSlot]);
   const diagnostic=session&&diagnostics[session.projectId]?.find(item=>item.provider===session.provider);
   return <SnapshotContext.Provider value={snapshot}><ShellContext.Provider value={shell}>
@@ -73,7 +74,7 @@ export function App(){
             :project?<NewConversation key={project.id} project={project} onCreated={id=>go({kind:'session',projectId:project.id,sessionId:id})} onError={setNotice}/>
             :<AtelierView projects={snapshot.projects} sessions={snapshot.sessions} remembered={remembered} onOpen={openProject} onOpenFolder={()=>void openFolder()}/>}
         </main>
-        <RightPanel tab={panel} width={panelWidth} projectId={project?.id} onTab={setPanel} onClose={()=>setPanel(undefined)} onResize={setPanelWidth} onSlot={setPreviewSlot}/>
+        <RightPanel tab={panel} width={clampPanelWidth(panelWidth,viewport)} projectId={project?.id} onTab={setPanel} onClose={()=>setPanel(undefined)} onResize={setPanelWidth} onSlot={setPreviewSlot}/>
       </div>
       {settings&&<SettingsScreen items={project?diagnostics[project.id]??[]:[]} loading={!!project&&loading===project.id} onRefresh={()=>{if(project)void diagnose(project.id);}} onClose={()=>{setSettings(false);if(project)void diagnose(project.id);}}/>}
     </div>

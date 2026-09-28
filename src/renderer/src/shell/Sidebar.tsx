@@ -32,7 +32,7 @@ export function Sidebar(p:Props){
         {groups.map(group=><div key={group.project.id} className={`sidebar-group ${group.collapsed?'collapsed':''}`}>
           <div className="sidebar-group-head">
             <button className="sidebar-group-toggle" data-nav-item aria-expanded={!group.collapsed} onClick={()=>p.onToggleGroup(group.project.id)}><ProjectEmblem projectId={group.project.id}/><span>{group.project.name}</span><ShellIcon name="chevron"/></button>
-            {group.collapsed&&group.attention&&<i className="attention-dot" role="img" aria-label="Une conversation attend votre attention"/>}
+            {group.collapsed&&group.attention&&<i className={`attention-dot ${group.attention}`} role="img" aria-label="Une conversation attend votre attention"/>}
             <span className="sidebar-group-actions">
               <button className="shell-icon small" aria-label={`Nouvelle conversation dans ${group.project.name}`} title="Nouvelle conversation" onClick={()=>p.onNewSession(group.project.id)}><ShellIcon name="plus"/></button>
               <ProjectActions project={group.project} onRemoved={()=>p.onProjectRemoved(group.project.id)} onError={p.onError}/>

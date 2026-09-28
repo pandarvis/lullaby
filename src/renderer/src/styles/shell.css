@@ -23,7 +23,7 @@ html,body,#root{height:100%;margin:0;background:var(--chrome)}
 .shell-button.primary:hover{background:#584599}
 
 /* Title bar */
-.titlebar{display:flex;align-items:center;gap:2px;min-width:0;height:var(--titlebar);padding:0 calc(100vw - env(titlebar-area-x,0px) - env(titlebar-area-width,100vw)) 0 8px;background:var(--chrome);user-select:none;-webkit-app-region:drag}
+.titlebar{display:flex;align-items:center;gap:2px;min-width:0;height:var(--titlebar);padding:0 max(138px,calc(100vw - env(titlebar-area-x,0px) - env(titlebar-area-width,100vw))) 0 8px;background:var(--chrome);user-select:none;-webkit-app-region:drag}
 .titlebar button,.titlebar .shell-menu{-webkit-app-region:no-drag}
 .titlebar-logo{width:20px;height:22px;margin:0 8px 0 4px}
 .project-switcher{position:relative;margin-left:8px}
@@ -64,6 +64,8 @@ html,body,#root{height:100%;margin:0;background:var(--chrome)}
 .sidebar-group-head:hover .sidebar-group-actions,.sidebar-group-head:focus-within .sidebar-group-actions,.sidebar-group-actions:has([aria-expanded=true]){opacity:1}
 .sidebar .project-actions-menu{top:26px;right:-4px;width:min(264px,calc(var(--sidebar) - 16px))}
 .attention-dot{margin-left:0;width:7px;height:7px;flex:none;border-radius:50%;background:#d49a3a}
+.attention-dot.error{background:#b4404f}
+.iris-shell .settings-backdrop{top:var(--titlebar)}
 .sidebar-sessions{margin:0;padding:0;list-style:none}
 .sidebar-session{position:relative;display:flex;align-items:center;border-radius:var(--radius);transition:background var(--fast)}
 .sidebar-session:hover{background:var(--hover)}

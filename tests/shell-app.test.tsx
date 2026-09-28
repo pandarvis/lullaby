@@ -98,3 +98,8 @@ test('shortcuts stay inactive while a modal dialog is open',()=>{
   const modal=document.createElement('div');modal.setAttribute('aria-modal','true');document.body.append(modal);
   try{fireEvent.keyDown(window,{key:'b',ctrlKey:true});expect(container.querySelector('.iris-shell')!.classList.contains('sidebar-hidden')).toBe(false);}finally{modal.remove();}
 });
+test('a stored panel width is fitted to the window without overwriting the preference',()=>{
+  localStorage.setItem('lullaby.panel-width','900');const before=window.innerWidth;Object.defineProperty(window,'innerWidth',{value:1000,configurable:true});
+  try{const {container}=start();expect((container.querySelector('.right-panel') as HTMLElement).style.getPropertyValue('--panel-width')).toBe('600px');expect(localStorage.getItem('lullaby.panel-width')).toBe('900');}
+  finally{Object.defineProperty(window,'innerWidth',{value:before,configurable:true});}
+});
