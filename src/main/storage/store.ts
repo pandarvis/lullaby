@@ -5,6 +5,10 @@ import { randomUUID } from 'node:crypto';
 export const emptySnapshot = (): Snapshot => ({revision:0,projects:[],sessions:[],messages:{},pending:[]});
 const writes = new Map<string,Promise<void>>();
 const record = (value:unknown): value is Record<string,any> => !!value && typeof value === 'object' && !Array.isArray(value);
+function validReview(value:unknown):boolean{
+  if(!record(value)||typeof value.runId!=='string'||typeof value.capturedAt!=='string'||!Number.isFinite(Date.parse(value.capturedAt))||typeof value.partial!=='boolean'||!Array.isArray(value.files)||value.files.length>100||(value.notice!==undefined&&typeof value.notice!=='string'))return false;
+  return value.files.every((file:unknown)=>record(file)&&typeof file.path==='string'&&['added','modified','deleted'].includes(file.change)&&[file.additions,file.deletions].every(n=>n===undefined||(Number.isSafeInteger(n)&&n>=0))&&record(file.diff)&&['text','binary','submodule','symlink'].includes(file.diff.kind)&&typeof file.diff.text==='string'&&typeof file.diff.truncated==='boolean');
+}
 function decode(raw:string): Snapshot {
   let data: unknown;
   try { data = JSON.parse(raw); } catch { throw new Error('STORE_CORRUPT'); }
@@ -15,7 +19,7 @@ function decode(raw:string): Snapshot {
   if(!record(s) || !Number.isSafeInteger(s.revision) || s.revision < 0 || !Array.isArray(s.projects) || !Array.isArray(s.sessions) || !record(s.messages) || !Array.isArray(s.pending)) throw new Error('STORE_CORRUPT');
   if(s.projects.some((p:unknown)=>!record(p)||!strings(p,['id','name','cwd','folderKey']))) throw new Error('STORE_CORRUPT');
   if(s.sessions.some((v:unknown)=>!record(v)||!strings(v,['id','projectId','title','draft'])||!['claude','codex'].includes(v.provider)||!['idle','running','waiting','done','interrupted','error'].includes(v.phase)||!record(v.choices)||(v.nativeId !== undefined && typeof v.nativeId !== 'string'))) throw new Error('STORE_CORRUPT');
-  if(Object.values(s.messages).some(v=>!Array.isArray(v)||v.some(m=>!record(m)||!strings(m,['id','text'])||!['user','assistant'].includes(m.role)||!Array.isArray(m.actions)))) throw new Error('STORE_CORRUPT');
+  if(Object.values(s.messages).some(v=>!Array.isArray(v)||v.some(m=>!record(m)||!strings(m,['id','text'])||!['user','assistant'].includes(m.role)||!Array.isArray(m.actions)||(m.review!==undefined&&!validReview(m.review))))) throw new Error('STORE_CORRUPT');
   return s as Snapshot;
 }
 export async function readStore(file: string): Promise<Snapshot> {

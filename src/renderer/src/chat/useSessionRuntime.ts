@@ -2,12 +2,13 @@ import { useContext, useEffect, useState } from 'react';
 import { useExternalStoreRuntime, type ThreadMessageLike } from '@assistant-ui/react';
 import { SnapshotContext } from './sessionStore';
 const drafts=new Map<string,string>();
-export function useSessionRuntime(sessionId:string){
+export function forgetSessionDraft(sessionId:string){drafts.delete(sessionId);}
+export function useSessionRuntime(sessionId:string,configuring=false){
   const snapshot=useContext(SnapshotContext);const session=snapshot.sessions.find(s=>s.id===sessionId)!;
   const [error,setError]=useState('');const [sending,setSending]=useState(false);
   const isRunning=['running','waiting'].includes(session.phase);
   const runtime=useExternalStoreRuntime({
-    messages:snapshot.messages[sessionId]??[],isRunning,isSendDisabled:sending,
+    messages:snapshot.messages[sessionId]??[],isRunning,isSendDisabled:sending||configuring,
     convertMessage:(item):ThreadMessageLike=>({id:item.id,role:item.role,content:item.text?[{type:'text',text:item.text}]:[]}),
     onNew:async message=>{
       const text=message.content.filter(part=>part.type==='text').map(part=>part.text).join('\n');setSending(true);setError('');
@@ -27,5 +28,5 @@ export function useSessionRuntime(sessionId:string){
     });
     return ()=>{unsubscribe();if(timer)clearTimeout(timer);save();};
   },[runtime,sessionId]);
-  return {runtime,session,isRunning,error};
+  return {runtime,session,isRunning,sending,error};
 }

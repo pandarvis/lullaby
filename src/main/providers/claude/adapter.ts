@@ -6,6 +6,7 @@ import { checkSubscriptionEnvironment, assertClaudeSubscription } from '../../di
 import { AsyncQueue } from '../queue';
 import { ClaudeMessages } from './messages';
 import { spawnNativeClaude } from './native';
+import { claudePermissionMode } from '../permissions';
 type Answer=ReplyRequest['answer'];
 export class ClaudeAdapter implements ProviderAdapter {
   readonly provider='claude' as const;
@@ -27,6 +28,7 @@ export class ClaudeAdapter implements ProviderAdapter {
   }
   async run(input:RunInput):Promise<ProviderRun> {
     checkSubscriptionEnvironment(input.env,'claude');
+    const permissionMode=claudePermissionMode(input.choices.permissionProfile);
     const outgoing=new AsyncQueue<{eventId:string;body:EventBody}>();
     const incoming=new AsyncQueue<SDKUserMessage>();
     const controller=new AbortController();
@@ -44,7 +46,8 @@ export class ClaudeAdapter implements ProviderAdapter {
     }
     const options:Options={cwd:input.cwd,resume:input.nativeId,env:input.env,
       systemPrompt:{type:'preset',preset:'claude_code'},settingSources:['user','project','local'],
-      includePartialMessages:true,abortController:controller,spawnClaudeCodeProcess:spawnNativeClaude,
+      includePartialMessages:true,abortController:controller,
+      spawnClaudeCodeProcess:options=>spawnNativeClaude(options,permissionMode!==undefined),
       canUseTool:async(name,args,context):Promise<PermissionResult>=>{
         if(name==='AskUserQuestion'&&Array.isArray(args.questions)) {
           const answers:Record<string,string>={};
@@ -64,7 +67,7 @@ export class ClaudeAdapter implements ProviderAdapter {
       if(!['low','medium','high','xhigh','max'].includes(input.choices.effort))throw new Error('UNSUPPORTED_EFFORT');
       options.effort=input.choices.effort as Options['effort'];
     }
-    if(input.choices.permissionProfile)throw new Error('UNSUPPORTED_PERMISSION_PROFILE');
+    if(permissionMode!==undefined)options.permissionMode=permissionMode;
     const runtime=query({prompt:incoming,options});
     const timeout=setTimeout(()=>controller.abort(),20000);
     try {assertClaudeSubscription(await runtime.accountInfo());}

@@ -39,6 +39,26 @@ Les parcours complets V0 encore ouverts restent décrits dans la
 
 ## Lecture et limites
 
+### Complément : fiches au survol
+
+Implémenté sur `feature/git-hover` : délai de 250 ms au survol, fiche immédiate
+au focus clavier, fermeture par Échap, sortie de la fiche, changement de relevé,
+défilement extérieur ou sortie de la vue Git. Un court délai de sortie permet de
+déplacer le pointeur dans la fiche. La fiche reste dans la fenêtre et respecte
+la préférence de réduction des animations.
+
+Les branches et tags affichés pointent exactement sur le commit. Un trait décrit
+la relation commit/parent et signale un parent hors des commits chargés ; il ne
+prétend pas représenter une branche d'origine. Le rendu utilise le relevé existant.
+
+Quatre tests ajoutés : délai/contenu/transfert vers la fiche, focus/Échap/références,
+lien et parent hors page, annulation au remplacement du relevé ou à la fermeture
+de la vue. Ils échouaient avant implémentation. Suite finale : 67 réussis, 5 essais
+réels opt-in ignorés ; build et TypeScript réussis. Fiche de merge et parcours
+clavier observés dans le paquet mis à jour avec la sortie compilée.
+
+### Lecture Git
+
 Le main utilise Git local, sans appel aux fournisseurs ni fetch. Formats NUL,
 chemins littéraux et OID validés ; les identifiants de sélection correspondent à
 des relevés conservés côté main. Les paramètres de désactivation des helpers et

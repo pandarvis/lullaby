@@ -9,3 +9,6 @@ test('the pinned SDK implicit default cannot override native permission settings
   expect(captured.length).toBeGreaterThan(0);expect(captured).not.toContain('--permission-mode');
   expect(nativePermissionArgs(['--permission-mode','plan','--other','x'])).toEqual(['--permission-mode','plan','--other','x']);
 });
+test('an explicitly selected ask profile preserves the default permission flag',()=>{
+  expect(nativePermissionArgs(['--permission-mode','default','--other','x'],true)).toEqual(['--permission-mode','default','--other','x']);
+});

@@ -1,34 +1,82 @@
-import { useEffect, useState, useSyncExternalStore } from 'react';
-import type { Diagnostic } from '../../../shared/contracts';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import type { Diagnostic, Session } from '../../../shared/contracts';
 import { SnapshotContext, sessionStore } from '../chat/sessionStore';
-import { ProjectSessions, phaseLabel } from './ProjectSessions';
-import { Diagnostics } from '../settings/Diagnostics';
-import { NetworkSettings } from '../settings/NetworkSettings';
-import { ProjectWorkspace } from './ProjectWorkspace';
-import logo from '../assets/lullaby.svg';
+import { SettingsScreen } from '../settings/SettingsScreen';
+import { AtelierView } from '../shell/AtelierView';
+import { back, canBack, canForward, currentView, forward, initialNavigation, navigate, prune, type View } from '../shell/navigation';
+import { clampPanelWidth, defaultPanelWidth, type PanelTab } from '../shell/panel';
+import { RightPanel } from '../shell/RightPanel';
+import { ShellContext } from '../shell/ShellContext';
+import { useShortcuts } from '../shell/shortcuts';
+import { Sidebar } from '../shell/Sidebar';
+import { isBoolean, isFlags, isNumber, usePersistentState } from '../shell/storage';
+import { TitleBar } from '../shell/TitleBar';
+import { projectFocus } from './ProjectOverview';
+import { NewConversation, SessionView } from './ProjectSessions';
 export function App(){
   const snapshot=useSyncExternalStore(sessionStore.subscribe,sessionStore.getSnapshot);
-  const [selected,setSelected]=useState<string>();const [selectedSession,setSelectedSession]=useState<string>();
-  const [notice,setNotice]=useState('');const [collapsed,setCollapsed]=useState(()=>localStorage.getItem('lullaby.rail')==='compact');
-  const [diagnostics,setDiagnostics]=useState<Record<string,Diagnostic[]>>({});const [loading,setLoading]=useState<string>();const [panel,setPanel]=useState(false);
-  const [network,setNetwork]=useState(false);
+  const [nav,setNav]=useState(initialNavigation);const view=currentView(nav);
+  const [remembered,setRemembered]=useState<Record<string,string|undefined>>({});
+  const [sidebarHidden,setSidebarHidden]=usePersistentState('lullaby.sidebar-hidden',false,isBoolean);
+  const [collapsed,setCollapsed]=usePersistentState<Record<string,boolean>>('lullaby.sidebar-groups',{},isFlags);
+  const [panelWidth,setPanelWidth]=usePersistentState('lullaby.panel-width',defaultPanelWidth,isNumber);
+  const [viewport,setViewport]=useState(()=>window.innerWidth);
+  const [panel,setPanel]=useState<PanelTab>();const [previewSlot,setPreviewSlot]=useState<HTMLDivElement|null>(null);
+  const [query,setQuery]=useState('');const [menuOpen,setMenuOpen]=useState(false);const [pendingNew,setPendingNew]=useState(false);
+  const [notice,setNotice]=useState('');const [settings,setSettings]=useState(false);
+  const [diagnostics,setDiagnostics]=useState<Record<string,Diagnostic[]>>({});const [loading,setLoading]=useState<string>();
+  const searchRef=useRef<HTMLInputElement>(null);
   useEffect(()=>{const unsubscribe=window.lullaby.subscribe(sessionStore.accept);void window.lullaby.snapshot().then(result=>{if(result.ok)sessionStore.accept(result.value);else setNotice(result.message);});return unsubscribe;},[]);
-  const project=snapshot.projects.find(p=>p.id===selected);
-  async function diagnose(projectId:string){setLoading(projectId);try{const result=await window.lullaby.diagnose(projectId);if(result.ok)setDiagnostics(previous=>({...previous,[projectId]:result.value}));else setNotice(result.message);}finally{setLoading(current=>current===projectId?undefined:current);}}
-  useEffect(()=>{if(selected&&!diagnostics[selected])void diagnose(selected);},[selected]);
-  async function openProject(){const result=await window.lullaby.pickProject();if(result.ok&&result.value)setSelected(result.value.id);else if(!result.ok)setNotice(result.message);}
-  return <SnapshotContext.Provider value={snapshot}><div className={`shell ${collapsed?'compact':''}`}><aside className="rail"><div className="brand"><img src={logo} alt=""/><span>lullaby<b>.</b></span></div><div className="rail-caption">VOTRE ESPACE</div><button className={`rail-button ${!project?'active':''}`} title="Atelier" onClick={()=>setSelected(undefined)}><Icon name="grid"/><span>Atelier</span></button><div className="rail-caption projects-caption">PROJETS <span>{snapshot.projects.length}</span></div><nav aria-label="Projets">{snapshot.projects.map((item,index)=><button key={item.id} title={item.name} className={`rail-button ${selected===item.id?'active':''}`} onClick={()=>setSelected(item.id)}><span className={`emblem tone-${index%3}`}><Icon name={['gem','peak','spark'][index%3]}/></span><span className="project-name">{item.name}</span>{snapshot.sessions.some(s=>s.projectId===item.id&&s.phase==='waiting')&&<i className="attention-dot" aria-label="Attend votre réponse"/>}</button>)}</nav><button className="rail-button add-project" title="Ouvrir un projet" onClick={()=>void openProject()}><Icon name="plus"/><span>Ouvrir un projet</span></button><div className="rail-footer"><span className="status-dot"/><span>Atelier local · Windows</span></div></aside><main>
-    <header className="topbar"><button className="icon-button" aria-label={collapsed?'Déplier le menu':'Replier le menu'} onClick={()=>{setCollapsed(!collapsed);localStorage.setItem('lullaby.rail',!collapsed?'compact':'expanded');}}><Icon name="panel"/></button><div className="breadcrumb">Votre espace <span>/</span><strong>{project?.name??'Atelier'}</strong></div><span className="local-pill">V0 · aperçu local</span><button className="secondary" onClick={()=>{setNetwork(!network);setPanel(false);}}>Réseau</button>{project&&<button className="secondary" onClick={()=>{setPanel(!panel);setNetwork(false);}}>Moteurs {loading===selected?'…':''}</button>}</header>
-    <section className={`workspace ${project?'studio-workspace':''}`}><div className="eyebrow">UN ENDROIT POUR FAIRE AVANCER LES IDÉES</div><div className="page-heading"><div><h1>{project?.name??'Votre atelier'}<span>.</span></h1><p>{project?.cwd??'Vos projets, vos agents. Un espace pour garder le fil.'}</p></div><button className="primary" onClick={()=>void openProject()}><Icon name="plus"/>Ouvrir un projet</button></div>
-      {notice&&<div className="notice" role="alert">{notice}<button className="text-button" onClick={()=>setNotice('')}>Fermer</button></div>}
-      {project?<ProjectWorkspace key={project.id} projectId={project.id}><ProjectSessions project={project} selected={selectedSession} onSelect={setSelectedSession} diagnostics={diagnostics[project.id]??[]} onError={setNotice}/></ProjectWorkspace>:<>
-        {!snapshot.projects.length?<div className="welcome-card"><div className="welcome-art"><div className="orbit one"/><div className="orbit two"/><img src={logo} alt=""/></div><div className="eyebrow">CHAQUE PROJET COMMENCE PAR UNE IDÉE</div><h2>Faisons de la place à votre prochain projet.</h2><p>Ouvrez un dossier pour retrouver ici vos conversations et suivre le travail de vos agents.</p><button className="primary" onClick={()=>void openProject()}><Icon name="folder"/>Choisir un dossier</button></div>:<div className="project-grid">{snapshot.projects.map((item,index)=>{const sessions=snapshot.sessions.filter(s=>s.projectId===item.id);return <button key={item.id} className="project-tile" onClick={()=>setSelected(item.id)}><span className={`large-emblem tone-${index%3}`}><Icon name={['gem','peak','spark'][index%3]}/></span><h2>{item.name}</h2><p>{item.cwd}</p><div className="tile-footer"><span>{sessions.length} conversation{sessions.length>1?'s':''}</span><span>{sessions.filter(s=>['running','waiting'].includes(s.phase)).length} active(s)</span></div></button>;})}</div>}
-        {snapshot.sessions.some(s=>['running','waiting'].includes(s.phase))&&<section className="activity"><h2>En cours dans l’atelier</h2>{snapshot.sessions.filter(s=>['running','waiting'].includes(s.phase)).map(session=><button className="activity-row" key={session.id} onClick={()=>{setSelected(session.projectId);setSelectedSession(session.id);}}><span>{snapshot.projects.find(p=>p.id===session.projectId)?.name}</span><strong>{session.title}</strong><span className={`phase ${session.phase}`}>{phaseLabel[session.phase]}</span></button>)}</section>}
-        <footer className="workspace-footer"><span>IRIS · Un atelier qui vous ressemble</span><span>Vos dossiers restent sur votre poste</span></footer>
-      </>}
-    </section></main>{panel&&project&&<Diagnostics items={diagnostics[project.id]??[]} loading={loading===project.id} onRefresh={()=>void diagnose(project.id)} onClose={()=>setPanel(false)}/>} {network&&<NetworkSettings onClose={()=>{setNetwork(false);if(selected)void diagnose(selected);}}/>}</div></SnapshotContext.Provider>;
-}
-export function Icon({name}:{name:string}){
-  const paths:Record<string,string>={grid:'M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z',plus:'M12 5v14 M5 12h14',folder:'M3 6h7l2 3h9v11H3z',gem:'M12 2 22 9 17 21H7L2 9z M2 9h20 M12 2 7 9l5 12 5-12z',peak:'m2 21 8-17 5 10 3-6 4 13H2z M7 11l3 3 3-4',spark:'m12 2 3 7 7 3-7 3-3 7-3-7-7-3 7-3z M12 7v10 M7 12h10',panel:'M3 4h18v16H3z M9 4v16'};
-  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="miter" aria-hidden="true"><path d={paths[name]??paths.grid}/></svg>;
+  useEffect(()=>{setNav(previous=>prune(previous,item=>item.kind==='atelier'||snapshot.projects.some(project=>project.id===item.projectId)&&(item.kind==='project'||snapshot.sessions.some(session=>session.id===item.sessionId))));},[snapshot]);
+  const projectId=view.kind==='atelier'?undefined:view.projectId;
+  const project=snapshot.projects.find(item=>item.id===projectId);
+  const session=view.kind==='session'?snapshot.sessions.find(item=>item.id===view.sessionId):undefined;
+  // The open conversation must stay visible in the sidebar, whichever way it was reached.
+  // Runs only when the view changes, so the user can still collapse the active group afterwards.
+  useEffect(()=>{if(view.kind==='session'&&collapsed[view.projectId])setCollapsed(previous=>({...previous,[view.projectId]:false}));},[view]);
+  async function diagnose(id:string){setLoading(id);try{const result=await window.lullaby.diagnose(id);if(result.ok)setDiagnostics(previous=>({...previous,[id]:result.value}));else setNotice(result.message);}finally{setLoading(current=>current===id?undefined:current);}}
+  useEffect(()=>{if(projectId&&!diagnostics[projectId])void diagnose(projectId);},[projectId]);
+  function go(next:View){setNav(previous=>navigate(previous,next));if(next.kind==='session')setRemembered(previous=>({...previous,[next.projectId]:next.sessionId}));}
+  const openSession=(item:Session)=>go({kind:'session',projectId:item.projectId,sessionId:item.id});
+  function openProject(id:string,sessionId?:string){
+    const own=snapshot.sessions.filter(item=>item.projectId===id);
+    const focus=own.find(item=>item.id===sessionId)??projectFocus(own,remembered[id]);
+    if(focus)openSession(focus);else go({kind:'project',projectId:id});
+  }
+  function newSession(target?:string){
+    const id=target??projectId;
+    if(id){setCollapsed(previous=>({...previous,[id]:false}));go({kind:'project',projectId:id});return;}
+    if(!snapshot.projects.length){void openFolder();return;}
+    setPendingNew(true);setMenuOpen(true);
+  }
+  function selectProject(id:string){if(pendingNew){setPendingNew(false);go({kind:'project',projectId:id});}else openProject(id);}
+  async function openFolder(){const result=await window.lullaby.pickProject();if(result.ok&&result.value)go({kind:'project',projectId:result.value.id});else if(!result.ok)setNotice(result.message);}
+  const togglePanel=(tab?:PanelTab)=>setPanel(current=>tab?(current===tab?undefined:tab):(current?undefined:'git'));
+  const toggleSidebar=()=>setSidebarHidden(hidden=>!hidden);
+  useShortcuts({toggleSidebar,togglePanel:()=>togglePanel(),newSession:()=>newSession(),back:()=>setNav(back),forward:()=>setNav(forward),
+    search:()=>{setSidebarHidden(false);requestAnimationFrame(()=>searchRef.current?.focus());}});
+  useEffect(()=>{const fit=()=>setViewport(window.innerWidth);window.addEventListener('resize',fit);return()=>window.removeEventListener('resize',fit);},[]);
+  const shell=useMemo(()=>({openPanel:(tab:PanelTab)=>setPanel(tab),previewSlot}),[previewSlot]);
+  const diagnostic=session&&diagnostics[session.projectId]?.find(item=>item.provider===session.provider);
+  return <SnapshotContext.Provider value={snapshot}><ShellContext.Provider value={shell}>
+    <div className={`shell iris-shell ${sidebarHidden?'sidebar-hidden':''} ${panel?'panel-open':''}`}>
+      <TitleBar project={project} projects={snapshot.projects} sessions={snapshot.sessions} sidebarHidden={sidebarHidden} canBack={canBack(nav)} canForward={canForward(nav)} panel={panel} menuOpen={menuOpen}
+        onMenu={open=>{setMenuOpen(open);if(!open)setPendingNew(false);}} onToggleSidebar={toggleSidebar} onBack={()=>setNav(back)} onForward={()=>setNav(forward)}
+        onSelectProject={selectProject} onAtelier={()=>go({kind:'atelier'})} onTogglePanel={togglePanel}/>
+      <div className="shell-body">
+        <Sidebar projects={snapshot.projects} sessions={snapshot.sessions} view={view} query={query} collapsed={collapsed} hidden={sidebarHidden} searchRef={searchRef}
+          onQuery={setQuery} onToggleGroup={id=>setCollapsed(previous=>({...previous,[id]:!previous[id]}))} onOpenSession={openSession} onNewSession={newSession}
+          onAtelier={()=>go({kind:'atelier'})} onOpenFolder={()=>void openFolder()} onSettings={()=>setSettings(true)}
+          onProjectRemoved={id=>{if(id===projectId)go({kind:'atelier'});}} onSessionRemoved={id=>{if(view.kind==='session'&&view.sessionId===id)go({kind:'project',projectId:view.projectId});}} onError={setNotice}/>
+        <main className="main-area">
+          {notice&&<div className="shell-notice" role="alert"><span>{notice}</span><button onClick={()=>setNotice('')}>Fermer</button></div>}
+          {session&&project?<SessionView session={session} diagnostic={diagnostic}/>
+            :project?<NewConversation key={project.id} project={project} onCreated={id=>go({kind:'session',projectId:project.id,sessionId:id})} onError={setNotice}/>
+            :<AtelierView projects={snapshot.projects} sessions={snapshot.sessions} remembered={remembered} onOpen={openProject} onOpenFolder={()=>void openFolder()}/>}
+        </main>
+        <RightPanel tab={panel} width={clampPanelWidth(panelWidth,viewport)} projectId={project?.id} onTab={setPanel} onClose={()=>setPanel(undefined)} onResize={setPanelWidth} onSlot={setPreviewSlot}/>
+      </div>
+      {settings&&<SettingsScreen items={project?diagnostics[project.id]??[]:[]} loading={!!project&&loading===project.id} onRefresh={()=>{if(project)void diagnose(project.id);}} onClose={()=>{setSettings(false);if(project)void diagnose(project.id);}}/>}
+    </div>
+  </ShellContext.Provider></SnapshotContext.Provider>;
 }

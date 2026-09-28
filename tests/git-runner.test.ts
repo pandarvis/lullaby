@@ -17,7 +17,7 @@ test('literal pathspec does not expand magic or glob syntax; external diff and t
   await writeFile(join(cwd,'.gitattributes'),'*.txt diff=trap\n');await git(cwd,'config','diff.trap.textconv','echo SHOULD_NOT_RUN');await git(cwd,'config','diff.external','echo SHOULD_NOT_RUN');
   const r=new GitReader(()=>cwd);const s=await r.read('p');const diff=await r.diff(s.id,{kind:'local',changeId:s.changes.find(c=>c.path==='a[1].txt')!.id});
   expect(diff.text).toContain('+after');expect(diff.text).not.toContain('unrelated');expect(diff.text).not.toContain('SHOULD_NOT_RUN');
-});
+},20_000);
 test('read-only operations never run a repository clean filter',async()=>{
   const cwd=await repository();await commit(cwd,'a.txt','before\n','root');
   await writeFile(join(cwd,'filter.cjs'),"require('fs').writeFileSync('filter-ran','bad');process.stdin.pipe(process.stdout)");

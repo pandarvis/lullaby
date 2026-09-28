@@ -5,6 +5,32 @@ de l'ordinateur personnel ne suffisent pas. Cette checklist n'installe rien.
 Docker et WSL sont confirmés bloqués : aucune étape ne doit les nécessiter.
 La cible est une exécution Windows native.
 
+## Reprendre la version complète sur un autre poste
+
+La branche de validation actuelle est **`feature/turn-review`**. Elle contient les
+évolutions d’interface et le récapitulatif des interventions, pas encore fusionnés
+dans `develop`. Pour un nouveau clone, dans PowerShell :
+
+```powershell
+git clone --branch feature/turn-review https://github.com/pandarvis/lullaby.git
+cd lullaby
+npm ci
+node node_modules/electron/install.js
+npm run dev
+```
+
+Ces commandes nécessitent Git, Node 22.12 ou ultérieur compatible, npm et l’accès
+aux téléchargements npm/Electron. Pour un clone existant, préserver ses changements
+locaux, puis `git fetch origin` et `git switch feature/turn-review`.
+Voir [Développement](developpement.md) pour construire le paquet Windows.
+
+Git transporte les sources, le lockfile et la documentation, pas `node_modules`,
+le paquet compilé, les connexions, la configuration réseau ou les conversations
+personnelles. Ces réglages se font sur le poste concerné. Pour utiliser l’application
+sans construire sur place, transférer par un moyen autorisé **tout** le dossier
+`dist/win-unpacked` produit sur le poste personnel, pas seulement `Lullaby.exe`.
+La checklist ci-dessous reste à exécuter sur le poste professionnel.
+
 ## 1. Inventaire local
 
 Dans PowerShell, ce bloc indique les exécutables disponibles et leur version :

@@ -91,15 +91,27 @@ Format SVG confirmé par l'utilisateur pour les emblèmes et icônes Lullaby.
 Prévoir une bibliothèque locale réutilisable, sans génération à chaque session.
 L'emblème identifie durablement le projet ; fournisseur, catégorie de tâche et état
 restent distincts. Les catégories ne modifient pas les capacités de l'agent.
-Le nombre d'emblèmes et leur sélecteur restent à concevoir ; bibliothèque non créée.
+Bibliothèque implémentée sur `feature/iris-workspace` : huit emblèmes SVG facettés
+(montagne, livre, cristal, boussole, feuille, tour, éclair, portail), déclinés en
+lavande, menthe et ambre. Le dessin et la couleur dérivent de l'identifiant stable
+du projet, sans dépendre de l'ordre d'affichage. Les combinaisons peuvent se répéter ;
+ce ne sont pas des logos uniques générés. Le logo Lullaby reste réservé à l'application.
+Le sélecteur manuel d'emblème reste à concevoir.
+
+Pour l'usage quotidien personnel, les slogans et le grand en-tête des projets sont
+retirés. Nom et chemin tiennent dans la barre supérieure ; la conversation occupe
+la hauteur restante, avec défilement interne des messages et saisie en bas. Les
+contrôles modèle/effort et les autorisations restent accessibles. La fiche Git reçoit
+des pictogrammes SVG distincts pour commit, branche, référence distante, tag et parent.
 
 ## Navigation et mouvement
 
-Navigation repliable demandée par l'utilisateur : conserver une barre compacte avec
-logo Lullaby, emblèmes de projets, indicateurs d'attention et accès au proxy Claude.
-Le contrôle de repli reste visible en haut, fonctionne au clavier et mémorise le choix.
-Dans la maquette, la barre passe à 76 px ; les boutons conservent leur nom accessible
-et une infobulle quand le texte est masqué. Le chat profite de la place libérée.
+Coquille Iris validée le 28 septembre 2026 ([spec](superpowers/specs/2026-09-28-iris-shell-design.md),
+[maquette](mockups/iris-shell.html)) : une barre de titre de 40 px remplace la barre
+Windows et l'en-tête, la barre latérale liste les conversations groupées par projet
+et se masque entièrement (`Ctrl+B`, choix mémorisé). La barre compacte de 76 px
+disparaît. Git et les aperçus s'ouvrent dans un panneau droit (`Ctrl+J`).
+Densité : texte 13–14 px, lignes de 32 px, titres limités à 16 px.
 
 Privilégier des transitions CSS courtes (ordre de grandeur proposé : 120–200 ms)
 pour survol, sélection, ouverture d'un panneau et changement d'état. Ne pas retarder
@@ -110,27 +122,50 @@ Une bibliothèque d'animation supplémentaire doit être justifiée par un besoi
 
 ## Avec assistant-ui
 
-Les pictogrammes de fournisseurs présents dans la maquette sont provisoires.
-L'utilisateur demande les véritables logos Anthropic et Codex. Employer des assets
-officiels, avec le nom du moteur visible, lors de la prochaine retouche de l'interface ;
-ne pas les redessiner dans le style facetté de Lullaby. Sources de départ :
-[ressources de marque OpenAI](https://openai.com/brand/) et
-[kit presse Anthropic](https://www.anthropic.com/news).
+Le studio utilise le véritable astérisque Claude et le symbole OpenAI pour Codex,
+avec le nom du moteur visible et un mouvement discret au survol. Leur provenance
+est documentée dans la [recette Studio](validation/studio-v1.md). Les fournisseurs
+ne sont pas redessinés dans le style facetté des projets.
 Le logo Lullaby et la palette Iris restent les références validées.
 
 assistant-ui fournit les composants et comportements du chat. Les styles de Lullaby
 seront partagés entre ce chat et le reste de l'application : couleurs, espacements,
 rayons, ombres, typographie et mouvements. La bibliothèque ne fixe pas notre identité
-visuelle. Garder ces réglages centralisés pour maintenir la cohérence et limiter les
-retouches dispersées.
+visuelle. Les styles `iris.css` et `studio.css` centralisent ces réglages. Modèle,
+effort, permissions, ajout et envoi sont dans le compositeur, les aperçus à droite.
+Les listes Markdown conservent des marqueurs distincts et des espacements lisibles.
+Paramètres regroupe moteurs/réseau/apparence ; le point vert décoratif a été retiré
+car il ne confirmait aucune connexion. Les états d'abonnement viennent du diagnostic.
 
 ## Validation et vérifications restantes
 
 La [première maquette interactive](mockups/README.md) présente deux vues, supervision
 et conversation. Iris et le logo sont validés ; les interactions restent simulées
-en HTML. L'intégration réelle utilisera assistant-ui.
+en HTML. L'intégration réelle utilise maintenant assistant-ui.
 
 Les vues présentent les états vide, actif, attente et erreur. Approfondir la validation
 de la lisibilité du code, navigation clavier, contraste, densité et mouvements
 pendant l'intégration. L'expression « UI/UX++ » ne
 constitue pas à elle seule un critère de recette : ces écrans serviront de référence.
+
+## Ajustements après recette Studio
+
+Les icônes utilitaires adoptent les mêmes facettes que les emblèmes, à une échelle
+plus discrète. Les logos fournisseurs officiels gardent leur dessin. Les contrôles
+du compositeur utilisent des menus Iris au clavier, avec descriptions plutôt que
+les menus système. Conversations/Git rejoint l'en-tête pour rendre la hauteur au chat.
+La coloration du code utilise des teintes lavande, menthe, bleu et ambre contrastées.
+Le cristal d'activité respire doucement ; le réglage sans animations et la préférence
+système de mouvement réduit restent respectés. Voir la [recette](validation/iris-feedback.md).
+
+## Accueil de supervision
+
+L’Atelier présente les projets en lignes compactes, dans un ordre stable, avec leur
+emblème, dossier, conversation représentative et état. Les compteurs résument les
+conversations en cours et celles à traiter (attente, erreur ou interruption).
+Un clic rejoint la conversation prioritaire ; les raccourcis de gauche retrouvent
+la dernière conversation sélectionnée dans chaque projet pendant la session de l’app.
+L’accueil remplace les grandes cartes et leur seconde liste d’activité redondante.
+Les états reposent sur le snapshot réel, sans pourcentage d’avancement inventé.
+Les paramètres généraux ont un seul accès, en bas à gauche. Les points de suspension
+restent sobres ; les emblèmes gardent le relief le plus marqué.

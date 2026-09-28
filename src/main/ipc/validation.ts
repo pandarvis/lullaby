@@ -11,9 +11,10 @@ export function text(value: unknown, max = 200000, allowEmpty = false): string {
 export function id(value: unknown): string { return text(value, 200); }
 export function nativeId(value:unknown):string|undefined {if(value===undefined)return undefined;const result=text(value,100);if(!/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(result))throw new Error('INVALID_NATIVE_ID');return result;}
 export function launchChoices(value:unknown):LaunchChoices {
-  const data=object(value,['model','effort']);const choices:LaunchChoices={};
+  const data=object(value,['model','effort','permissionProfile']);const choices:LaunchChoices={};
   if(data.model!==undefined)choices.model=text(data.model,200);
   if(data.effort!==undefined)choices.effort=text(data.effort,30);
+  if(data.permissionProfile!==undefined){if(!['native','ask','auto','plan'].includes(String(data.permissionProfile)))throw new Error('INVALID_PERMISSION_PROFILE');choices.permissionProfile=String(data.permissionProfile);}
   return choices;
 }
 export function provider(value: unknown): Provider {

@@ -13,3 +13,11 @@ test('maps only the active thread and turn, final text replaces fragments',()=>{
   expect(codexEvents({method:'item/completed',params:{threadId:'a',turnId:'t',item:{type:'agentMessage',id:'i',text:'hello'}}},'a','t')[0]).toMatchObject({kind:'text',mode:'replace',itemId:'i'});
   expect(codexEvents({method:'turn/completed',params:{threadId:'a',turn:{id:'t',status:'failed'}}},'a','t')[0]).toMatchObject({kind:'error'});
 });
+
+test('reports reasoning lifecycle without copying native reasoning text',()=>{
+  for(const method of ['item/started','item/completed']){
+    const events=codexEvents({method,params:{threadId:'a',turnId:'t',item:{type:'reasoning',id:'r',content:['PRIVATE_REASONING']}}},'a','t');
+    expect(events[0]).toMatchObject({kind:'action',label:'Réflexion',state:method==='item/started'?'running':'done'});
+    expect(JSON.stringify(events)).not.toContain('PRIVATE_REASONING');
+  }
+});

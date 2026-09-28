@@ -1,7 +1,19 @@
 import type { Diagnostic, Project, Provider, PromptRequest, ReplyRequest, Result, Session, Snapshot, LaunchChoices, NetworkProfile, NetworkSnapshot, ProxyState } from './contracts';
 import type { GitApi } from './git';
+import type { EngineConfiguration, PreviewInput, PreviewDocument } from './contracts';
 export type GitBridge={ [K in keyof GitApi]: (...args:Parameters<GitApi[K]>)=>Promise<Result<Awaited<ReturnType<GitApi[K]>>>> };
 export interface LullabyApi {
+  renameProject(id:string,name:string):Promise<Result<void>>;
+  removeProject(id:string):Promise<Result<void>>;
+  removeSession(id:string):Promise<Result<void>>;
+  pickAttachments(kind:'files'|'folder'):Promise<Result<string[]>>;
+  previewHtml(projectId:string,input:PreviewInput):Promise<Result<PreviewDocument>>;
+  pickPreview(projectId:string):Promise<Result<PreviewDocument|null>>;
+  openPreview(id:string):Promise<Result<void>>;
+  releasePreview(id:string):Promise<Result<void>>;
+  engineSettings():Promise<Result<EngineConfiguration>>;
+  saveEngineSettings(settings:EngineConfiguration):Promise<Result<void>>;
+  pickCodexExecutable():Promise<Result<string|null>>;
   git:GitBridge;
   pickProject(): Promise<Result<Project | null>>;
   snapshot(): Promise<Result<Snapshot>>;
@@ -19,6 +31,10 @@ export interface LullabyApi {
   subscribe(listener: (snapshot: Snapshot) => void): () => void;
 }
 export const channels = {
+  removeSession:'lullaby:remove-session',
+  renameProject:'lullaby:rename-project',removeProject:'lullaby:remove-project',pickAttachments:'lullaby:pick-attachments',
+  previewHtml:'lullaby:preview-html',pickPreview:'lullaby:pick-preview',openPreview:'lullaby:open-preview',releasePreview:'lullaby:release-preview',
+  engineSettings:'lullaby:engine-settings',saveEngineSettings:'lullaby:save-engines',pickCodexExecutable:'lullaby:pick-codex',
   gitRead:'lullaby:git-read',gitMore:'lullaby:git-more',gitFiles:'lullaby:git-files',gitDiff:'lullaby:git-diff',gitCancel:'lullaby:git-cancel',
   pickProject:'lullaby:pick-project', snapshot:'lullaby:snapshot',
   createSession:'lullaby:create-session', send:'lullaby:send', reply:'lullaby:reply',
