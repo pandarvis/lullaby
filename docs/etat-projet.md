@@ -1,6 +1,6 @@
 # État du projet et passation
 
-Dernière mise à jour : 27 septembre 2026, Codex.
+Dernière mise à jour : 28 septembre 2026, Claude.
 
 ## État réel
 
@@ -24,6 +24,9 @@ permissions. Brouillons et projection des échanges sont conservés dans
 `%APPDATA%\lullaby\state.json` ; les moteurs gardent contexte natif, instructions,
 skills et identifiants de reprise. Une seule exécution par dossier dans Lullaby ;
 une CLI externe n'est pas verrouillée.
+
+- Coquille Iris dense (`feature/iris-shell`) : barre de titre intégrée, conversations
+  par projet, panneau droit Git/Aperçu. Recette : [iris-shell](validation/iris-shell.md).
 
 La tranche Studio ajoute :
 

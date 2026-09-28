@@ -126,3 +126,27 @@ ensemble limité de grammaires. Il évite un moteur de coloration maison, les re
 externes et un éditeur lourd. Les contrôles utilisent Radix Select déjà présent.
 Les frontières de réflexion natives alimentent un indicateur générique ; leur texte
 privé n'est pas enregistré. Les actions conservent les données utiles au suivi visible.
+
+## D012 — Coquille Iris dense
+
+Date : 28 septembre 2026. Statut : **retenu**, validé par l'utilisateur le
+28 septembre 2026 (sections du design, maquette et plan approuvés). Implémenté sur
+`feature/iris-shell` ; recette dans [iris-shell](validation/iris-shell.md).
+
+- Fenêtre sans cadre (`titleBarStyle: 'hidden'`) avec boutons Windows natifs fournis
+  par `titleBarOverlay`, sous une barre de titre de 40 px qui porte navigation,
+  sélecteur de projet et bascules du panneau.
+- La barre latérale liste les conversations groupées par projet ; elle se masque
+  entièrement (`Ctrl+B`, préférence `lullaby.sidebar-hidden`). La barre compacte
+  de 76 px et les onglets Conversations/Git disparaissent.
+- Git et les aperçus HTML s'ouvrent dans un panneau droit (`Ctrl+J`) ; l'aperçu y est
+  rendu par un portail React depuis la conversation, sans changer son isolation.
+- Couches CSS : `shell.css`, chargé en dernier, surcharge les styles hérités
+  d'`iris.css` et `studio.css` ; les règles mortes de l'ancien rail et de l'ancienne
+  barre ont été supprimées de ces deux fichiers.
+
+Raison : gagner de la place et de la densité pour le chat, et regrouper les
+conversations par projet sans navigation à deux niveaux. Conséquences : les boutons
+de fenêtre dépendent de l'overlay natif (zone de déplacement à vérifier à la main) ;
+la superposition CSS reste à réduire si les styles hérités sont réécrits ; les
+Paramètres gardent en partie l'ancienne échelle visuelle.

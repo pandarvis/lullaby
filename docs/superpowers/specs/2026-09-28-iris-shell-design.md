@@ -102,7 +102,7 @@ session CLI. « Nouvelle conversation » en haut utilise le projet actif, sinon 
 le sélecteur de projet de la barre de titre. Le + de « Projets » ouvre un
 dossier. Les actions de `SessionActions` et `ProjectActions` passent dans des menus
 « ⋯ » affichés au survol. Repli complet par `Ctrl+B` ou le bouton de la barre de
-titre, mémorisé sous `lullaby.rail` ; la barre compacte de 76 px disparaît.
+titre, mémorisé sous `lullaby.sidebar-hidden` (booléen JSON) ; la barre compacte de 76 px disparaît.
 
 **Navigation.** Précédent/suivant et `Alt+←/→` parcourent l'historique des vues
 de la session. `Ctrl+N` nouvelle conversation, `Ctrl+K` recherche. Le sélecteur
