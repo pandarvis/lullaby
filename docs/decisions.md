@@ -139,11 +139,12 @@ n'est pas la base du produit, car la supervision multi-sessions repose sur des
 
 ## D013 — Moteurs conservés entre les messages (implémenté)
 
-Date : 28 septembre 2026. Statut : **retenu** ; Claude vérifié en réel, Codex
-vérifié par tests simulés uniquement.
+Date : 28 septembre 2026. Statut : **retenu** ; Claude et Codex vérifiés en réel
+sur le poste professionnel.
 
 Relancer le moteur à chaque message coûtait ~40 s par réponse sur le poste pro
-(hooks utilisateur au démarrage), contre 3 s une fois le moteur ouvert. Une
+(hooks utilisateur au démarrage), contre 3 s une fois le moteur ouvert ; Codex
+passe de 14 s à 3 s. Une
 conversation garde son processus Claude entre les tours s'il est dans le même dossier,
 avec les mêmes choix et le même environnement réseau, et si la session native n'a
 pas été modifiée ailleurs. Il est fermé en cas d'interruption ou d'erreur, après

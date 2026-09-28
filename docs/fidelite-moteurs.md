@@ -32,7 +32,6 @@ comme une dette prioritaire.
 | --- | --- | --- |
 | Premier message d'une conversation (~30 s sur le poste pro) | Démarrage natif et hooks utilisateur, payés aussi par le CLI | Démarrage anticipé (`prewarm`) à évaluer |
 | Moteur relancé après 10 min d'inactivité, interruption ou changement de réglage | Limite de processus ouverts | Durée et nombre à rendre configurables si besoin |
-| Codex : processus conservé entre les tours, pas encore essayé en réel | Codex bloqué par le proxy du poste pro ; mécanisme vérifié par tests simulés | Essai réel sur un poste où Codex est autorisé |
 
 ## Configuration des adaptateurs
 

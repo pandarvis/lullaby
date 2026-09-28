@@ -110,8 +110,11 @@ export class CodexAdapter implements ProviderAdapter {
       result.models=(catalog.data??[]).filter((model:any)=>!model.hidden).map((model:any)=>({id:model.model,name:model.displayName,default:model.isDefault,efforts:model.supportedReasoningEfforts.map((item:any)=>item.reasoningEffort)}));
       if(result.configuredModel&&!result.models?.some(model=>model.id===result.configuredModel))Object.assign(result,{configuredModelUnavailable:true});
       const config=connected.nativeConfig;const approval=typeof config.approval_policy==='string'?config.approval_policy:undefined;
-      result.native={modelName:result.models?.find(model=>model.id===result.configuredModel)?.name??result.configuredModel,
-        effort:typeof config.model_reasoning_effort==='string'?config.model_reasoning_effort:undefined,
+      // Without a configured model the engine uses its catalog default and that model's default effort.
+      const nativeModel=(catalog.data??[]).find((model:any)=>result.configuredModel?model.model===result.configuredModel:model.isDefault);
+      if(!result.configuredModel&&nativeModel)result.configuredModel=nativeModel.model;
+      result.native={modelName:nativeModel?.displayName??result.configuredModel??undefined,
+        effort:typeof config.model_reasoning_effort==='string'?config.model_reasoning_effort:typeof nativeModel?.defaultReasoningEffort==='string'?nativeModel.defaultReasoningEffort:undefined,
         permission:approval&&typeof config.sandbox_mode==='string'?`${approval}/${config.sandbox_mode}`:undefined};
       const skills=await rpc.request('skills/list',{cwds:[cwd],forceReload:false});
       result.skills=(skills.data??[]).flatMap((entry:any)=>(entry.skills??[]).map((skill:any)=>({name:skill.name,available:skill.enabled,evidence:'Skill annoncé par le moteur natif ; invocation à vérifier.'})));

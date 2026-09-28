@@ -99,7 +99,8 @@ Aucun bouton Annuler, aucun appel LLM supplémentaire. Voir la [recette dédiée
   reprise) réussi via Px ; trois tours dans un moteur conservé : 28,8 s puis 3,5 s et 2,6 s.
   Tests ciblés et TypeScript réussis. Les tests Git dépassent leurs délais sur ce poste
   (Git lent) et un test compare un chemin court `~1` à sa forme longue : échecs
-  préexistants, non traités. Codex conservé ouvert : tests simulés uniquement.
+  préexistants, non traités. Codex réel : trois tours dans un
+  App Server conservé, 14,4 s puis 2,9 s et 2,9 s, contexte conservé.
 - Tranche chat compact : 11 tests du chat réussis, TypeScript/build réussis ; aucun nouvel appel fournisseur.
 - Dernière suite complète : **126 tests réussis, 5 essais fournisseurs opt-in ignorés**.
   TypeScript, build et `npm run package:win` réussis ; paquet Windows non signé.
@@ -123,9 +124,10 @@ Les essais utilisent des projets temporaires séparés du dépôt utilisateur.
 
 ## Limites et suite
 
-Poste professionnel : Claude par abonnement fonctionne via Px, lancé par Lullaby ou
-en externe. Codex y est bloqué : le proxy d'entreprise répond 403 sur chatgpt.com
-(compte, modèles, plugins) ; Lullaby l'indique sans contournement. Le compte rendu
+Poste professionnel : Claude et Codex fonctionnent par abonnement via Px, lancé par
+Lullaby ou en externe. Le matin, le proxy d'entreprise répondait 403 sur chatgpt.com
+pour Codex ; après mise à jour de Codex l'après-midi, l'accès fonctionne. Lullaby
+affiche désormais la raison donnée par le moteur en cas de refus. Le compte rendu
 détaillé reste hors dépôt. Le paquet Windows n'a pas encore été essayé sur ce poste. La parité globale avec les clients officiels n'est pas démontrée.
 L'historique d'une session importée reste dans le moteur ; Lullaby n'affiche que
 les échanges réalisés après l'import. Aucune synchronisation entre machines.
