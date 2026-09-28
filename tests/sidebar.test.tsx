@@ -9,7 +9,6 @@ vi.mock('../src/renderer/src/app/SessionActions',()=>({SessionActions:({session}
 import { StateMark } from '../src/renderer/src/shell/StateMark';
 import { Sidebar } from '../src/renderer/src/shell/Sidebar';
 afterEach(cleanup);
-afterEach(cleanup);
 test('state marks are labelled and use a shape beyond colour for attention',()=>{
   const {container}=render(<><StateMark phase="waiting"/><StateMark phase="error"/><StateMark phase="running"/></>);
   expect(screen.getByRole('img',{name:'Attend votre réponse'}).querySelector('svg')).toBeTruthy();

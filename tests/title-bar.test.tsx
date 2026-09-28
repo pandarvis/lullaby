@@ -24,3 +24,13 @@ test('the project menu lists the Atelier and projects, then closes',()=>{
   expect(p.onMenu).toHaveBeenCalledWith(false);expect(p.onSelectProject).toHaveBeenCalledWith('a');
   fireEvent.keyDown(document,{key:'Escape'});expect(p.onMenu).toHaveBeenCalledTimes(2);
 });
+test('Escape and choosing return focus to the switch; arrows move between items',()=>{
+  const p=props({menuOpen:true});render(<TitleBar {...p}/>);
+  const items=screen.getAllByRole('menuitem');items[0].focus();
+  fireEvent.keyDown(items[0],{key:'ArrowDown'});expect(document.activeElement).toBe(items[1]);
+  fireEvent.keyDown(items[1],{key:'ArrowUp'});expect(document.activeElement).toBe(items[0]);
+  fireEvent.keyDown(items[0],{key:'ArrowUp'});expect(document.activeElement).toBe(items[items.length-1]);
+  fireEvent.keyDown(document,{key:'Escape'});expect(document.activeElement).toBe(screen.getByRole('button',{name:/Atelier/,expanded:true}));
+  (document.activeElement as HTMLElement).blur();fireEvent.click(items[1]);
+  expect(document.activeElement).toBe(screen.getByRole('button',{name:/Atelier/,expanded:true}));
+});
