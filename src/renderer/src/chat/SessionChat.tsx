@@ -9,6 +9,7 @@ import type { Diagnostic, PreviewDocument, PreviewInput } from '../../../shared/
 import { ComposerOptions } from './ComposerOptions';
 import { PreviewPane } from './PreviewPane';
 import { UiIcon } from '../app/UiIcon';
+import { useDismiss } from '../app/useDismiss';
 import { htmlPath, safeMarkdownUrl } from './links';
 import { CodeHighlight } from './CodeHighlight';
 import { AgentActivity } from './AgentActivity';
@@ -27,12 +28,12 @@ function Markdown(){
 function Message(){
   const message=useAuiState(s=>s.message);const snapshot=useContext(SnapshotContext);const examine=useContext(ReviewContext);
   const item=Object.values(snapshot.messages).flat().find(item=>item.id===message.id);
-  return <MessagePrimitive.Root className={`message ${message.role}`}>{!item?.review&&<div className="message-author">{message.role==='user'?'Vous':'Agent'}</div>}<div className="message-content"><MessagePrimitive.Parts components={{Text:Markdown}}/>{item?.review&&<TurnReviewCard review={item.review} onExamine={examine}/>}{item?.actions.length? <ActionDetails actions={item.actions}/>:null}</div>{item?.text&&<ActionBarPrimitive.Root className="message-actions"><ActionBarPrimitive.Copy className="text-button">Copier</ActionBarPrimitive.Copy></ActionBarPrimitive.Root>}</MessagePrimitive.Root>;
+  return <MessagePrimitive.Root className={`message ${message.role}`}>{!item?.review&&<div className="message-author">{message.role==='user'?'Vous':'Agent'}</div>}<div className="message-content"><MessagePrimitive.Parts components={{Text:Markdown}}/>{item?.review&&<TurnReviewCard review={item.review} onExamine={examine}/>}{item?.actions.length? <ActionDetails actions={item.actions}/>:null}</div>{item?.text&&<ActionBarPrimitive.Root className="message-actions"><ActionBarPrimitive.Copy className="copy-button" aria-label="Copier le message" title="Copier"><span className="copy-idle"><UiIcon name="copy" flat/></span><span className="copy-done"><UiIcon name="check" flat/></span></ActionBarPrimitive.Copy></ActionBarPrimitive.Root>}</MessagePrimitive.Root>;
 }
 export function SessionChat({sessionId,diagnostic}:{sessionId:string;diagnostic?:Diagnostic}){
   const [configuring,setConfiguring]=useState(false);const [review,setReview]=useState<ReviewSelection>();
   const {runtime,session,isRunning,sending,error}=useSessionRuntime(sessionId,configuring);const snapshot=useContext(SnapshotContext);
-  const [notice,setNotice]=useState('');const [menu,setMenu]=useState(false);const [document,setDocument]=useState<PreviewDocument>();
+  const [notice,setNotice]=useState('');const [menu,setMenu]=useState(false);const menuRef=useRef<HTMLDivElement>(null),addRef=useRef<HTMLButtonElement>(null);useDismiss(menu,()=>setMenu(false),[menuRef,addRef],addRef);const [document,setDocument]=useState<PreviewDocument>();
   const alive=useRef(true);const previewId=useRef<string|undefined>(undefined);const previewSerial=useRef(0);
   useEffect(()=>{alive.current=true;return()=>{alive.current=false;if(previewId.current)void window.lullaby.releasePreview(previewId.current);};},[]);
   const pending=snapshot.pending.filter(event=>event.sessionId===sessionId);
@@ -51,8 +52,8 @@ export function SessionChat({sessionId,diagnostic}:{sessionId:string;diagnostic?
     </ThreadPrimitive.Viewport>
     <div className="composer-area"><AgentActivity sessionId={sessionId} phase={session.phase} sending={sending} provider={session.provider} messages={snapshot.messages[sessionId]??[]}/>{pending.map(event=><ApprovalPanel key={event.eventId} event={event}/>)}{(error||notice)&&<p className="notice" role="alert">{error||notice}</p>}
       <ThreadPrimitive.ScrollToBottom className="scroll-bottom">Revenir en bas ↓</ThreadPrimitive.ScrollToBottom>
-      {menu&&<div className="attach-menu" aria-label="Ajouter au message"><button onClick={()=>void attach('files')}><UiIcon name="file"/>Fichiers</button><button onClick={()=>void attach('folder')}><UiIcon name="folder"/>Dossier</button><button onClick={()=>void preview()}><UiIcon name="preview"/>Ouvrir un aperçu HTML</button><small>Les fichiers sont joints comme références locales à lire par l’agent.</small></div>}
-      <ComposerPrimitive.Root className="composer"><ComposerPrimitive.Input aria-label="Votre message" placeholder="Écrivez à votre agent…" className="composer-input" addAttachmentOnPaste={false}/><div className="composer-footer"><button type="button" className="composer-add icon-button" aria-label="Ajouter au message" title="Fichiers, dossiers et aperçu" aria-expanded={menu} onClick={()=>setMenu(!menu)}><UiIcon name="plus"/></button><ComposerOptions session={session} diagnostic={diagnostic} onError={setNotice} onBusy={setConfiguring}/>{isRunning?<ComposerPrimitive.Cancel className="send-button stop" aria-label="Arrêter" title="Arrêter"><UiIcon name="stop"/></ComposerPrimitive.Cancel>:<ComposerPrimitive.Send className="send-button" aria-label="Envoyer" title="Envoyer · Entrée"><UiIcon name="arrow"/></ComposerPrimitive.Send>}</div></ComposerPrimitive.Root>
+      {menu&&<div ref={menuRef} className="attach-menu" aria-label="Ajouter au message"><button onClick={()=>void attach('files')}><UiIcon name="file"/>Fichiers</button><button onClick={()=>void attach('folder')}><UiIcon name="folder"/>Dossier</button><button onClick={()=>void preview()}><UiIcon name="preview"/>Ouvrir un aperçu HTML</button><small>Les fichiers sont joints comme références locales à lire par l’agent.</small></div>}
+      <ComposerPrimitive.Root className="composer"><ComposerPrimitive.Input aria-label="Votre message" placeholder="Écrivez à votre agent…" className="composer-input" addAttachmentOnPaste={false}/><div className="composer-footer"><button ref={addRef} type="button" className="composer-add icon-button" aria-label="Ajouter au message" title="Fichiers, dossiers et aperçu" aria-expanded={menu} onClick={()=>setMenu(!menu)}><UiIcon name="plus"/></button><ComposerOptions session={session} diagnostic={diagnostic} onError={setNotice} onBusy={setConfiguring}/>{isRunning?<ComposerPrimitive.Cancel className="send-button stop" aria-label="Arrêter" title="Arrêter"><UiIcon name="stop"/></ComposerPrimitive.Cancel>:<ComposerPrimitive.Send className="send-button" aria-label="Envoyer" title="Envoyer · Entrée"><UiIcon name="arrow"/></ComposerPrimitive.Send>}</div></ComposerPrimitive.Root>
 
     </div>
   </ThreadPrimitive.Root>{review&&<TurnReviewPane key={`${review.review.runId}:${review.path??""}`} selection={review} onClose={()=>setReview(undefined)}/>} {document&&<PreviewPane document={document} onClose={closePreview} onError={setNotice}/>}</div></PreviewContext.Provider></ReviewContext.Provider></AssistantRuntimeProvider>;

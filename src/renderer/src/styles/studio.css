@@ -87,3 +87,20 @@
 .relay-journal pre .lullaby{color:#c7b8ff}
 .relay-journal pre .stderr{color:#ffc2c9}
 @media (prefers-reduced-motion:reduce){.relay-status.starting i{animation:none;border-right-color:currentColor}}
+/* Repli du menu latéral : discret, dans le rail, à côté du logo. */
+.rail-toggle{margin-left:auto;width:28px;height:28px;padding:5px;border-radius:8px;border:1px solid #ffffff14;background:transparent;color:#eee9ff8c;display:grid;place-items:center;cursor:pointer;flex-shrink:0;transition:background .15s,color .15s}
+.rail-toggle:hover,.rail-toggle:focus-visible{background:var(--rail2);color:#fff;border-color:#ffffff26}
+.rail-toggle svg{width:16px;height:16px}
+.compact .brand{flex-direction:column;gap:14px}
+.compact .rail-toggle{margin-left:0}
+/* Copier : icône discrète en fin de message, sans hauteur supplémentaire. */
+.message{position:relative}
+.message-actions{position:absolute;right:4px;bottom:-22px;margin:0;opacity:1}
+.message.user .message-actions{bottom:-24px;right:6px}
+.copy-button{border:0;background:none;padding:3px;border-radius:6px;color:var(--muted);opacity:.45;display:grid;place-items:center;cursor:pointer}
+.copy-button svg{width:14px;height:14px}
+.message:hover .copy-button,.copy-button:focus-visible{opacity:1}
+.copy-button:hover{background:var(--accent-soft);color:var(--accent)}
+.copy-button .copy-done,.copy-button[data-copied] .copy-idle{display:none}
+.copy-button[data-copied] .copy-done{display:grid;color:var(--mint-ink)}
+.copy-button span{display:grid}
