@@ -4,7 +4,7 @@ import type { Diagnostic, EventBody, ReplyRequest } from '../../../shared/contra
 import { assertCodexSubscription, checkSubscriptionEnvironment } from '../../diagnostics/providers';
 import { canonicalizeFolder } from '../../projects/registry';
 import { AsyncQueue } from '../queue';
-import { RpcProcess, type RpcMessage } from './transport';
+import { RpcProcess, RpcRejected, type RpcMessage } from './transport';
 import { codexEvents } from './messages';
 import { resolveCodexExecutable } from './executable';
 import { codexPermissions } from '../permissions';
@@ -20,6 +20,13 @@ const diagnosticIssues:Record<string,string>={
   SUBSCRIPTION_NOT_CONFIRMED:'Codex répond, mais la connexion ChatGPT n’est pas confirmée. Connectez-vous avec ChatGPT dans le client ou la CLI officielle, puis relancez la vérification.',
   AUTH_CONFIGURATION_AMBIGUOUS:'La configuration Codex peut sélectionner une API facturée. Vérifiez le fournisseur natif et les variables de configuration ; aucune bascule payante n’a été effectuée.',
 };
+
+// Names the refused step and the engine's reason instead of a generic compatibility hint.
+export function rejectionIssue(error:RpcRejected):string {
+  const detail=error.detail?` : « ${error.detail} »`:'';
+  if(error.method==='account/read')return `Codex n’a pas pu vérifier le compte ChatGPT${detail}. Sur un réseau d’entreprise, le proxy peut bloquer chatgpt.com pour Codex ; Lullaby ne contourne pas ce blocage.`;
+  return `Codex a refusé l’étape ${error.method}${detail}.`;
+}
 
 export class CodexAdapter implements ProviderAdapter {
   readonly provider='codex' as const;
@@ -78,7 +85,8 @@ export class CodexAdapter implements ProviderAdapter {
     }catch(error){
       const code=error instanceof Error?error.message:'';
       if(result.auth!=='subscription')result.auth=code==='AUTH_CONFIGURATION_AMBIGUOUS'?'ambiguous':'missing';
-      result.issues.push(diagnosticIssues[code]??'Le diagnostic Codex n’a pas pu être terminé. Vérifiez la compatibilité et la configuration du moteur officiel.');
+      if(error instanceof RpcRejected)result.issues.push(rejectionIssue(error));
+      else result.issues.push(diagnosticIssues[code]??'Le diagnostic Codex n’a pas pu être terminé. Vérifiez la compatibilité et la configuration du moteur officiel.');
     }
     finally{await rpc?.close();}return result;
   }

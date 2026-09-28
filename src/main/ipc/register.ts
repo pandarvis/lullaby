@@ -8,6 +8,8 @@ import { PreviewService } from '../preview/service';
 import type { NetworkSettings } from '../network/settings';
 import { validateNetworkProfile } from '../network/profiles';
 import { GitReader } from '../git/reader';
+import { RpcRejected } from '../providers/codex/transport';
+import { rejectionIssue } from '../providers/codex/adapter';
 
 export function registerIpc(window: BrowserWindow, manager: SessionManager, network:NetworkSettings, engines:EngineSettings): void {
   const previews=new PreviewService(projectId=>manager.snapshot().projects.find(p=>p.id===projectId)?.cwd);
@@ -29,6 +31,7 @@ export function registerIpc(window: BrowserWindow, manager: SessionManager, netw
         studioMessages.CODEX_NATIVE_PERMISSIONS_UNAVAILABLE='Ce profil natif Codex utilise des permissions avancées que Lullaby ne peut pas rétablir fidèlement. Reprenez cette session dans le client officiel.';
         studioMessages.CODEX_EXECUTABLE_NOT_FOUND='Codex est introuvable. Choisissez son exécutable dans Paramètres / Moteurs.';
         studioMessages.CODEX_EXECUTABLE_INVALID='Le chemin du moteur Codex est invalide. Vérifiez Paramètres / Moteurs.';
+        if(error instanceof RpcRejected)return {ok:false,code,message:rejectionIssue(error)};
         return {ok:false,code,message:messages[code]??gitMessages[code]??studioMessages[code]??'La demande ne peut pas être traitée. Vérifiez le diagnostic et le dossier du projet.'};
       }
     });

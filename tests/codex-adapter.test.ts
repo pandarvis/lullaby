@@ -2,7 +2,7 @@ import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import { mkdtemp, mkdir, rm, writeFile, utimes } from 'node:fs/promises';
 import { delimiter, join } from 'node:path';
 const state=vi.hoisted(()=>({rpc:undefined as any,cwd:'',nativeCwd:'',executable:'',failure:undefined as string|undefined,config:{} as any,probeSandbox:'readOnly',storedApproval:'never',methods:[] as string[],params:[] as {method:string;params:any}[],replies:[] as unknown[]}));
-vi.mock('../src/main/providers/codex/transport',()=>({RpcProcess:class {
+vi.mock('../src/main/providers/codex/transport',()=>({RpcRejected:class extends Error{},RpcProcess:class {
   onMessage:any;onFailure:any;constructor(executable:string){state.executable=executable;state.rpc=this;state.methods=[];state.params=[];state.replies=[];}
   notify(){}reject(id:unknown){state.replies.push({id,rejected:true});}respond(id:unknown,result:unknown){state.replies.push({id,result});}
   async close(){}

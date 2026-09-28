@@ -1,5 +1,6 @@
 import { expect, test } from 'vitest';
-import { JsonRpcLines, RpcProcess } from '../src/main/providers/codex/transport';
+import { JsonRpcLines, RpcProcess, RpcRejected } from '../src/main/providers/codex/transport';
+import { rejectionIssue } from '../src/main/providers/codex/adapter';
 
 test('decodes fragmented lines and UTF-8 without duplicating messages',()=>{
   const parser=new JsonRpcLines();
@@ -31,4 +32,17 @@ test('a dead process rejects pending calls and late responses cannot satisfy ano
   await expect(dead.request('test',{})).rejects.toThrow('CODEX_PROCESS_CLOSED');await dead.close();
   const late=new RpcProcess(process.execPath,['-e','process.stdin.on("data",()=>{process.stdout.write(JSON.stringify({id:900,result:"late"})+"\\n")})'],process.cwd(),{...process.env});
   await expect(late.request('test',{},100)).rejects.toThrow('CODEX_RPC_TIMEOUT');await late.close();
+});
+
+test('a rejected call keeps the method and the engine message for diagnostics',async()=>{
+  const script='process.stdin.on("data",chunk=>{for(const line of String(chunk).split("\\n").filter(Boolean)){const m=JSON.parse(line);process.stdout.write(JSON.stringify({id:m.id,error:{code:-32603,message:"workspace routing discovery failed"}})+"\\n");}})';
+  const rpc=new RpcProcess(process.execPath,['-e',script],process.cwd(),{...process.env});
+  const error=await rpc.request('account/read',{}).catch(value=>value);
+  expect(error).toBeInstanceOf(RpcRejected);expect(error.message).toBe('CODEX_RPC_REJECTED');
+  expect(error.method).toBe('account/read');expect(error.detail).toBe('workspace routing discovery failed');await rpc.close();
+});
+test('an account refusal explains the likely network cause without claiming a bypass',()=>{
+  const issue=rejectionIssue(new RpcRejected('account/read',{message:'workspace routing discovery failed'}));
+  expect(issue).toContain('« workspace routing discovery failed »');expect(issue).toContain('ne contourne pas');
+  expect(rejectionIssue(new RpcRejected('turn/start',{}))).toBe('Codex a refusé l’étape turn/start.');
 });
