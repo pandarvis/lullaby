@@ -147,5 +147,5 @@ export class SessionManager {
   }
   async saveDraft(sessionId:string,text:string) {this.session(sessionId).draft=text;this.publish();await this.save();}
   async diagnose(projectId:string) {const project=this.state.projects.find(p=>p.id===projectId);if(!project)throw new Error('PROJECT_NOT_FOUND');return Promise.all(this.options.adapters.map(a=>a.diagnose(project.cwd,this.options.envFor?.(a.provider))));}
-  async close() { this.closing=true;await Promise.all([...this.active.keys()].map(id=>this.interrupt(id)));await this.save(); }
+  async close() { this.closing=true;await Promise.all([...this.active.keys()].map(id=>this.interrupt(id)));await Promise.all(this.options.adapters.map(a=>a.dispose?.().catch(()=>{})));await this.save(); }
 }

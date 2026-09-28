@@ -12,7 +12,7 @@ export class NetworkSettings {
     catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')throw new Error('NETWORK_STORE_INVALID');}}
   profile(provider:Provider){return structuredClone(this.profiles.find(p=>p.provider===provider)??{provider});}
   env(provider:Provider){return buildProviderEnv(process.env,this.profile(provider));}
-  snapshot():NetworkSnapshot{return {profiles:structuredClone(this.profiles),states:{claude:this.proxy.state('claude'),codex:this.proxy.state('codex')},inherited:['HTTP_PROXY','HTTPS_PROXY','ALL_PROXY','NO_PROXY','NODE_EXTRA_CA_CERTS','CODEX_CA_CERTIFICATE','SSL_CERT_FILE'].map(name=>({name,present:Object.keys(process.env).some(key=>key.toUpperCase()===name&&!!process.env[key])}))};}
+  snapshot():NetworkSnapshot{return {profiles:structuredClone(this.profiles),states:{claude:this.proxy.state('claude'),codex:this.proxy.state('codex')},logs:{claude:this.proxy.log('claude'),codex:this.proxy.log('codex')},inherited:['HTTP_PROXY','HTTPS_PROXY','ALL_PROXY','NO_PROXY','NODE_EXTRA_CA_CERTS','CODEX_CA_CERTIFICATE','SSL_CERT_FILE'].map(name=>({name,present:Object.keys(process.env).some(key=>key.toUpperCase()===name&&!!process.env[key])}))};}
   async save(profile:NetworkProfile){
     const valid=validateNetworkProfile(profile);if(valid.certificatePath)await access(valid.certificatePath);
     if(['owned','starting'].includes(this.proxy.state(valid.provider)))throw new Error('PROXY_RUNNING');

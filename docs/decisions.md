@@ -126,3 +126,25 @@ ensemble limité de grammaires. Il évite un moteur de coloration maison, les re
 externes et un éditeur lourd. Les contrôles utilisent Radix Select déjà présent.
 Les frontières de réflexion natives alimentent un indicateur générique ; leur texte
 privé n'est pas enregistré. Les actions conservent les données utiles au suivi visible.
+
+## D012 — Règle d'or : jamais en dessous des clients officiels
+
+Date : 28 septembre 2026. Statut : **retenu**.
+
+À usage équivalent, Lullaby fait au minimum aussi bien que Claude Code et Codex
+utilisés seuls. Un écart mesuré devient une dette listée dans
+[fidélité aux moteurs](fidelite-moteurs.md). Conséquence : une vue terminal
+n'est pas la base du produit, car la supervision multi-sessions repose sur des
+événements structurés, mais elle reste une échappatoire possible par session.
+
+## D013 — Moteur Claude conservé entre les messages (implémenté)
+
+Date : 28 septembre 2026. Statut : **retenu**, Codex **à faire**.
+
+Relancer le moteur à chaque message coûtait ~40 s par réponse sur le poste pro
+(hooks utilisateur au démarrage), contre 3 s une fois le moteur ouvert. Une
+conversation garde son processus Claude entre les tours s'il est dans le même dossier,
+avec les mêmes choix et le même environnement réseau, et si la session native n'a
+pas été modifiée ailleurs. Il est fermé en cas d'interruption ou d'erreur, après
+10 min d'inactivité, au-delà de trois moteurs inactifs, ou à la fermeture.
+Un doute sur la fraîcheur de la session impose un démarrage neuf.

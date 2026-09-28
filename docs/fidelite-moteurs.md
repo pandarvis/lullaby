@@ -19,6 +19,21 @@ Ne pas réduire silencieusement les budgets, le nombre de tours ou le jeu d'outi
 Conserver les autorisations et restrictions configurées : fidélité ne signifie pas
 accès illimité. Toute adaptation nécessaire à l'interface sera minimale et documentée.
 
+### Règle d'or : jamais en dessous des clients officiels
+
+Exigence utilisateur du 28 septembre 2026. À usage équivalent, Lullaby fait au
+minimum aussi bien que Claude Code et Codex utilisés seuls : mêmes capacités, même
+réactivité une fois la session ouverte, mêmes informations visibles (activité,
+erreurs, quotas). Centraliser plusieurs sessions ne justifie pas un recul par session.
+Tout écart mesuré est consigné ci-dessous avec sa cause et sa suite, puis traité
+comme une dette prioritaire.
+
+| Écart connu | Cause | Suite |
+| --- | --- | --- |
+| Premier message d'une conversation (~30 s sur le poste pro) | Démarrage natif et hooks utilisateur, payés aussi par le CLI | Démarrage anticipé (`prewarm`) à évaluer |
+| Moteur relancé après 10 min d'inactivité, interruption ou changement de réglage | Limite de processus ouverts | Durée et nombre à rendre configurables si besoin |
+| Codex relancé à chaque message (15-21 s mesurés sur le poste pro) | Adaptateur Codex pas encore maintenu ouvert | Même mécanisme que Claude, après validation de l'abonnement Codex sur ce poste |
+
 ## Configuration des adaptateurs
 
 ### Claude

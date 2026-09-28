@@ -14,6 +14,10 @@ documentée avec une décision validée ou une fonctionnalité implémentée.
 
 ## Contraintes produit
 
+- **Règle d'or : Lullaby n'est jamais une version dégradée des clients officiels.**
+  À usage équivalent, faire au minimum aussi bien que Claude Code et Codex : capacités,
+  réactivité, fidélité et informations visibles. Un écart connu est une dette explicite
+  (voir `docs/fidelite-moteurs.md`), pas un compromis accepté en silence.
 - Windows natif, application Electron ; Docker et WSL sont exclus.
 - Abonnements Claude et ChatGPT ; aucune bascule automatique vers une API payante.
 - assistant-ui pour les composants du chat ; moteurs officiels Claude/Codex.

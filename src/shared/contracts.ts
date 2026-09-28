@@ -50,5 +50,6 @@ export type NetworkProfile = {
   launcher?: { executable: string; args: string[]; host: string; port: number };
 };
 export type ProxyState = 'stopped' | 'starting' | 'owned' | 'external' | 'error';
-export type NetworkSnapshot={profiles:NetworkProfile[];states:Record<Provider,ProxyState>;inherited:{name:string;present:boolean}[]};
+export type ProxyLogLine={at:string;stream:'lullaby'|'stdout'|'stderr';text:string};
+export type NetworkSnapshot={profiles:NetworkProfile[];states:Record<Provider,ProxyState>;logs:Record<Provider,ProxyLogLine[]>;inherited:{name:string;present:boolean}[]};
 export type Result<T> = { ok: true; value: T } | { ok: false; code: string; message: string };
