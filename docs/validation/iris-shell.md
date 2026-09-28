@@ -17,7 +17,8 @@ avec 3 projets locaux. Aucune conversation réelle avec un moteur n'a été lanc
 | Panneau droit : Git, Aperçu HTML, redimensionnement, `Ctrl+J` | Git (historique réel du dépôt), onglet Aperçu vide et fermeture : OK. Redimensionnement : chemin clavier couvert par tests, glissement à la souris non testé. Aperçu HTML réel non testé (pas d'exécution de moteur). |
 | Fenêtre < 1 000 px : panneau par-dessus le chat | OK (fenêtre émulée à 900 px). |
 | Sans animations et mouvement réduit respectés | Non testé visuellement ; les règles CSS sont présentes. |
-| Focus visible et navigation au clavier dans la barre latérale | Tests automatisés. |
+| Navigation au clavier dans la barre latérale | Flèches : tests automatisés ; focus visible : non vérifié. |
+| Paramètres sous la barre de titre (fenêtre basse) | Corrigé après relecture finale ; non revérifié à l'écran. |
 | `npm test` et `npm run typecheck` | OK : `npm test` 163 réussis, 5 ignorés (34 fichiers passés, 2 ignorés) ; `npm run typecheck` sans erreur. |
 
 Corrections trouvées pendant la recette et commitées : champ de recherche contre la

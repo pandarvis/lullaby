@@ -140,5 +140,7 @@ avec son +.
 5. Restylage du chat, de Git et des Paramètres.
 6. Recette.
 
+Le volet de revue de tour (TurnReviewPane) reste dans la conversation pour l'instant (hors périmètre).
+
 Chaque étape laisse l'application utilisable. Fusion et publication restent
 soumises à l'autorisation de l'utilisateur.

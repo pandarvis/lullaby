@@ -25,8 +25,8 @@ permissions. Brouillons et projection des échanges sont conservés dans
 skills et identifiants de reprise. Une seule exécution par dossier dans Lullaby ;
 une CLI externe n'est pas verrouillée.
 
-- Coquille Iris dense (`feature/iris-shell`) : barre de titre intégrée, conversations
-  par projet, panneau droit Git/Aperçu. Recette : [iris-shell](validation/iris-shell.md).
+**Coquille Iris** (`feature/iris-shell`) : barre de titre intégrée, conversations
+par projet, panneau droit Git/Aperçu. Recette : [iris-shell](validation/iris-shell.md).
 
 La tranche Studio ajoute :
 
