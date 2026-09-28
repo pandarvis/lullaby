@@ -167,3 +167,8 @@ html,body,#root{height:100%;margin:0;background:var(--chrome)}
 .iris-shell .settings-backdrop h2{font-size:var(--text-lg)}
 .sidebar-search{flex-direction:row;gap:8px;font-size:var(--text-sm)}
 .sidebar-search input{padding:0;border:0;border-radius:0}
+/* The overview grid follows the main area width, not the window (legacy media queries). */
+.atelier-body{container-type:inline-size;overflow-x:hidden}
+.iris-shell .overview-columns,.iris-shell .project-row{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) 130px;gap:16px}
+.iris-shell .overview-state{grid-column:auto;grid-row:auto}
+@container (max-width:560px){.iris-shell .overview-columns,.iris-shell .project-row{grid-template-columns:minmax(0,1fr) 130px}.iris-shell .overview-columns span:nth-child(2){display:none}.iris-shell .overview-state{grid-column:2;grid-row:1 / span 2}}
