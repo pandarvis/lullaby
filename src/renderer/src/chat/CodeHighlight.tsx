@@ -26,5 +26,5 @@ export function CodeHighlight({language,code,components:{Pre,Code}}:SyntaxHighli
     try{if(!hljs.getLanguage(name))return undefined;return hljs.highlight(code,{language:name,ignoreIllegals:true}).value;}catch{return undefined;}
   },[language,code]);
   // highlight.js escapes input; only its generated token markup reaches innerHTML.
-  return <div className={`code-block-body ${command?'command-snippet':''}`}><span className="code-gutter" title={command?'Extrait de commande · non exécuté':'Extrait de code'}><UiIcon name={command?'terminal':'file'}/></span><Pre>{html===undefined?<Code>{code}</Code>:<Code className="hljs" dangerouslySetInnerHTML={{__html:html}}/>}</Pre></div>;
+  return <div className={`code-block-body ${command?'command-snippet':''}`}><span className="code-gutter" title={command?'Extrait de commande · non exécuté':'Extrait de code'}><UiIcon name={command?'terminal':'file'} flat/></span><Pre>{html===undefined?<Code>{code}</Code>:<Code className="hljs" dangerouslySetInnerHTML={{__html:html}}/>}</Pre></div>;
 }

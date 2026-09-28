@@ -16,12 +16,12 @@ import { AgentActivity } from './AgentActivity';
 import { TurnReviewCard, TurnReviewPane, type ReviewSelection } from './TurnReview';
 const ReviewContext=createContext<(selection:ReviewSelection)=>void>(()=>{});
 const PreviewContext=createContext<(input:PreviewInput)=>void>(()=>{});
-function CodeHeader({language,code}:CodeHeaderProps){const preview=useContext(PreviewContext);return <div className="code-header"><span>{language||'code'}</span><div>{['html','htm'].includes(language?.toLowerCase()??'')&&<button onClick={()=>preview({html:code})}><UiIcon name="preview"/>Aperçu</button>}<button onClick={()=>void navigator.clipboard.writeText(code)}>Copier</button></div></div>;}
+function CodeHeader({language,code}:CodeHeaderProps){const preview=useContext(PreviewContext);return <div className="code-header"><span>{language||'code'}</span><div>{['html','htm'].includes(language?.toLowerCase()??'')&&<button onClick={()=>preview({html:code})}><UiIcon name="preview" flat/>Aperçu</button>}<button onClick={()=>void navigator.clipboard.writeText(code)}>Copier</button></div></div>;}
 function Markdown(){
   const preview=useContext(PreviewContext);
   return <MarkdownTextPrimitive urlTransform={safeMarkdownUrl} components={{CodeHeader,SyntaxHighlighter:CodeHighlight,a:({href,children})=>{
     const local=href?htmlPath(href):undefined;
-    if(local)return <button className="inline-link" onClick={()=>preview({path:local})}>{children}<UiIcon name="preview"/></button>;
+    if(local)return <button className="inline-link" onClick={()=>preview({path:local})}>{children}<UiIcon name="preview" flat/></button>;
     return <a href={href} target="_blank" rel="noreferrer">{children}</a>;
   }}}/>;
 }
@@ -52,7 +52,7 @@ export function SessionChat({sessionId,diagnostic}:{sessionId:string;diagnostic?
     </ThreadPrimitive.Viewport>
     <div className="composer-area"><AgentActivity sessionId={sessionId} phase={session.phase} sending={sending} provider={session.provider} messages={snapshot.messages[sessionId]??[]}/>{pending.map(event=><ApprovalPanel key={event.eventId} event={event}/>)}{(error||notice)&&<p className="notice" role="alert">{error||notice}</p>}
       <ThreadPrimitive.ScrollToBottom className="scroll-bottom">Revenir en bas ↓</ThreadPrimitive.ScrollToBottom>
-      {menu&&<div ref={menuRef} className="attach-menu" aria-label="Ajouter au message"><button onClick={()=>void attach('files')}><UiIcon name="file"/>Fichiers</button><button onClick={()=>void attach('folder')}><UiIcon name="folder"/>Dossier</button><button onClick={()=>void preview()}><UiIcon name="preview"/>Ouvrir un aperçu HTML</button><small>Les fichiers sont joints comme références locales à lire par l’agent.</small></div>}
+      {menu&&<div ref={menuRef} className="attach-menu" aria-label="Ajouter au message"><button onClick={()=>void attach('files')}><UiIcon name="file" flat/>Fichiers</button><button onClick={()=>void attach('folder')}><UiIcon name="folder" flat/>Dossier</button><button onClick={()=>void preview()}><UiIcon name="preview" flat/>Ouvrir un aperçu HTML</button><small>Les fichiers sont joints comme références locales à lire par l’agent.</small></div>}
       <ComposerPrimitive.Root className="composer"><ComposerPrimitive.Input aria-label="Votre message" placeholder="Écrivez à votre agent…" className="composer-input" addAttachmentOnPaste={false}/><div className="composer-footer"><button ref={addRef} type="button" className="composer-add icon-button" aria-label="Ajouter au message" title="Fichiers, dossiers et aperçu" aria-expanded={menu} onClick={()=>setMenu(!menu)}><UiIcon name="plus"/></button><ComposerOptions session={session} diagnostic={diagnostic} onError={setNotice} onBusy={setConfiguring}/>{isRunning?<ComposerPrimitive.Cancel className="send-button stop" aria-label="Arrêter" title="Arrêter"><UiIcon name="stop"/></ComposerPrimitive.Cancel>:<ComposerPrimitive.Send className="send-button" aria-label="Envoyer" title="Envoyer · Entrée"><UiIcon name="arrow"/></ComposerPrimitive.Send>}</div></ComposerPrimitive.Root>
 
     </div>
