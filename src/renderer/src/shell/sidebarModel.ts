@@ -7,7 +7,7 @@ const fold=(text:string)=>text.toLocaleLowerCase('fr');
 // Sessions have no timestamp: the snapshot keeps creation order, so newest is last.
 export function sidebarGroups(projects:Project[],sessions:Session[],{query='',collapsed={},expanded={},active,limit=5}:SidebarOptions={}):SidebarGroup[]{
   const search=fold(query.trim());
-  return projects.flatMap(project=>{
+  return projects.flatMap((project):SidebarGroup[]=>{
     const own=sessions.filter(session=>session.projectId===project.id).reverse();
     const projectMatch=!search||fold(project.name).includes(search);
     const matching=projectMatch?own:own.filter(session=>fold(session.title).includes(search));
