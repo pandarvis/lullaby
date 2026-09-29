@@ -150,3 +150,29 @@ conversations par projet sans navigation à deux niveaux. Conséquences : les bo
 de fenêtre dépendent de l'overlay natif (zone de déplacement à vérifier à la main) ;
 la superposition CSS reste à réduire si les styles hérités sont réécrits ; les
 Paramètres gardent en partie l'ancienne échelle visuelle.
+
+## D013 — Règle d'or : jamais en dessous des clients officiels
+
+Date : 28 septembre 2026. Statut : **retenu**.
+
+À usage équivalent, Lullaby fait au minimum aussi bien que Claude Code et Codex
+utilisés seuls. Un écart mesuré devient une dette listée dans
+[fidélité aux moteurs](fidelite-moteurs.md). Conséquence : une vue terminal
+n'est pas la base du produit, car la supervision multi-sessions repose sur des
+événements structurés, mais elle reste une échappatoire possible par session.
+
+## D014 — Moteurs conservés entre les messages (implémenté)
+
+Date : 28 septembre 2026. Statut : **retenu** ; Claude et Codex vérifiés en réel
+sur le poste professionnel.
+
+Relancer le moteur à chaque message coûtait ~40 s par réponse sur le poste pro
+(hooks utilisateur au démarrage), contre 3 s une fois le moteur ouvert ; Codex
+passe de 14 s à 3 s. Une
+conversation garde son processus Claude entre les tours s'il est dans le même dossier,
+avec les mêmes choix et le même environnement réseau, et si la session native n'a
+pas été modifiée ailleurs. Il est fermé en cas d'interruption ou d'erreur, après
+10 min d'inactivité, au-delà de trois moteurs inactifs, ou à la fermeture.
+Un doute sur la fraîcheur de la session impose un démarrage neuf. Codex suit la même
+règle : le processus App Server garde son fil, contrôlé via le fichier `thread.path`
+(champ marqué instable : sans lui, pas de réutilisation).

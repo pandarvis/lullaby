@@ -1,6 +1,6 @@
 # État du projet et passation
 
-Dernière mise à jour : 28 septembre 2026, Claude.
+Dernière mise à jour : 29 septembre 2026, Claude.
 
 ## État réel
 
@@ -17,6 +17,22 @@ dans `develop`.
 
 Pour reprendre la version complète sur un autre poste, utiliser
 `feature/turn-review` et les commandes de [reprise professionnelle](poste-pro.md).
+
+Sur le poste professionnel, Claude a poursuivi sur `feature/pro-workstation`
+(depuis `946237e`, checkout `C:\Sources\lullaby`), qui intègre `develop` (`7e3d5e6`,
+coquille Iris) le 29 septembre ; non poussée, non fusionnée dans `develop` :
+
+- Moteurs conservés entre les messages (D014) : ~40 s par réponse avant, ~3 s
+  ensuite pour Claude ; premier message ~30 s (démarrage natif et hooks utilisateur).
+  Délai de démarrage Claude porté à 90 s.
+- Relais : journal en direct (étapes, sortie du processus, en mémoire uniquement)
+  et badge d'état dans Réseau ; arrêt vérifié du lanceur Px et de son processus enfant.
+- Choix « natifs » nommés dans le compositeur (modèle, effort, autorisations).
+- Chrono du tour conservé en changeant de vue ; menus fermés au clic extérieur ;
+  icônes utilitaires au trait ; copie en icône ; prompt envoyé ancré en haut du
+  chat (`turnAnchor="top"` d'assistant-ui).
+- Refus Codex rapportés avec l'étape et le message du moteur.
+- Règle d'or ajoutée : jamais en dessous des clients officiels (D013).
 
 L'application ouvre des dossiers, y compris vides et sans Git, puis crée des
 conversations Claude/Codex. assistant-ui affiche Markdown, outils, questions et
@@ -84,6 +100,12 @@ Aucun bouton Annuler, aucun appel LLM supplémentaire. Voir la [recette dédiée
 
 ## Vérifications
 
+- Poste pro (`feature/pro-workstation`) : essai réel Claude (skill, écriture,
+  reprise) réussi via Px ; trois tours dans un moteur conservé : 28,8 s puis 3,5 s et 2,6 s.
+  Tests ciblés et TypeScript réussis. Les tests Git dépassent leurs délais sur ce poste
+  (Git lent) et un test compare un chemin court `~1` à sa forme longue : échecs
+  préexistants, non traités. Codex réel : trois tours dans un
+  App Server conservé, 14,4 s puis 2,9 s et 2,9 s, contexte conservé.
 - Tranche chat compact : 11 tests du chat réussis, TypeScript/build réussis ; aucun nouvel appel fournisseur.
 - Dernière suite complète : **126 tests réussis, 5 essais fournisseurs opt-in ignorés**.
   TypeScript, build et `npm run package:win` réussis ; paquet Windows non signé.
@@ -107,8 +129,11 @@ Les essais utilisent des projets temporaires séparés du dépôt utilisateur.
 
 ## Limites et suite
 
-Le poste professionnel, Px, les certificats et les règles d'exécution restent à
-tester sur place. La parité globale avec les clients officiels n'est pas démontrée.
+Poste professionnel : Claude et Codex fonctionnent par abonnement via Px, lancé par
+Lullaby ou en externe. Le matin, le proxy d'entreprise répondait 403 sur chatgpt.com
+pour Codex ; après mise à jour de Codex l'après-midi, l'accès fonctionne. Lullaby
+affiche désormais la raison donnée par le moteur en cas de refus. Le compte rendu
+détaillé reste hors dépôt. Le paquet Windows n'a pas encore été essayé sur ce poste. La parité globale avec les clients officiels n'est pas démontrée.
 L'historique d'une session importée reste dans le moteur ; Lullaby n'affiche que
 les échanges réalisés après l'import. Aucune synchronisation entre machines.
 

@@ -19,7 +19,7 @@ export function TurnReviewCard({review,onExamine}:{review:TurnReview;onExamine:(
 export function TurnReviewPane({selection,onClose}:{selection:ReviewSelection;onClose:()=>void}){
   const {review}=selection;const [path,setPath]=useState(selection.path??review.files[0]?.path);
   const file=review.files.find(file=>file.path===path)??review.files[0];
-  return <aside className="turn-review-pane" aria-label="Examiner les modifications"><header><UiIcon name="file"/><strong>Modifications de l’intervention</strong><button className="icon-button" aria-label="Fermer les modifications" onClick={onClose}><UiIcon name="close"/></button></header>
+  return <aside className="turn-review-pane" aria-label="Examiner les modifications"><header><UiIcon name="file" flat/><strong>Modifications de l’intervention</strong><button className="icon-button" aria-label="Fermer les modifications" onClick={onClose}><UiIcon name="close"/></button></header>
     <p className="review-scope">Avant / après cette intervention · relevé conservé au {new Date(review.capturedAt).toLocaleString('fr-FR')}. Les éditions faites ensuite n’y figurent pas.</p>
     {review.notice&&<p className="review-scope review-warning">{review.notice}</p>}
     <nav aria-label="Fichiers de l’intervention">{review.files.map(item=><button key={item.path} aria-current={file?.path===item.path?'true':undefined} onClick={()=>setPath(item.path)}><span className="review-path">{item.path}</span><Counts file={item}/></button>)}</nav>

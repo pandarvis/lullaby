@@ -13,4 +13,6 @@ export interface ProviderAdapter {
   provider: Provider;
   diagnose(cwd: string,env?:NodeJS.ProcessEnv): Promise<Diagnostic>;
   run(input: RunInput): Promise<ProviderRun>;
+  // Releases processes kept between turns; called when Lullaby closes.
+  dispose?(): Promise<void>;
 }

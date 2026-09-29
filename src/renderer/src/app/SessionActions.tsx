@@ -2,19 +2,14 @@ import { useEffect, useId, useRef, useState } from 'react';
 import type { Session } from '../../../shared/contracts';
 import { forgetSessionDraft } from '../chat/useSessionRuntime';
 import { UiIcon } from './UiIcon';
+import { useDismiss } from './useDismiss';
 
 export function SessionActions({session,onRemoved}:{session:Session;onRemoved:(id:string)=>void}){
   const [open,setOpen]=useState(false),[confirming,setConfirming]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState('');
   const anchor=useRef<HTMLDivElement>(null),dialog=useRef<HTMLDialogElement>(null),trigger=useRef<HTMLButtonElement>(null);
   const titleId=useId();const active=session.phase==='running'||session.phase==='waiting';
   useEffect(()=>{if(confirming)dialog.current?.showModal();else if(dialog.current?.open)dialog.current.close();},[confirming]);
-  useEffect(()=>{
-    if(!open)return;
-    const outside=(event:PointerEvent)=>{if(!anchor.current?.contains(event.target as Node))setOpen(false);};
-    const escape=(event:KeyboardEvent)=>{if(event.key==='Escape'){setOpen(false);trigger.current?.focus();}};
-    document.addEventListener('pointerdown',outside);document.addEventListener('keydown',escape);
-    return()=>{document.removeEventListener('pointerdown',outside);document.removeEventListener('keydown',escape);};
-  },[open]);
+  useDismiss(open,()=>setOpen(false),[anchor],trigger);
   function cancel(){setConfirming(false);setError('');trigger.current?.focus();}
   async function remove(){
     if(busy||active)return;setBusy(true);setError('');

@@ -4,7 +4,7 @@ export type IrisOption={value:string;label:string;description?:string};
 export function IrisSelect({label,value,options,disabled,onChange,icon}:{label:string;value:string;options:IrisOption[];disabled?:boolean;onChange:(value:string)=>void;icon?:string}){
   return <Select.Root value={value||'__native__'} disabled={disabled} onValueChange={next=>onChange(next==='__native__'?'':next)}>
     <Select.Trigger className="iris-select-trigger" aria-label={label} title={label}>
-      {icon&&<UiIcon name={icon}/>}<Select.Value/><Select.Icon className="select-chevron"><UiIcon name="chevron"/></Select.Icon>
+      {icon&&<UiIcon name={icon} flat/>}<Select.Value/><Select.Icon className="select-chevron"><UiIcon name="chevron"/></Select.Icon>
     </Select.Trigger>
     <Select.Portal><Select.Content className="iris-select-menu" position="popper" side="top" align="end" sideOffset={8} collisionPadding={12}>
       <Select.ScrollUpButton className="select-scroll up"><UiIcon name="chevron"/></Select.ScrollUpButton>

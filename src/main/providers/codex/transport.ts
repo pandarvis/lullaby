@@ -2,6 +2,15 @@ import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process';
 import { StringDecoder } from 'node:string_decoder';
 
 export type RpcMessage={id?:string|number;method?:string;params?:any;result?:any;error?:unknown};
+// Keeps the engine's own explanation (bounded) so diagnostics can name the real cause.
+export class RpcRejected extends Error {
+  readonly detail:string;
+  constructor(readonly method:string,error:unknown){
+    super('CODEX_RPC_REJECTED');
+    const message=(error as {message?:unknown}|undefined)?.message;
+    this.detail=typeof message==='string'?message.replace(/\s+/g,' ').trim().slice(0,300):'';
+  }
+}
 export class JsonRpcLines {
   private decoder=new StringDecoder('utf8');private buffer='';
   push(chunk:Buffer):RpcMessage[] {
@@ -24,7 +33,7 @@ export class RpcProcess {
   onFailure:(error:Error)=>void=()=>{};
   private child:ChildProcessWithoutNullStreams;
   private nextId=0;private failure?:Error;private closing=false;
-  private pending=new Map<number,{resolve:(value:any)=>void;reject:(error:Error)=>void;timer:ReturnType<typeof setTimeout>}>();
+  private pending=new Map<number,{method:string;resolve:(value:any)=>void;reject:(error:Error)=>void;timer:ReturnType<typeof setTimeout>}>();
   private exited:Promise<void>;
   constructor(executable:string,args:string[],cwd:string,env:NodeJS.ProcessEnv){
     this.child=spawn(executable,args,{cwd,env,shell:false,windowsHide:true,stdio:'pipe'});
@@ -32,7 +41,7 @@ export class RpcProcess {
     this.child.stdout.on('data',(chunk:Buffer)=>{try{for(const message of parser.push(chunk)){
       if(message.method){this.onMessage(message);continue;}
       const waiting=typeof message.id==='number'?this.pending.get(message.id):undefined;
-      if(waiting){clearTimeout(waiting.timer);this.pending.delete(message.id as number);message.error?waiting.reject(new Error('CODEX_RPC_REJECTED')):waiting.resolve(message.result);}
+      if(waiting){clearTimeout(waiting.timer);this.pending.delete(message.id as number);message.error?waiting.reject(new RpcRejected(waiting.method,message.error)):waiting.resolve(message.result);}
     }}catch(error){this.fail(error instanceof Error?error:new Error('INVALID_JSON_RPC'));}});
     // Drain stderr independently; it can contain tokens or private tool output, so never relay it raw.
     this.child.stderr.on('data',()=>{});
@@ -50,7 +59,7 @@ export class RpcProcess {
     const id=++this.nextId;
     return new Promise((resolve,reject)=>{
       const timer=setTimeout(()=>{this.pending.delete(id);reject(new Error('CODEX_RPC_TIMEOUT'));},timeoutMs);
-      this.pending.set(id,{resolve,reject,timer});
+      this.pending.set(id,{method,resolve,reject,timer});
       try{this.write({id,method,params});}catch(error){clearTimeout(timer);this.pending.delete(id);reject(error);}
     });
   }

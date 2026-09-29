@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import { mkdtemp, mkdir, rm, writeFile, utimes } from 'node:fs/promises';
 import { delimiter, join } from 'node:path';
-const state=vi.hoisted(()=>({rpc:undefined as any,cwd:'',nativeCwd:'',executable:'',failure:undefined as string|undefined,config:{} as any,probeSandbox:'readOnly',storedApproval:'never',methods:[] as string[],params:[] as {method:string;params:any}[],replies:[] as unknown[]}));
-vi.mock('../src/main/providers/codex/transport',()=>({RpcProcess:class {
+const state=vi.hoisted(()=>({catalog:[] as any[],rpc:undefined as any,cwd:'',nativeCwd:'',executable:'',failure:undefined as string|undefined,config:{} as any,probeSandbox:'readOnly',storedApproval:'never',methods:[] as string[],params:[] as {method:string;params:any}[],replies:[] as unknown[]}));
+vi.mock('../src/main/providers/codex/transport',()=>({RpcRejected:class extends Error{},RpcProcess:class {
   onMessage:any;onFailure:any;constructor(executable:string){state.executable=executable;state.rpc=this;state.methods=[];state.params=[];state.replies=[];}
   notify(){}reject(id:unknown){state.replies.push({id,rejected:true});}respond(id:unknown,result:unknown){state.replies.push({id,result});}
   async close(){}
@@ -11,7 +11,7 @@ vi.mock('../src/main/providers/codex/transport',()=>({RpcProcess:class {
     if(method==='initialize')return {};
     if(method==='account/read')return {account:{type:'chatgpt'},requiresOpenaiAuth:true};
     if(method==='config/read')return {config:{model_provider:'openai',...state.config}};
-    if(method==='model/list'||method==='skills/list')return {data:[]};
+    if(method==='model/list')return {data:state.catalog};if(method==='skills/list')return {data:[]};
     if(method==='thread/read')return {thread:{cwd:state.nativeCwd}};
     if(method==='thread/start'&&params.ephemeral)return {thread:{id:'probe'},modelProvider:'openai',cwd:state.cwd,approvalPolicy:'on-request',sandbox:{type:state.probeSandbox}};
     if(method==='thread/resume')return {thread:{id:'native'},modelProvider:'openai',cwd:state.cwd,approvalPolicy:params.approvalPolicy??state.storedApproval};
@@ -22,7 +22,7 @@ vi.mock('../src/main/providers/codex/transport',()=>({RpcProcess:class {
 import { CodexAdapter } from '../src/main/providers/codex/adapter';
 import { tmpdir } from 'node:os';
 const folders:string[]=[];
-beforeEach(()=>{state.cwd=process.cwd();state.nativeCwd=state.cwd;state.failure=undefined;state.methods=[];state.config={};state.probeSandbox='readOnly';state.storedApproval='never';});
+beforeEach(()=>{state.catalog=[];state.cwd=process.cwd();state.nativeCwd=state.cwd;state.failure=undefined;state.methods=[];state.config={};state.probeSandbox='readOnly';state.storedApproval='never';});
 afterEach(async()=>{await Promise.all(folders.splice(0).map(path=>rm(path,{recursive:true,force:true})));});
 async function fixture(){const folder=await mkdtemp(join(tmpdir(),'lullaby-codex-resolver-'));folders.push(folder);return folder;}
 async function executable(folder:string){await mkdir(folder,{recursive:true});const path=join(folder,'codex.exe');await writeFile(path,'fixture, never executed');return path;}
@@ -123,4 +123,11 @@ test('an unavailable native model is reported as a flag so a selected session mo
   state.config={model:'retired-model'};const result=await new CodexAdapter(process.execPath).diagnose(state.cwd,{});
   expect(result).toMatchObject({configuredModel:'retired-model',configuredModelUnavailable:true});
   expect(result.issues).toEqual([]);
+});
+test('without a configured model, native choices name the engine default and its effort',async()=>{
+  state.catalog=[{model:'gpt-a',displayName:'GPT A',isDefault:false,defaultReasoningEffort:'low',supportedReasoningEfforts:[]},{model:'gpt-b',displayName:'GPT B',isDefault:true,defaultReasoningEffort:'medium',supportedReasoningEfforts:[{reasoningEffort:'medium'}]}];
+  const diagnostic=await new CodexAdapter(process.execPath).diagnose(process.cwd(),{});
+  expect(diagnostic.configuredModel).toBe('gpt-b');expect(diagnostic.native).toMatchObject({modelName:'GPT B',effort:'medium'});
+  state.config={model:'gpt-a',model_reasoning_effort:'high'};
+  expect((await new CodexAdapter(process.execPath).diagnose(process.cwd(),{})).native).toMatchObject({modelName:'GPT A',effort:'high'});
 });
