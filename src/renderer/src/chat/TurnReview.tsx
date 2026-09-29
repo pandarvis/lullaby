@@ -24,6 +24,6 @@ export function TurnReviewPane({selection,onClose}:{selection:ReviewSelection;on
     <p className="review-scope">Avant / après cette intervention · relevé conservé au {new Date(review.capturedAt).toLocaleString('fr-FR')}. Les éditions faites ensuite n’y figurent pas.</p>
     {review.notice&&<p className="review-scope review-warning">{review.notice}</p>}
     <nav aria-label="Fichiers de l’intervention">{review.files.map(item=><button key={item.path} aria-current={file?.path===item.path?'true':undefined} onClick={()=>setPath(item.path)}><span className="review-path">{item.path}</span><Counts file={item}/></button>)}</nav>
-    {file&&<div className="review-file-diff"><div className="git-diff-path">{file.path}</div><DiffView diff={file.diff}/></div>}
+    {file&&<div className="review-file-diff"><div className="git-diff-path">{file.path}</div><DiffView diff={file.diff} path={file.path}/></div>}
   </aside>;
 }

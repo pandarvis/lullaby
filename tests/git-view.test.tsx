@@ -4,6 +4,7 @@ import { cleanup,render,screen,fireEvent,waitFor } from '@testing-library/react'
 import { GitView } from '../src/renderer/src/git/GitView';
 import { CommitGraph } from '../src/renderer/src/git/CommitGraph';
 import { ChangesTree } from '../src/renderer/src/git/ChangesTree';
+import { DiffView } from '../src/renderer/src/git/DiffView';
 import irisStyles from '../src/renderer/src/styles/iris.css?raw';
 import { SessionChat } from '../src/renderer/src/chat/SessionChat';
 import { SnapshotContext } from '../src/renderer/src/chat/sessionStore';
@@ -78,4 +79,23 @@ test('clean local changes lead to history and refresh between clean and changed 
   expect(await screen.findByRole('heading',{name:'Aucune modification locale'})).toBeTruthy();
   expect(screen.queryByRole('button',{name:/deleted.txt/})).toBeNull();
   expect(screen.queryByText('+after')).toBeNull();expect(screen.queryByText(/Sélectionnez un fichier/)).toBeNull();
+});
+test('coming back to the window re-reads Git silently and keeps the open diff',async()=>{
+  const git=api();let serial=0;git.read.mockImplementation(async(projectId:string)=>({ok:true,value:{...snapshot(projectId),id:`read-${++serial}`}}));
+  render(<GitView projectId="p"/>);await screen.findByRole('heading',{name:'Merge fixture'});
+  fireEvent.click(await screen.findByRole('button',{name:/commit\.ts/}));await screen.findByText('+after');
+  const files=git.commitFiles.mock.calls.length,diffs=git.diff.mock.calls.length;
+  window.dispatchEvent(new Event('focus'));
+  await waitFor(()=>expect(git.read).toHaveBeenCalledTimes(2),{timeout:2000});
+  expect(screen.queryByText('Lecture du dépôt…')).toBeNull();expect(screen.getByText('+after')).toBeTruthy();
+  await new Promise(resolve=>setTimeout(resolve,50));
+  expect(git.commitFiles.mock.calls.length).toBe(files);expect(git.diff.mock.calls.length).toBe(diffs);
+});
+test('diff lines take the colours of the file language and keep their sign',()=>{
+  const diff={kind:'text' as const,text:'@@ -1 +1 @@\n-const a = 1;\n+const a = "b";\n context',truncated:false};
+  const view=render(<DiffView diff={diff} path="src/a.ts"/>);
+  const added=view.container.querySelector('.git-diff-added code')!;
+  expect(added.textContent).toBe('+const a = "b";');expect(added.querySelector('.hljs-keyword')?.textContent).toBe('const');expect(added.querySelector('.hljs-string')).toBeTruthy();
+  expect(view.container.querySelector('.git-diff-hunk .hljs-keyword')).toBeNull();
+  view.unmount();const plain=render(<DiffView diff={diff} path="notes.unknown"/>);expect(plain.container.querySelector('.hljs-keyword')).toBeNull();
 });
