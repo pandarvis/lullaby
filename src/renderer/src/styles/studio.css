@@ -1,10 +1,7 @@
 /* Studio: compact controls, readable messages and an isolated artifact pane. */
 :root{--chat-font:15px}
 .provider-logo{width:23px;height:23px;object-fit:contain;flex-shrink:0}
-.new-session button{display:flex;align-items:center;justify-content:center;gap:8px;min-height:41px}
-.new-session button:hover .provider-logo{transform:translateY(-2px) rotate(-7deg)}
-.provider-logo{transition:transform .18s ease}.shell .atelier-icon{width:30px;height:34px;filter:drop-shadow(0 2px 2px #211c3920)}
-.rail-footer{padding:10px 0 0}.rail-footer .rail-button{margin:0}.rail-footer svg{color:#c8b5e7}
+.provider-logo{transition:transform .18s ease}
 .session-header{gap:10px;padding:9px 16px;max-height:32%;min-height:54px}
 .session-header>div{flex:1;min-width:0!important}.session-header h2{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:1px 0}
 .session-header>.provider-logo{width:21px;height:21px}.model-notice{margin:0;width:100%;font-size:11px}
@@ -35,15 +32,10 @@
 .settings-backdrop{position:fixed;inset:0;background:#21172b40;backdrop-filter:blur(3px);z-index:30;display:grid;place-items:center;padding:22px}.settings-screen{width:min(950px,100%);height:min(780px,100%);display:flex;flex-direction:column;background:var(--surface);border:1px solid #cdbbdd;border-radius:18px;box-shadow:0 24px 80px #21172b40;overflow:hidden}.settings-title{display:flex;align-items:center;gap:12px;padding:16px 22px;border-bottom:1px solid var(--line);background:#f2ecfa}.settings-title h2{flex:1;margin:0;font-size:19px;font-weight:600}.settings-title>svg{color:var(--accent)}.settings-body{display:grid;grid-template-columns:170px minmax(0,1fr);flex:1;min-height:0}.settings-body>nav{background:#eae4f3;padding:18px 10px;border-right:1px solid var(--line)}.settings-body>nav button{display:flex;align-items:center;gap:10px;width:100%;border:1px solid transparent;border-radius:8px;background:none;text-align:left;padding:11px;font-size:12px;margin-bottom:5px}.settings-body>nav button[aria-current]{background:var(--surface);border-color:#cbbada;color:var(--accent)}.settings-content{overflow:auto;padding:24px}.settings-content>h2{font-size:20px;margin:0 0 8px}.settings-content .settings-panel{position:static;width:auto;padding:0;background:none;border:0;box-shadow:none;overflow:visible}.settings-content .settings-panel>.panel-heading{margin-top:25px}.settings-content .settings-panel>.panel-heading h2{font-size:18px}.settings-content .panel-heading button{display:none}.settings-content .diagnostic-card h3{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.settings-content .diagnostic-card h3 .phase{font-size:9px}.setting-toggle{flex-direction:row;align-items:center;margin:20px 0;gap:8px;font-size:12px}.settings-content select{width:100%}.settings-content input{font-size:12px}.settings-content .button-row{flex-wrap:wrap}.settings-content .panel-note{margin-top:20px}
 [data-motion=off] *{animation:none!important;transition:none!important}
 @media(max-width:1150px){.chat-layout.has-preview{grid-template-columns:minmax(240px,1fr) minmax(230px,1fr)}.has-preview .composer-options{flex-wrap:wrap}.has-preview .composer-options select{max-width:115px}.has-preview .composer-options .permission-choice{width:100%;margin:0}.has-preview .chat-viewport{padding:15px}.has-preview .composer-area{padding:8px}.has-preview .message.user{max-width:100%}}
-@media(max-width:850px){.chat-layout.has-preview{display:flex;flex-direction:column}.has-preview>.chat{flex:1;min-height:170px}.preview-pane{height:42%;min-height:160px;border-left:0;border-top:1px solid var(--line)}.composer-options select{max-width:120px}.composer-options .permission-choice{margin-right:0}.composer-options .permission-choice select{max-width:90px}.composer-area{padding:8px}.settings-backdrop{padding:12px}.settings-body{grid-template-columns:135px minmax(0,1fr)}.settings-content{padding:16px}.new-session button{gap:4px}.new-session .provider-logo{width:19px;height:19px}}
+@media(max-width:850px){.chat-layout.has-preview{display:flex;flex-direction:column}.has-preview>.chat{flex:1;min-height:170px}.preview-pane{height:42%;min-height:160px;border-left:0;border-top:1px solid var(--line)}.composer-options select{max-width:120px}.composer-options .permission-choice{margin-right:0}.composer-options .permission-choice select{max-width:90px}.composer-area{padding:8px}.settings-backdrop{padding:12px}.settings-body{grid-template-columns:135px minmax(0,1fr)}.settings-content{padding:16px}}
 /* Iris polish: sculpted utility symbols and legible, accessible controls. */
 :root{font-family:'Segoe UI Variable Text','Segoe UI',sans-serif;font-synthesis:none;text-rendering:optimizeLegibility}
 .iris-icon{filter:drop-shadow(0 1px 1px #47305a26)}
-.topbar .icon-button{width:34px;height:34px;border-color:#e0d4ec;background:linear-gradient(155deg,#fffafc,#e9e0f3);box-shadow:inset 0 1px #fff,0 2px 0 #cdbedc44;border-radius:10px}
-.topbar .iris-icon{width:24px;height:24px}.topbar .icon-button:hover{background:#e8ddf3;transform:translateY(-1px)}
-.shell .rail-footer .iris-icon{width:25px;height:25px}.rail-footer .rail-button:hover .iris-icon{transform:rotate(12deg)}
-.shell .studio-workspace{padding:6px 12px 10px}.project-workspace>.project-view-tabs{margin-bottom:6px;padding:2px;border-radius:9px;gap:2px}
-.project-workspace>.project-view-tabs button{padding:4px 12px;line-height:1.4;font-size:12px;border-radius:7px;font-weight:600}
 .session-header{min-height:49px;padding:7px 14px}.session-header h2{font-weight:600;letter-spacing:-.15px}
 .composer-input{font-size:15px}.composer-options{gap:3px}.composer-options>div{min-width:0}.composer-options .permission-choice{margin-right:auto}
 .composer-footer .iris-select-trigger{display:flex;align-items:center;gap:6px;border:1px solid transparent;background:none;border-radius:8px;font-size:12px;font-weight:550;padding:6px 7px;color:#58456e;max-width:190px;min-width:0;height:33px}
@@ -63,7 +55,6 @@
 @keyframes iris-breathe{0%,100%{opacity:.55;transform:translateY(0)}50%{opacity:1;transform:translateY(-1px)}}
 @media(max-width:1000px){.composer-footer .iris-select-trigger{font-size:11px;max-width:145px;padding:5px}.composer-options .permission-choice{margin-right:0}.iris-select-trigger .iris-icon{width:17px}.composer-options{gap:0}.has-preview .composer-options .permission-choice{width:auto}}
 @media(prefers-reduced-motion:reduce){.agent-activity *,.action.running summary>.iris-icon{animation:none}}
-.topbar-tabs:empty{display:none}.topbar-tabs{flex-shrink:0}.topbar-tabs .project-view-tabs{margin:0;padding:2px;border-radius:9px;gap:2px}.topbar-tabs .project-view-tabs button{padding:5px 11px;font-size:12px;border-radius:7px;font-weight:600;line-height:1.4}.topbar{gap:9px}.topbar .breadcrumb{min-width:60px}.topbar .icon-button{flex-shrink:0}
 .actions{min-width:0;grid-template-columns:minmax(0,1fr)}.action{min-width:0}.action summary{min-width:0}.action-description{overflow:hidden}
 /* Compact chat: SVG chevrons, utility gutter and quieter composer controls. */
 .chat-viewport{padding:16px clamp(14px,2vw,28px)}.message{max-width:1120px;margin-bottom:20px}.message-content{line-height:1.65}
@@ -87,12 +78,6 @@
 .relay-journal pre .lullaby{color:#c7b8ff}
 .relay-journal pre .stderr{color:#ffc2c9}
 @media (prefers-reduced-motion:reduce){.relay-status.starting i{animation:none;border-right-color:currentColor}}
-/* Repli du menu latéral : discret, dans le rail, à côté du logo. */
-.rail-toggle{margin-left:auto;width:28px;height:28px;padding:5px;border-radius:8px;border:1px solid #ffffff14;background:transparent;color:#eee9ff8c;display:grid;place-items:center;cursor:pointer;flex-shrink:0;transition:background .15s,color .15s}
-.rail-toggle:hover,.rail-toggle:focus-visible{background:var(--rail2);color:#fff;border-color:#ffffff26}
-.rail-toggle svg{width:16px;height:16px}
-.compact .brand{flex-direction:column;gap:14px}
-.compact .rail-toggle{margin-left:0}
 /* Copier : icône discrète en fin de message, sans hauteur supplémentaire. */
 .message{position:relative}
 .message-actions{position:absolute;right:4px;bottom:-22px;margin:0;opacity:1}
@@ -104,7 +89,5 @@
 .copy-button .copy-done,.copy-button[data-copied] .copy-idle{display:none}
 .copy-button[data-copied] .copy-done{display:grid;color:var(--mint-ink)}
 .copy-button span{display:grid}
-/* Icônes utilitaires au trait : engrenage des paramètres et bouclier des autorisations. */
+/* Bouclier des autorisations au trait, en couleur neutre. */
 .permission-choice svg{color:var(--muted)}
-.rail-footer .rail-button svg{transition:transform .2s}
-.rail-footer .rail-button:hover svg{transform:rotate(12deg)}

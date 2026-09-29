@@ -1,6 +1,6 @@
 # État du projet et passation
 
-Dernière mise à jour : 28 septembre 2026, Claude.
+Dernière mise à jour : 29 septembre 2026, Claude.
 
 ## État réel
 
@@ -19,18 +19,20 @@ Pour reprendre la version complète sur un autre poste, utiliser
 `feature/turn-review` et les commandes de [reprise professionnelle](poste-pro.md).
 
 Sur le poste professionnel, Claude a poursuivi sur `feature/pro-workstation`
-(depuis `946237e`, checkout `C:\Sources\lullaby`, non poussée, non fusionnée) :
+(depuis `946237e`, checkout `C:\Sources\lullaby`), qui intègre `develop` (`7e3d5e6`,
+coquille Iris) le 29 septembre ; non poussée, non fusionnée dans `develop` :
 
-- Moteurs conservés entre les messages (D013) : ~40 s par réponse avant, ~3 s
+- Moteurs conservés entre les messages (D014) : ~40 s par réponse avant, ~3 s
   ensuite pour Claude ; premier message ~30 s (démarrage natif et hooks utilisateur).
   Délai de démarrage Claude porté à 90 s.
 - Relais : journal en direct (étapes, sortie du processus, en mémoire uniquement)
   et badge d'état dans Réseau ; arrêt vérifié du lanceur Px et de son processus enfant.
 - Choix « natifs » nommés dans le compositeur (modèle, effort, autorisations).
 - Chrono du tour conservé en changeant de vue ; menus fermés au clic extérieur ;
-  icônes utilitaires au trait ; bouton de repli dans le rail ; copie en icône.
+  icônes utilitaires au trait ; copie en icône ; prompt envoyé ancré en haut du
+  chat (`turnAnchor="top"` d'assistant-ui).
 - Refus Codex rapportés avec l'étape et le message du moteur.
-- Règle d'or ajoutée : jamais en dessous des clients officiels (D012).
+- Règle d'or ajoutée : jamais en dessous des clients officiels (D013).
 
 L'application ouvre des dossiers, y compris vides et sans Git, puis crée des
 conversations Claude/Codex. assistant-ui affiche Markdown, outils, questions et
@@ -38,6 +40,9 @@ permissions. Brouillons et projection des échanges sont conservés dans
 `%APPDATA%\lullaby\state.json` ; les moteurs gardent contexte natif, instructions,
 skills et identifiants de reprise. Une seule exécution par dossier dans Lullaby ;
 une CLI externe n'est pas verrouillée.
+
+**Coquille Iris** (`feature/iris-shell`) : barre de titre intégrée, conversations
+par projet, panneau droit Git/Aperçu. Recette : [iris-shell](validation/iris-shell.md).
 
 La tranche Studio ajoute :
 

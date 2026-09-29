@@ -30,7 +30,7 @@ export function rejectionIssue(error:RpcRejected):string {
 }
 
 // App Server startup was measured at 15-21 s on the managed workstation, so a
-// conversation keeps its process between turns, as for Claude (see D013).
+// conversation keeps its process between turns, as for Claude (see D014).
 type Stamp={size:number;mtimeMs:number};
 type CodexEngine={rpc:RpcProcess;threadId:string;key:string;path?:string;stamp?:Stamp;idle?:ReturnType<typeof setTimeout>;dead:boolean};
 async function threadStamp(path?:string):Promise<Stamp|undefined>{

@@ -34,7 +34,5 @@ Les connexions officielles Claude/ChatGPT doivent déjà être présentes.
 - [Vérifications sur le poste professionnel](docs/poste-pro.md)
 - [Contribuer : Gitflow et cohabitation entre agents](CONTRIBUTING.md)
 
-La branche `feature/git-inspector` ajoute la consultation Git : graphe des commits,
-branches/tags, arbre des changements et différences par fichier ou parent de merge.
-Voir la [recette Git](docs/validation/git-v1.md). Chronos et alertes internes restent
-des jalons suivants.
+Interface : coquille Iris dense (barre de titre intégrée, conversations par projet,
+panneau droit Git/Aperçu). Voir la [direction artistique](docs/direction-artistique.md).

@@ -106,11 +106,12 @@ des pictogrammes SVG distincts pour commit, branche, référence distante, tag e
 
 ## Navigation et mouvement
 
-Navigation repliable demandée par l'utilisateur : conserver une barre compacte avec
-logo Lullaby, emblèmes de projets, indicateurs d'attention et accès au proxy Claude.
-Le contrôle de repli reste visible en haut, fonctionne au clavier et mémorise le choix.
-Dans la maquette, la barre passe à 76 px ; les boutons conservent leur nom accessible
-et une infobulle quand le texte est masqué. Le chat profite de la place libérée.
+Coquille Iris validée le 28 septembre 2026 ([spec](superpowers/specs/2026-09-28-iris-shell-design.md),
+[maquette](mockups/iris-shell.html)) : une barre de titre de 40 px remplace la barre
+Windows et l'en-tête, la barre latérale liste les conversations groupées par projet
+et se masque entièrement (`Ctrl+B`, choix mémorisé). La barre compacte de 76 px
+disparaît. Git et les aperçus s'ouvrent dans un panneau droit (`Ctrl+J`).
+Densité : texte 13–14 px, lignes de 32 px, titres limités à 16 px.
 
 Privilégier des transitions CSS courtes (ordre de grandeur proposé : 120–200 ms)
 pour survol, sélection, ouverture d'un panneau et changement d'état. Ne pas retarder
