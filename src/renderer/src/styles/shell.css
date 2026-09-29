@@ -212,3 +212,23 @@ html,body,#root{height:100%;margin:0;background:var(--chrome)}
 .rail-divider{width:24px;height:1px;flex:none;margin:4px 0;background:var(--line)}
 .rail-projects{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;min-height:0;width:100%;overflow-y:auto;scrollbar-width:none}
 .sidebar-compact .sidebar-footer{width:36px;display:grid;place-items:center}
+/* Menu d'un projet : renommage compact, puis ligne de menu de retrait. */
+.iris-shell .project-actions-menu{padding:8px;width:min(260px,calc(var(--sidebar) - 16px));border-radius:var(--radius-lg)}
+.project-rename label{display:block;margin:2px 4px 6px;font-size:var(--text-xs);color:var(--muted)}
+.project-rename-row{display:flex;gap:6px}
+.project-rename-row input{flex:1;min-width:0;height:var(--control);padding:0 8px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);font:inherit;font-size:var(--text-sm)}
+.project-rename-row input:focus{outline:2px solid var(--accent-soft);border-color:var(--accent)}
+.rename-confirm{display:grid;place-items:center;width:var(--control);height:var(--control);flex:none;padding:0;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);color:var(--accent);cursor:pointer}
+.rename-confirm:hover:not(:disabled){background:var(--accent-soft)}
+.rename-confirm:disabled{color:var(--muted);opacity:.5;cursor:default}
+.rename-confirm svg{width:15px;height:15px}
+.iris-shell .project-actions-menu hr{margin:8px -8px;border:0;border-top:1px solid var(--line)}
+.menu-row{display:flex;align-items:center;gap:8px;width:100%;height:32px;padding:0 8px;border:0;border-radius:var(--radius);background:none;font:inherit;font-size:var(--text-sm);text-align:left;color:var(--ink);cursor:pointer}
+.menu-row:hover{background:var(--hover)}
+.menu-row svg{width:16px;height:16px}
+.menu-row.danger{color:var(--rose-ink)}
+.menu-row.danger:hover{background:var(--rose)}
+.project-remove-confirm p{margin:2px 4px 10px;font-size:var(--text-sm);line-height:1.45;color:var(--ink)}
+.project-remove-buttons{display:flex;justify-content:flex-end;gap:6px}
+.shell-button.danger{background:#b4404f;border-color:#b4404f;color:#fff}
+.shell-button.danger:hover:not(:disabled){background:#9c3242;border-color:#9c3242}

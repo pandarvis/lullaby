@@ -7,6 +7,7 @@
   au message suivant pour Codex. Modèle et effort restent fixés pendant un tour.
 - Nouveau choix « Auto » pour Claude (mode auto de Claude Code : le moteur approuve
   les actions jugées sûres et demande les autres).
+- Menu d’un projet plus lisible : renommage en ligne, retrait avec confirmation.
 - Chaque projet retient le dernier mode d’autorisation choisi pour ses nouvelles
   conversations.
 
