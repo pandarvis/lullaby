@@ -6,7 +6,8 @@ export type EngineConfiguration = {codexExecutable?:string};
 export type PreviewInput = {path?:string;html?:string};
 export type PreviewDocument = {id:string;title:string;url:string};
 export type Phase = 'idle' | 'running' | 'waiting' | 'done' | 'interrupted' | 'error';
-export type Project = { id: string; name: string; cwd: string; folderKey: string };
+// permissionProfile: the last one chosen in the project, applied to its new conversations.
+export type Project = { id: string; name: string; cwd: string; folderKey: string; permissionProfile?: string };
 export type LaunchChoices = { model?: string; effort?: string; permissionProfile?: string };
 export type Session = {
   id: string; projectId: string; provider: Provider; title: string;

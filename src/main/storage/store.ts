@@ -17,7 +17,7 @@ function decode(raw:string): Snapshot {
   const s = data.snapshot;
   const strings = (v:Record<string,any>,keys:string[]) => keys.every(k=>typeof v[k] === 'string');
   if(!record(s) || !Number.isSafeInteger(s.revision) || s.revision < 0 || !Array.isArray(s.projects) || !Array.isArray(s.sessions) || !record(s.messages) || !Array.isArray(s.pending)) throw new Error('STORE_CORRUPT');
-  if(s.projects.some((p:unknown)=>!record(p)||!strings(p,['id','name','cwd','folderKey']))) throw new Error('STORE_CORRUPT');
+  if(s.projects.some((p:unknown)=>!record(p)||!strings(p,['id','name','cwd','folderKey'])||(p.permissionProfile!==undefined&&typeof p.permissionProfile!=='string'))) throw new Error('STORE_CORRUPT');
   if(s.sessions.some((v:unknown)=>!record(v)||!strings(v,['id','projectId','title','draft'])||!['claude','codex'].includes(v.provider)||!['idle','running','waiting','done','interrupted','error'].includes(v.phase)||!record(v.choices)||(v.nativeId !== undefined && typeof v.nativeId !== 'string'))) throw new Error('STORE_CORRUPT');
   if(Object.values(s.messages).some(v=>!Array.isArray(v)||v.some(m=>!record(m)||!strings(m,['id','text'])||!['user','assistant'].includes(m.role)||!Array.isArray(m.actions)||(m.review!==undefined&&!validReview(m.review))))) throw new Error('STORE_CORRUPT');
   return s as Snapshot;
