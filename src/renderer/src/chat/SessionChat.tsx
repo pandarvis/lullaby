@@ -4,7 +4,7 @@ import { MarkdownTextPrimitive, type CodeHeaderProps } from '@assistant-ui/react
 import { SnapshotContext } from './sessionStore';
 import { useSessionRuntime } from './useSessionRuntime';
 import { ApprovalPanel } from './ApprovalPanel';
-import { ActionDetails } from './ActionDetails';
+import { WorkLog } from './WorkLog';
 import type { Diagnostic, PreviewDocument, PreviewInput } from '../../../shared/contracts';
 import { ComposerOptions } from './ComposerOptions';
 import { PreviewPane } from './PreviewPane';
@@ -31,7 +31,11 @@ function Markdown(){
 function Message(){
   const message=useAuiState(s=>s.message);const snapshot=useContext(SnapshotContext);const examine=useContext(ReviewContext);
   const item=Object.values(snapshot.messages).flat().find(item=>item.id===message.id);
-  return <MessagePrimitive.Root className={`message ${message.role}`}>{!item?.review&&<div className="message-author">{message.role==='user'?'Vous':'Agent'}</div>}<div className="message-content"><MessagePrimitive.Parts components={{Text:Markdown}}/>{item?.review&&<TurnReviewCard review={item.review} onExamine={examine}/>}{item?.actions.length? <ActionDetails actions={item.actions}/>:null}</div>{item?.text&&<ActionBarPrimitive.Root className="message-actions"><ActionBarPrimitive.Copy className="copy-button" aria-label="Copier le message" title="Copier"><span className="copy-idle"><UiIcon name="copy" flat/></span><span className="copy-done"><UiIcon name="check" flat/></span></ActionBarPrimitive.Copy></ActionBarPrimitive.Root>}</MessagePrimitive.Root>;
+  // The log stays open while its turn runs: latest item with actions of an active conversation.
+  const owner=item&&Object.entries(snapshot.messages).find(([,items])=>items.includes(item));
+  const phase=owner&&snapshot.sessions.find(session=>session.id===owner[0])?.phase;
+  const live=!!owner&&(phase==='running'||phase==='waiting')&&owner[1].filter(entry=>entry.actions.length>0).at(-1)===item;
+  return <MessagePrimitive.Root className={`message ${message.role}`}>{!item?.review&&<div className="message-author">{message.role==='user'?'Vous':'Agent'}</div>}<div className="message-content"><MessagePrimitive.Parts components={{Text:Markdown}}/>{item?.review&&<TurnReviewCard review={item.review} onExamine={examine}/>}{item?.actions.length? <WorkLog actions={item.actions} live={live}/>:null}</div>{item?.text&&<ActionBarPrimitive.Root className="message-actions"><ActionBarPrimitive.Copy className="copy-button" aria-label="Copier le message" title="Copier"><span className="copy-idle"><UiIcon name="copy" flat/></span><span className="copy-done"><UiIcon name="check" flat/></span></ActionBarPrimitive.Copy></ActionBarPrimitive.Root>}</MessagePrimitive.Root>;
 }
 export function SessionChat({sessionId,diagnostic}:{sessionId:string;diagnostic?:Diagnostic}){
   const [configuring,setConfiguring]=useState(false);const [review,setReview]=useState<ReviewSelection>();

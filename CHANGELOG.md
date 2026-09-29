@@ -7,6 +7,9 @@
   au message suivant pour Codex. Modèle et effort restent fixés pendant un tour.
 - Nouveau choix « Auto » pour Claude (mode auto de Claude Code : le moteur approuve
   les actions jugées sûres et demande les autres).
+- Journal de travail compact : une ligne par action pendant le tour (modifications et
+  lectures consécutives regroupées, réflexions masquées), puis une seule ligne repliée
+  « Travail · N actions » avec les échecs mis en avant.
 - Menu d’un projet plus lisible : renommage en ligne, retrait avec confirmation.
 - Chaque projet retient le dernier mode d’autorisation choisi pour ses nouvelles
   conversations.

@@ -84,7 +84,7 @@ test.each(['diff','patch'])('renders %s additions and removals while preserving 
 test('command snippets have a gutter and stay separate from executed tools',async()=>{
   api();const rendered=render(view({...state,messages:{studio:[{id:'cmd-snippet',role:'assistant',text:'```powershell\ndotnet run\n```',actions:[{id:'tool',label:'PowerShell',state:'done',detail:'{"command":"dotnet test"}'}]}]}}));
   await waitFor(()=>expect(rendered.container.querySelector('.code-gutter')?.getAttribute('title')).toBe('Extrait de commande · non exécuté'));
-  expect(rendered.container.querySelector('.action-gutter svg')).toBeTruthy();
+  expect(rendered.container.querySelector('.work-row svg')).toBeTruthy();expect(screen.getByText(/Travail · 1 action/)).toBeTruthy();
   expect(screen.getByText('Commande')).toBeTruthy();
   expect(rendered.container.querySelector('pre code')?.textContent).toBe('dotnet run\n');
 });
