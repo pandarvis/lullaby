@@ -9,7 +9,7 @@ import { StateMark } from './StateMark';
 import { sidebarGroups } from './sidebarModel';
 type Props={projects:Project[];sessions:Session[];view:View;query:string;collapsed:Record<string,boolean>;hidden:boolean;searchRef:RefObject<HTMLInputElement|null>;
   onQuery:(query:string)=>void;onToggleGroup:(projectId:string)=>void;onOpenSession:(session:Session)=>void;onNewSession:(projectId?:string)=>void;
-  onAtelier:()=>void;onOpenFolder:()=>void;onSettings:()=>void;onProjectRemoved:(projectId:string)=>void;onSessionRemoved:(sessionId:string)=>void;onError:(message:string)=>void};
+  onAtelier:()=>void;onOpenFolder:()=>void;onSettings:()=>void;onOpenProject:(projectId:string)=>void;onSearch:()=>void;onProjectRemoved:(projectId:string)=>void;onSessionRemoved:(sessionId:string)=>void;onError:(message:string)=>void};
 export function Sidebar(p:Props){
   const [expanded,setExpanded]=useState<Record<string,boolean>>({});
   const active=p.view.kind==='session'?p.view.sessionId:undefined;const query=p.query.trim();
@@ -20,7 +20,8 @@ export function Sidebar(p:Props){
     const next=items[items.indexOf(document.activeElement as HTMLElement)+(event.key==='ArrowDown'?1:-1)];
     if(items.includes(document.activeElement as HTMLElement)&&next){event.preventDefault();next.focus();}
   }
-  return <aside className="sidebar" aria-label="Navigation" inert={p.hidden} onKeyDown={arrows}>
+  if(p.hidden)return <CompactRail {...p}/>;
+  return <aside className="sidebar" aria-label="Navigation" onKeyDown={arrows}>
     <label className="sidebar-search"><ShellIcon name="search"/>
       <input ref={p.searchRef} value={p.query} placeholder="Rechercher" aria-label="Rechercher une conversation" onChange={event=>p.onQuery(event.target.value)} onKeyDown={event=>{if(event.key==='Escape')p.onQuery('');}}/><kbd>Ctrl K</kbd>
     </label>
@@ -51,5 +52,26 @@ export function Sidebar(p:Props){
       </nav>
     </div>
     <div className="sidebar-footer"><button className="sidebar-row" data-nav-item onClick={p.onSettings}><ShellIcon name="settings"/>Paramètres</button></div>
+  </aside>;
+}
+// Reduced sidebar: the entry points and one emblem per project, so nothing disappears.
+function CompactRail(p:Props){
+  const current=p.view.kind==='atelier'?undefined:p.view.projectId;
+  return <aside className="sidebar sidebar-compact" aria-label="Navigation réduite">
+    <button className="rail-icon" aria-label="Nouvelle conversation" title="Nouvelle conversation (Ctrl+N)" onClick={()=>p.onNewSession()}><ShellIcon name="edit"/></button>
+    <button className="rail-icon" aria-label="Rechercher" title="Rechercher (Ctrl+K)" onClick={p.onSearch}><ShellIcon name="search"/></button>
+    <button className={`rail-icon ${p.view.kind==='atelier'?'active':''}`} aria-label="Atelier" title="Atelier" aria-current={p.view.kind==='atelier'?'page':undefined} onClick={p.onAtelier}><ShellIcon name="atelier"/></button>
+    <span className="rail-divider" aria-hidden="true"/>
+    <nav className="rail-projects" aria-label="Projets">
+      {sidebarGroups(p.projects,p.sessions).map(({project,attention})=>{
+        const running=p.sessions.some(session=>session.projectId===project.id&&session.phase==='running');
+        const state=attention==='error'?'Erreur':attention==='waiting'?'Attend votre attention':running?'En cours':'';
+        return <button key={project.id} className={`rail-icon rail-project ${project.id===current?'active':''}`} aria-label={state?`${project.name} · ${state}`:project.name} title={state?`${project.name} · ${state}`:project.name} aria-current={project.id===current?'page':undefined} onClick={()=>p.onOpenProject(project.id)}>
+          <ProjectEmblem projectId={project.id}/>{(attention||running)&&<i className={`attention-dot ${attention||'running'}`} aria-hidden="true"/>}
+        </button>;
+      })}
+      <button className="rail-icon" aria-label="Ouvrir un projet" title="Ouvrir un projet" onClick={p.onOpenFolder}><ShellIcon name="plus"/></button>
+    </nav>
+    <div className="sidebar-footer"><button className="rail-icon" aria-label="Paramètres" title="Paramètres" onClick={p.onSettings}><ShellIcon name="settings"/></button></div>
   </aside>;
 }

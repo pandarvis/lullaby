@@ -22,7 +22,7 @@ const session=(id:string,projectId:string,phase:Phase='idle'):Session=>({id,proj
 const sessions=[...['1','2','3','4','5','6'].map(n=>session(`a${n}`,'a')),session('b1','b','waiting')];
 function setup(extra={}){
   const p={projects,sessions,view:{kind:'session' as const,projectId:'a',sessionId:'a6'},query:'',collapsed:{},hidden:false,searchRef:createRef<HTMLInputElement>(),
-    onQuery:vi.fn(),onToggleGroup:vi.fn(),onOpenSession:vi.fn(),onNewSession:vi.fn(),onAtelier:vi.fn(),onOpenFolder:vi.fn(),onSettings:vi.fn(),onProjectRemoved:vi.fn(),onSessionRemoved:vi.fn(),onError:vi.fn(),...extra};
+    onQuery:vi.fn(),onToggleGroup:vi.fn(),onOpenSession:vi.fn(),onNewSession:vi.fn(),onAtelier:vi.fn(),onOpenFolder:vi.fn(),onSettings:vi.fn(),onOpenProject:vi.fn(),onSearch:vi.fn(),onProjectRemoved:vi.fn(),onSessionRemoved:vi.fn(),onError:vi.fn(),...extra};
   return {p,...render(<Sidebar {...p}/>)};
 }
 test('lists conversations by project, newest first, with the active one marked',()=>{
@@ -58,6 +58,15 @@ test('arrow keys move focus between sidebar rows',()=>{
   fireEvent.keyDown(atelier,{key:'ArrowDown'});expect(document.activeElement).toBe(screen.getByRole('button',{name:'Lullaby',expanded:true}));
   fireEvent.keyDown(document.activeElement!,{key:'ArrowUp'});expect(document.activeElement).toBe(atelier);
 });
-test('hidden sidebar is inert',()=>{
-  const {container}=setup({hidden:true});expect(container.querySelector('.sidebar')!.hasAttribute('inert')).toBe(true);
+test('a reduced sidebar keeps entry points and one emblem per project with its state',()=>{
+  const running=[...sessions,session('c1','c','running')];
+  const {p}=setup({hidden:true,sessions:running});
+  expect(screen.queryByRole('navigation',{name:'Conversations par projet'})).toBeNull();
+  const rail=within(screen.getByRole('navigation',{name:'Projets'}));
+  expect(rail.getByRole('button',{name:'Lullaby'}).getAttribute('aria-current')).toBe('page');
+  expect(rail.getByRole('button',{name:'Alice · Attend votre attention'})).toBeTruthy();expect(rail.getByRole('button',{name:'Vide · En cours'})).toBeTruthy();
+  fireEvent.click(rail.getByRole('button',{name:'Alice · Attend votre attention'}));expect(p.onOpenProject).toHaveBeenCalledWith('b');
+  fireEvent.click(screen.getByRole('button',{name:'Rechercher'}));expect(p.onSearch).toHaveBeenCalled();
+  fireEvent.click(screen.getByRole('button',{name:'Nouvelle conversation'}));expect(p.onNewSession).toHaveBeenCalled();
+  fireEvent.click(screen.getByRole('button',{name:'Paramètres'}));expect(p.onSettings).toHaveBeenCalled();
 });

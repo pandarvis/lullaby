@@ -59,8 +59,9 @@ export function App(){
     if(projectId)go({kind:'git',projectId});
   }
   const toggleSidebar=()=>setSidebarHidden(hidden=>!hidden);
+  const focusSearch=()=>{setSidebarHidden(false);requestAnimationFrame(()=>searchRef.current?.focus());};
   useShortcuts({toggleSidebar,togglePanel:()=>togglePanel(),toggleGit,newSession:()=>newSession(),back:()=>setNav(back),forward:()=>setNav(forward),
-    search:()=>{setSidebarHidden(false);requestAnimationFrame(()=>searchRef.current?.focus());}});
+    search:focusSearch});
   useEffect(()=>{const fit=()=>setViewport(window.innerWidth);window.addEventListener('resize',fit);return()=>window.removeEventListener('resize',fit);},[]);
   const shell=useMemo(()=>({openPanel:(tab:PanelTab)=>setPanel(tab),openGit:projectId?()=>go({kind:'git',projectId}):undefined,previewSlot}),[previewSlot,projectId]);
   const diagnostic=session&&diagnostics[session.projectId]?.find(item=>item.provider===session.provider);
@@ -72,7 +73,7 @@ export function App(){
       <div className="shell-body">
         <Sidebar projects={snapshot.projects} sessions={snapshot.sessions} view={view} query={query} collapsed={collapsed} hidden={sidebarHidden} searchRef={searchRef}
           onQuery={setQuery} onToggleGroup={id=>setCollapsed(previous=>({...previous,[id]:!previous[id]}))} onOpenSession={openSession} onNewSession={newSession}
-          onAtelier={()=>go({kind:'atelier'})} onOpenFolder={()=>void openFolder()} onSettings={()=>setSettings(true)}
+          onAtelier={()=>go({kind:'atelier'})} onOpenFolder={()=>void openFolder()} onSettings={()=>setSettings(true)} onOpenProject={id=>openProject(id)} onSearch={focusSearch}
           onProjectRemoved={id=>{if(id===projectId)go({kind:'atelier'});}} onSessionRemoved={id=>{if(view.kind==='session'&&view.sessionId===id)go({kind:'project',projectId:view.projectId});}} onError={setNotice}/>
         <main className="main-area">
           {notice&&<div className="shell-notice" role="alert"><span>{notice}</span><button onClick={()=>setNotice('')}>Fermer</button></div>}
