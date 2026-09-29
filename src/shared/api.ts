@@ -18,7 +18,8 @@ export interface LullabyApi {
   pickProject(): Promise<Result<Project | null>>;
   snapshot(): Promise<Result<Snapshot>>;
   createSession(projectId: string, provider: Provider, nativeId?:string): Promise<Result<Session>>;
-  configureSession(sessionId:string,choices:LaunchChoices):Promise<Result<void>>;
+  // 'now': applied to the running turn; 'next': from the next message; 'saved': no turn running.
+  configureSession(sessionId:string,choices:LaunchChoices):Promise<Result<'now'|'next'|'saved'>>;
   networkSettings():Promise<Result<NetworkSnapshot>>;
   saveNetworkProfile(profile:NetworkProfile):Promise<Result<void>>;
   startProxy(provider:Provider):Promise<Result<ProxyState>>;

@@ -4,6 +4,11 @@ Dernière mise à jour : 29 septembre 2026, Claude.
 
 ## État réel
 
+**Version 0.1.1** (hotfix `hotfix/approval-scroll`) : défilement conservé lors d’une
+demande d’autorisation, autorisations modifiables pendant un tour, mode « Auto » Claude,
+mémoire du mode par projet. Un réglage d’autorisation signalé perdu avant le premier
+message n’a pas été reproduit (chaîne vérifiée de l’interface au moteur) : à surveiller.
+
 **Version 0.1.0** : première version, stabilisée sur `release/0.1.0` depuis `develop`,
 fusionnée dans `main` avec le tag annoté `v0.1.0` ; contenu et limites dans le
 [CHANGELOG](../CHANGELOG.md). Paquet `dist/win-unpacked` construit et lancé sur le

@@ -1,5 +1,15 @@
 # Historique des versions
 
+## 0.1.1 — 29 septembre 2026
+
+- La fin de la conversation reste visible quand une demande d’autorisation apparaît.
+- Autorisations modifiables pendant que l’agent travaille : immédiatement pour Claude,
+  au message suivant pour Codex. Modèle et effort restent fixés pendant un tour.
+- Nouveau choix « Auto » pour Claude (mode auto de Claude Code : le moteur approuve
+  les actions jugées sûres et demande les autres).
+- Chaque projet retient le dernier mode d’autorisation choisi pour ses nouvelles
+  conversations.
+
 ## 0.1.0 — 29 septembre 2026
 
 Première version utilisable de Lullaby : un atelier Windows natif pour superviser
