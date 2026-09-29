@@ -32,7 +32,7 @@ test('absent launcher and timeout are explicit and do not leak the owned process
 });
 test('relay journal keeps lifecycle steps and process output in memory',async()=>{
   const reservation=createServer();await new Promise<void>(resolve=>reservation.listen(0,'127.0.0.1',resolve));const port=(reservation.address() as any).port;await new Promise<void>(resolve=>reservation.close(()=>resolve()));
-  const controller=new ProxyController(2000);
+  const controller=new ProxyController(10000);
   const script=`process.stdout.write('Serving at 127.0.0.1:${port}\\npartial');process.stderr.write('warning line\\n');require('net').createServer(s=>s.end()).listen(${port},'127.0.0.1')`;
   expect(await controller.start({provider:'claude',launcher:{executable:process.execPath,args:['-e',script],host:'127.0.0.1',port}})).toBe('owned');
   await controller.stop('claude');const lines=controller.log('claude');const texts=lines.map(line=>line.text).join('\n');
@@ -51,7 +51,7 @@ test('stores independent profiles atomically across reload',async()=>{
 });
 test('owns a fake launcher and stops it on app shutdown',async()=>{
   const reservation=createServer();await new Promise<void>(resolve=>reservation.listen(0,'127.0.0.1',resolve));const port=(reservation.address() as any).port;await new Promise<void>(resolve=>reservation.close(()=>resolve()));
-  const controller=new ProxyController(2000);
+  const controller=new ProxyController(10000);
   expect(await controller.start({provider:'claude',launcher:{executable:process.execPath,args:['-e',`require('net').createServer(s=>s.end()).listen(${port},'127.0.0.1')`],host:'127.0.0.1',port}})).toBe('owned');
   await controller.close();expect(controller.state('claude')).toBe('stopped');
 });

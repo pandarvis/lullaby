@@ -163,8 +163,6 @@ html,body,#root{height:100%;margin:0;background:var(--chrome)}
 .atelier-empty img{width:48px;height:53px}
 .atelier-empty h1{margin:12px 0 4px;font-size:var(--text-lg);font-weight:600}
 .atelier-empty p{margin:0 0 16px;color:var(--muted)}
-.right-panel .git-view{gap:8px;padding:8px;font-size:var(--text-sm)}
-.right-panel .git-inspection{grid-template-columns:1fr}
 .iris-shell .settings-backdrop{font-size:var(--text-sm)}
 .iris-shell .settings-backdrop h2{font-size:var(--text-lg)}
 .sidebar-search{flex-direction:row;gap:8px;font-size:var(--text-sm)}
@@ -180,3 +178,20 @@ html,body,#root{height:100%;margin:0;background:var(--chrome)}
 .notice-action{flex-shrink:0;border:1px solid currentColor;background:transparent;color:inherit;border-radius:var(--radius);padding:1px 9px;font:inherit;font-weight:600;cursor:pointer}
 .notice-action:hover:not(:disabled){background:#fff8}
 .notice-action:disabled{opacity:.6;cursor:progress}
+/* Vue Git pleine largeur : historique | fichiers | différence, chaque colonne défile seule. */
+.git-workspace{display:flex;flex-direction:column;flex:1;min-width:0;min-height:0}
+.git-workspace-header{display:flex;align-items:center;gap:8px;padding:8px 16px;border-bottom:1px solid var(--line);flex-shrink:0}
+.git-workspace-header h1{font-size:var(--text-md);margin:0}
+.git-workspace-project{flex:1;min-width:0;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.git-workspace .git-view{flex:1;min-height:0;padding:10px 16px 14px;gap:10px}
+.git-workspace .git-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(340px,36%) minmax(0,1fr);gap:12px}
+.git-workspace .git-body>.git-panel{display:flex;flex-direction:column;min-height:0}
+.git-workspace .git-body>.git-panel:only-child{grid-column:1/-1}
+.git-workspace .git-history-scroll{flex:1;max-height:none}
+.git-workspace .git-commit-subject>strong{max-width:none}
+.git-workspace .git-inspection{flex:1;min-height:0;grid-template-columns:minmax(200px,30%) minmax(0,1fr)}
+.git-workspace .git-files-pane{max-height:none}
+.git-workspace .git-diff-pane{display:flex;flex-direction:column;min-height:0}
+.git-workspace .git-diff-view{display:flex;flex-direction:column;flex:1;min-height:0}
+.git-workspace .git-diff-scroll{flex:1;max-height:none}
+@media(max-width:1100px){.git-workspace .git-body{grid-template-columns:1fr;overflow:auto}.git-workspace .git-body>.git-panel{min-height:420px}}

@@ -54,9 +54,18 @@ test('sidebar and panel toggles are remembered and follow the current project',(
   fireEvent.click(sidebar().getByRole('button',{name:/Session B-2/}));
   fireEvent.keyDown(window,{key:'j',ctrlKey:true});
   expect(container.querySelector('.right-panel')!.classList.contains('open')).toBe(true);
-  expect(screen.getByLabelText('Git affiché').textContent).toBe('B');
-  fireEvent.click(screen.getByRole('button',{name:'Git'}));
+  fireEvent.keyDown(window,{key:'j',ctrlKey:true});
   expect(container.querySelector('.right-panel')!.classList.contains('open')).toBe(false);
+});
+test('Git opens full width for the current project and returns to the conversation',()=>{
+  start();
+  fireEvent.click(sidebar().getByRole('button',{name:/Session B-2/}));
+  fireEvent.click(screen.getByRole('button',{name:'Git'}));
+  expect(screen.getByRole('region',{name:'Git de Projet B'})).toBeTruthy();expect(screen.getByLabelText('Git affiché').textContent).toBe('B');
+  expect(screen.getByRole('button',{name:'Git'}).getAttribute('aria-pressed')).toBe('true');
+  fireEvent.click(screen.getByRole('button',{name:'Retour'}));
+  expect(screen.queryByLabelText('Git affiché')).toBeNull();expect(screen.getByRole('button',{name:'Git'}).getAttribute('aria-pressed')).toBe('false');
+  fireEvent.keyDown(window,{key:'g',ctrlKey:true,shiftKey:true});expect(screen.getByLabelText('Git affiché').textContent).toBe('B');
 });
 test('collapsing a group is remembered',()=>{
   start();

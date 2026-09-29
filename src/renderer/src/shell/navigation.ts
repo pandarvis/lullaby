@@ -1,4 +1,4 @@
-export type View={kind:'atelier'}|{kind:'project';projectId:string}|{kind:'session';projectId:string;sessionId:string};
+export type View={kind:'atelier'}|{kind:'project';projectId:string}|{kind:'session';projectId:string;sessionId:string}|{kind:'git';projectId:string};
 export type Navigation={entries:View[];index:number};
 const limit=50;
 export const initialNavigation:Navigation={entries:[{kind:'atelier'}],index:0};
@@ -7,8 +7,8 @@ export const canBack=(nav:Navigation)=>nav.index>0;
 export const canForward=(nav:Navigation)=>nav.index<nav.entries.length-1;
 export function sameView(a:View,b:View){
   if(a.kind==='atelier'||b.kind==='atelier')return a.kind===b.kind;
-  if(a.kind==='project'||b.kind==='project')return a.kind===b.kind&&a.projectId===b.projectId;
-  return a.sessionId===b.sessionId;
+  if(a.kind==='session'&&b.kind==='session')return a.sessionId===b.sessionId;
+  return a.kind===b.kind&&a.projectId===b.projectId;
 }
 export function navigate(nav:Navigation,view:View):Navigation{
   if(sameView(currentView(nav),view))return nav;

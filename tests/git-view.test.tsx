@@ -5,7 +5,6 @@ import { GitView } from '../src/renderer/src/git/GitView';
 import { CommitGraph } from '../src/renderer/src/git/CommitGraph';
 import { ChangesTree } from '../src/renderer/src/git/ChangesTree';
 import irisStyles from '../src/renderer/src/styles/iris.css?raw';
-import { RightPanel } from '../src/renderer/src/shell/RightPanel';
 import { SessionChat } from '../src/renderer/src/chat/SessionChat';
 import { SnapshotContext } from '../src/renderer/src/chat/sessionStore';
 import type { GitSnapshot } from '../src/shared/git';
@@ -27,13 +26,14 @@ test('chooses merge parent and routes versions separately; HTML names remain tex
   expect(screen.getByRole('button',{name:/<script>.txt/})).toBeTruthy();expect(document.querySelector('script')).toBeNull();expect(screen.getByRole('button',{name:/deleted.txt/})).toBeTruthy();expect(screen.getByText('Conflits')).toBeTruthy();
   git.diff.mockResolvedValueOnce({ok:true,value:{kind:'binary',text:'Fichier binaire',truncated:true}} as any);fireEvent.click(screen.getByRole('button',{name:/<script>.txt/}));expect(await screen.findByText('Fichier binaire')).toBeTruthy();expect(screen.getByText(/Différence tronquée/)).toBeTruthy();
 });
-test('opening Git in the right panel keeps the actual assistant-ui draft',async()=>{
+test('opening the full-width Git view and coming back keeps the assistant-ui draft',async()=>{
   api();Object.assign(window.lullaby,{saveDraft:vi.fn().mockResolvedValue({ok:true}),send:vi.fn(),interrupt:vi.fn()});
   const state={revision:1,projects:[],sessions:[{id:'chat-git',projectId:'p',provider:'claude' as const,title:'Chat',phase:'idle' as const,draft:'',choices:{}}],messages:{'chat-git':[]},pending:[]};
-  const panel=(tab?:'git')=><SnapshotContext.Provider value={state}><SessionChat sessionId="chat-git"/><RightPanel tab={tab} width={420} projectId="p" onTab={()=>{}} onClose={()=>{}} onResize={()=>{}} onSlot={()=>{}}/></SnapshotContext.Provider>;
-  const view=render(panel());
+  const main=(git:boolean)=><SnapshotContext.Provider value={state}>{git?<GitView projectId="p"/>:<SessionChat sessionId="chat-git"/>}</SnapshotContext.Provider>;
+  const view=render(main(false));
   fireEvent.change(screen.getByRole('textbox',{name:'Votre message'}),{target:{value:'mon brouillon'}});
-  view.rerender(panel('git'));await screen.findByRole('heading',{name:'Merge fixture'});
+  view.rerender(main(true));await screen.findByRole('heading',{name:'Merge fixture'});
+  view.rerender(main(false));
   expect((screen.getByRole('textbox',{name:'Votre message'})as HTMLTextAreaElement).value).toBe('mon brouillon');
 });
 test('a late diff never replaces the newly selected file',async()=>{

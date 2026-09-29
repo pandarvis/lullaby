@@ -1,5 +1,6 @@
-export type PanelTab='git'|'preview';
-export const panelTabs:[PanelTab,string][]=[['git','Git'],['preview','Aperçu']];
+// Git opens as a full-width view (View kind 'git'); the panel keeps what is read beside a conversation.
+export type PanelTab='preview';
+export const panelTabs:[PanelTab,string][]=[['preview','Aperçu']];
 export const minPanelWidth=320;
 export const defaultPanelWidth=420;
 export function clampPanelWidth(width:number,viewport:number){

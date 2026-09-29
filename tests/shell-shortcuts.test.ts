@@ -13,11 +13,12 @@ test('maps the documented shortcuts only',()=>{
   expect(shortcutFor(key('ArrowRight',{altKey:true}))).toBe('forward');
   expect(shortcutFor(key('b'))).toBeUndefined();
   expect(shortcutFor(key('b',{ctrlKey:true,shiftKey:true}))).toBeUndefined();
+  expect(shortcutFor(key('G',{ctrlKey:true,shiftKey:true}))).toBe('toggleGit');expect(shortcutFor(key('g',{shiftKey:true}))).toBeUndefined();
   expect(shortcutFor(key('ArrowLeft',{altKey:true,ctrlKey:true}))).toBeUndefined();
 });
 test('useShortcuts calls the latest handler and prevents the browser default',()=>{
   const first=vi.fn(),second=vi.fn();
-  const handlers=(toggleSidebar:()=>void)=>({toggleSidebar,togglePanel:vi.fn(),search:vi.fn(),newSession:vi.fn(),back:vi.fn(),forward:vi.fn()});
+  const handlers=(toggleSidebar:()=>void)=>({toggleSidebar,togglePanel:vi.fn(),toggleGit:vi.fn(),search:vi.fn(),newSession:vi.fn(),back:vi.fn(),forward:vi.fn()});
   const {rerender,unmount}=renderHook(({h})=>useShortcuts(h),{initialProps:{h:handlers(first)}});
   rerender({h:handlers(second)});
   const event=new KeyboardEvent('keydown',{key:'b',ctrlKey:true,cancelable:true});
@@ -33,7 +34,7 @@ test('panel width stays between 320 px and 60 % of the window',()=>{
 });
 test('useShortcuts ignores repeated and already handled key events',()=>{
   const toggleSidebar=vi.fn();
-  const {unmount}=renderHook(()=>useShortcuts({toggleSidebar,togglePanel:vi.fn(),search:vi.fn(),newSession:vi.fn(),back:vi.fn(),forward:vi.fn()}));
+  const {unmount}=renderHook(()=>useShortcuts({toggleSidebar,togglePanel:vi.fn(),toggleGit:vi.fn(),search:vi.fn(),newSession:vi.fn(),back:vi.fn(),forward:vi.fn()}));
   fireEvent.keyDown(window,{key:'b',ctrlKey:true,repeat:true});
   expect(toggleSidebar).not.toHaveBeenCalled();
   const handled=new KeyboardEvent('keydown',{key:'b',ctrlKey:true,cancelable:true});handled.preventDefault();

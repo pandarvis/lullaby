@@ -1,11 +1,9 @@
 import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent } from 'react';
-import { GitView } from '../git/GitView';
 import { ShellIcon } from './ShellIcon';
 import { clampPanelWidth, minPanelWidth, panelTabs, type PanelTab } from './panel';
-type Props={tab?:PanelTab;width:number;projectId?:string;onTab:(tab:PanelTab)=>void;onClose:()=>void;onResize:(width:number)=>void;onSlot:(element:HTMLDivElement|null)=>void};
-export function RightPanel({tab,width,projectId,onTab,onClose,onResize,onSlot}:Props){
-  const [gitOpened,setGitOpened]=useState(false);const [resizing,setResizing]=useState(false);
-  useEffect(()=>{if(tab==='git')setGitOpened(true);},[tab]);
+type Props={tab?:PanelTab;width:number;onTab:(tab:PanelTab)=>void;onClose:()=>void;onResize:(width:number)=>void;onSlot:(element:HTMLDivElement|null)=>void};
+export function RightPanel({tab,width,onTab,onClose,onResize,onSlot}:Props){
+  const [resizing,setResizing]=useState(false);
   const stopDrag=useRef<(()=>void)|null>(null);
   useEffect(()=>()=>stopDrag.current?.(),[]);
   function startResize(event:PointerEvent<HTMLDivElement>){
@@ -25,9 +23,6 @@ export function RightPanel({tab,width,projectId,onTab,onClose,onResize,onSlot}:P
       {panelTabs.map(([id,label])=><button key={id} role="tab" id={`panel-tab-${id}`} aria-controls={`panel-${id}`} className="panel-tab" aria-selected={tab===id} onClick={()=>onTab(id)}><ShellIcon name={id}/>{label}</button>)}
       </div>
       <button className="shell-icon" aria-label="Fermer le panneau" title="Fermer (Ctrl+J)" onClick={onClose}><ShellIcon name="close"/></button>
-    </div>
-    <div className="panel-body" id="panel-git" role="tabpanel" aria-labelledby="panel-tab-git" hidden={tab!=='git'}>
-      {projectId?gitOpened&&<GitView key={projectId} projectId={projectId} active={tab==='git'}/>:<p className="panel-empty">Ouvrez un projet pour consulter Git.</p>}
     </div>
     <div className="panel-body" id="panel-preview" role="tabpanel" aria-labelledby="panel-tab-preview" hidden={tab!=='preview'}>
       <div className="preview-slot" ref={onSlot}/>

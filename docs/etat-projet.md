@@ -31,7 +31,10 @@ coquille Iris) le 29 septembre ; non poussée, non fusionnée dans `develop` :
 - Chrono du tour conservé en changeant de vue ; menus fermés au clic extérieur ;
   icônes utilitaires au trait ; copie en icône ; prompt envoyé ancré en haut du
   chat (`turnAnchor="top"` d'assistant-ui).
-- Refus Codex rapportés avec l'étape et le message du moteur.
+- Refus Codex rapportés avec l'étape et le message du moteur ; le diagnostic Claude
+  nomme l'étape en échec et le bandeau propose « Réessayer » (`feature/diagnostic-retry`).
+- Git en vue pleine largeur, panneau droit réservé à l'aperçu (D015,
+  `feature/git-workspace`).
 - Règle d'or ajoutée : jamais en dessous des clients officiels (D013).
 
 L'application ouvre des dossiers, y compris vides et sans Git, puis crée des

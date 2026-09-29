@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react';
-export type ShortcutHandlers={toggleSidebar:()=>void;togglePanel:()=>void;search:()=>void;newSession:()=>void;back:()=>void;forward:()=>void};
+export type ShortcutHandlers={toggleSidebar:()=>void;togglePanel:()=>void;toggleGit:()=>void;search:()=>void;newSession:()=>void;back:()=>void;forward:()=>void};
 type Keys={key:string;ctrlKey:boolean;altKey:boolean;shiftKey:boolean;metaKey:boolean};
 export function shortcutFor(event:Keys):keyof ShortcutHandlers|undefined{
-  if(event.metaKey||event.shiftKey)return undefined;
+  if(event.metaKey)return undefined;
+  if(event.shiftKey)return event.ctrlKey&&!event.altKey&&event.key.toLowerCase()==='g'?'toggleGit':undefined;
   if(event.ctrlKey&&!event.altKey){
     const byKey:Record<string,keyof ShortcutHandlers>={b:'toggleSidebar',j:'togglePanel',k:'search',n:'newSession'};
     return byKey[event.key.toLowerCase()];
