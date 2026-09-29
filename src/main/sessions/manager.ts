@@ -33,7 +33,10 @@ export class SessionManager {
   }
   async createSession(projectId:string,provider:Provider,nativeId?:string) {
     if(!this.state.projects.some(p=>p.id===projectId)) throw new Error('PROJECT_NOT_FOUND');
-    const session:Session = {id:randomUUID(),projectId,provider,title:'Nouvelle conversation',phase:'idle',draft:'',choices:{}};
+    const remembered=this.state.projects.find(p=>p.id===projectId)!.permissionProfile;
+    // 'automatic' is Claude-only: a Codex conversation keeps its native permissions.
+    const choices=remembered&&!(provider==='codex'&&remembered==='automatic')?{permissionProfile:remembered}:{};
+    const session:Session = {id:randomUUID(),projectId,provider,title:'Nouvelle conversation',phase:'idle',draft:'',choices};
     if(nativeId){
       if(this.state.sessions.some(s=>s.provider===provider&&s.nativeId===nativeId))throw new Error('SESSION_ALREADY_IMPORTED');
       session.nativeId=nativeId;session.title='Session reprise';
@@ -55,8 +58,20 @@ export class SessionManager {
     for(const id of removed)this.state.messages[id]&&delete this.state.messages[id];
     this.publish();await this.save();
   }
-  async configureSession(sessionId:string,choices:LaunchChoices){
-    if(this.active.has(sessionId))throw new Error('SESSION_RUNNING');this.session(sessionId).choices=structuredClone(choices);this.publish();await this.save();
+  // Permissions may change during a turn; model and effort need a new engine, so they wait.
+  async configureSession(sessionId:string,choices:LaunchChoices):Promise<'now'|'next'|'saved'>{
+    const session=this.session(sessionId);const active=this.active.get(sessionId);
+    if(active&&(session.choices.model!==choices.model||session.choices.effort!==choices.effort))throw new Error('SESSION_RUNNING');
+    const changed=session.choices.permissionProfile!==choices.permissionProfile;
+    session.choices=structuredClone(choices);
+    const project=this.state.projects.find(p=>p.id===session.projectId);
+    if(project&&changed){if(choices.permissionProfile&&choices.permissionProfile!=='native')project.permissionProfile=choices.permissionProfile;else delete project.permissionProfile;}
+    let applied:'now'|'next'|'saved'='saved';
+    if(active&&changed){
+      await active.ready;
+      if(active.run?.setPermissionProfile&&!active.stopped){await active.run.setPermissionProfile(choices.permissionProfile);applied='now';}else applied='next';
+    }
+    this.publish();await this.save();return applied;
   }
   async removeSession(sessionId:string){
     this.session(sessionId);

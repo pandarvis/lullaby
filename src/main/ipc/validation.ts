@@ -14,7 +14,7 @@ export function launchChoices(value:unknown):LaunchChoices {
   const data=object(value,['model','effort','permissionProfile']);const choices:LaunchChoices={};
   if(data.model!==undefined)choices.model=text(data.model,200);
   if(data.effort!==undefined)choices.effort=text(data.effort,30);
-  if(data.permissionProfile!==undefined){if(!['native','ask','auto','plan'].includes(String(data.permissionProfile)))throw new Error('INVALID_PERMISSION_PROFILE');choices.permissionProfile=String(data.permissionProfile);}
+  if(data.permissionProfile!==undefined){if(!['native','ask','auto','plan','automatic'].includes(String(data.permissionProfile)))throw new Error('INVALID_PERMISSION_PROFILE');choices.permissionProfile=String(data.permissionProfile);}
   return choices;
 }
 export function provider(value: unknown): Provider {

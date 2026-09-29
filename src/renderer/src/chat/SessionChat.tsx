@@ -10,6 +10,7 @@ import { ComposerOptions } from './ComposerOptions';
 import { PreviewPane } from './PreviewPane';
 import { UiIcon } from '../app/UiIcon';
 import { useDismiss } from '../app/useDismiss';
+import { useKeepBottomOnShrink } from './useKeepBottomOnShrink';
 import { htmlPath, safeMarkdownUrl } from './links';
 import { CodeHighlight } from './CodeHighlight';
 import { AgentActivity } from './AgentActivity';
@@ -35,7 +36,7 @@ function Message(){
 export function SessionChat({sessionId,diagnostic}:{sessionId:string;diagnostic?:Diagnostic}){
   const [configuring,setConfiguring]=useState(false);const [review,setReview]=useState<ReviewSelection>();
   const {runtime,session,isRunning,sending,error}=useSessionRuntime(sessionId,configuring);const snapshot=useContext(SnapshotContext);
-  const [notice,setNotice]=useState('');const [menu,setMenu]=useState(false);const menuRef=useRef<HTMLDivElement>(null),addRef=useRef<HTMLButtonElement>(null);useDismiss(menu,()=>setMenu(false),[menuRef,addRef],addRef);const [document,setDocument]=useState<PreviewDocument>();
+  const [notice,setNotice]=useState('');const viewport=useRef<HTMLDivElement>(null);useKeepBottomOnShrink(viewport);const [menu,setMenu]=useState(false);const menuRef=useRef<HTMLDivElement>(null),addRef=useRef<HTMLButtonElement>(null);useDismiss(menu,()=>setMenu(false),[menuRef,addRef],addRef);const [document,setDocument]=useState<PreviewDocument>();
   const alive=useRef(true);const previewId=useRef<string|undefined>(undefined);const previewSerial=useRef(0);
   useEffect(()=>{alive.current=true;return()=>{alive.current=false;if(previewId.current)void window.lullaby.releasePreview(previewId.current);};},[]);
   const shell=useContext(ShellContext);
@@ -49,7 +50,7 @@ export function SessionChat({sessionId,diagnostic}:{sessionId:string;diagnostic?
   }
   function closePreview(){previewSerial.current++;if(previewId.current)void window.lullaby.releasePreview(previewId.current);previewId.current=undefined;setDocument(undefined);}
   return <AssistantRuntimeProvider runtime={runtime}><ReviewContext.Provider value={selection=>{closePreview();setReview(selection);}}><PreviewContext.Provider value={input=>void preview(input)}><div className={`chat-layout ${document&&!shell.previewSlot?'has-preview':review?'has-review':''}`}><ThreadPrimitive.Root className="chat">
-    <ThreadPrimitive.Viewport className="chat-viewport" turnAnchor="top">
+    <ThreadPrimitive.Viewport ref={viewport} className="chat-viewport" turnAnchor="top">
       <ThreadPrimitive.Empty><div className="chat-empty"><h2>Nouvelle conversation</h2><p>Qu’allons-nous construire ?</p></div></ThreadPrimitive.Empty>
       <ThreadPrimitive.Messages components={{UserMessage:Message,AssistantMessage:Message}}/>
     </ThreadPrimitive.Viewport>

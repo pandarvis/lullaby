@@ -1,4 +1,4 @@
-import { query, getSessionInfo, resolveSettings, filterEscalatingDefaultMode, type Options, type Settings, type Query, type SDKMessage, type SDKUserMessage, type PermissionResult } from '@anthropic-ai/claude-agent-sdk';
+import { query, getSessionInfo, resolveSettings, filterEscalatingDefaultMode, type Options, type Settings, type Query, type SDKMessage, type SDKUserMessage, type PermissionResult, type PermissionMode } from '@anthropic-ai/claude-agent-sdk';
 import { createHash, randomUUID } from 'node:crypto';
 import type { ProviderAdapter, ProviderRun, RunInput } from '../types';
 import type { Diagnostic, EventBody, ReplyRequest } from '../../../shared/contracts';
@@ -26,6 +26,8 @@ type Turn={
 };
 class ClaudeEngine {
   turn?:Turn;dead=false;nativeId?:string;stamp?:Stamp;idle?:ReturnType<typeof setTimeout>;
+  // Permission profile currently applied; it can change without a new process.
+  profile?:string;
   constructor(readonly runtime:Query,readonly incoming:AsyncQueue<SDKUserMessage>,readonly controller:AbortController,readonly key:string,readonly cwd:string){}
   // One reader for the process lifetime; messages go to the current turn only.
   pump(){void (async()=>{
@@ -55,7 +57,9 @@ function diagnosticIssue(error:unknown,timedOut:boolean,startupMs:number):string
 }
 function engineKey(input:RunInput){
   const env=createHash('sha256').update(JSON.stringify(Object.entries(input.env).filter(([name])=>!name.startsWith('CLAUDE_AGENT_SDK_')).sort(([a],[b])=>a.localeCompare(b)))).digest('hex');
-  return JSON.stringify({cwd:input.cwd,choices:input.choices,env});
+  // Permissions are applied live (setPermissionMode), so they do not force a new engine.
+  const {permissionProfile:_,...choices}=input.choices;
+  return JSON.stringify({cwd:input.cwd,choices,env});
 }
 export class ClaudeAdapter implements ProviderAdapter {
   readonly provider='claude' as const;
@@ -113,7 +117,7 @@ export class ClaudeAdapter implements ProviderAdapter {
     try {assertClaudeSubscription(await runtime.accountInfo());}
     catch(error){incoming.end();controller.abort();runtime.close();throw error;}
     finally {clearTimeout(timeout);}
-    engine=new ClaudeEngine(runtime,incoming,controller,key,input.cwd);engine.nativeId=input.nativeId;engine.pump();
+    engine=new ClaudeEngine(runtime,incoming,controller,key,input.cwd);engine.nativeId=input.nativeId;engine.profile=input.choices.permissionProfile;engine.pump();
     return engine;
   }
   // Reuse only an idle engine whose session file nobody else touched since its last turn.
@@ -139,6 +143,13 @@ export class ClaudeAdapter implements ProviderAdapter {
     checkSubscriptionEnvironment(input.env,'claude');
     const key=engineKey(input);
     const engine=await this.reusable(input,key)??await this.start(input,key);
+    const applyProfile=async(profile?:string)=>{
+      if((engine.profile??'native')===(profile??'native'))return;
+      // Native means the mode from the user's settings, as at launch.
+      const mode=claudePermissionMode(profile)??(await this.deps.settings(engine.cwd).catch(()=>undefined))?.permissions?.defaultMode??'default';
+      await engine.runtime.setPermissionMode(mode as PermissionMode);engine.profile=profile;
+    };
+    await applyProfile(input.choices.permissionProfile);
     const outgoing=new AsyncQueue<{eventId:string;body:EventBody}>();
     const pending=new Map<string,(answer:Answer)=>void>();
     const emit=(body:EventBody)=>outgoing.push({eventId:randomUUID(),body});
@@ -171,6 +182,7 @@ export class ClaudeAdapter implements ProviderAdapter {
     };
     return {events:outgoing,
       reply:async(requestId,answer)=>{const finish=pending.get(requestId);if(!finish)throw new Error('STALE_REQUEST');finish(answer);},
+      setPermissionProfile:applyProfile,
       interrupt:async()=>{stopped=true;for(const finish of [...pending.values()])finish({kind:'deny'});await Promise.race([engine.runtime.interrupt().catch(()=>{}),new Promise(resolve=>setTimeout(resolve,3000))]);await close();},
       close,
     };

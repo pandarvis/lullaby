@@ -6,6 +6,8 @@ export type RunInput = {
 export type ProviderRun = {
   events: AsyncIterable<{ eventId: string; body: EventBody }>;
   reply(requestId: string, answer: ReplyRequest['answer']): Promise<void>;
+  // Applies a permission profile to the running engine; absent when it only takes effect next turn.
+  setPermissionProfile?(profile?: string): Promise<void>;
   interrupt(): Promise<void>;
   close(): Promise<void>;
 };
