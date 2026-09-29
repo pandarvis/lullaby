@@ -137,7 +137,7 @@ Date : 28 septembre 2026. Statut : **retenu**, validé par l'utilisateur le
   par `titleBarOverlay`, sous une barre de titre de 40 px qui porte navigation,
   sélecteur de projet et bascules du panneau.
 - La barre latérale liste les conversations groupées par projet ; elle se masque
-  entièrement (`Ctrl+B`, préférence `lullaby.sidebar-hidden`). La barre compacte
+  entièrement (`Ctrl+B`, préférence `lullaby.sidebar-hidden`) ; remplacé par un rail réduit (D016). La barre compacte
   de 76 px et les onglets Conversations/Git disparaissent.
 - Git et les aperçus HTML s'ouvrent dans un panneau droit (`Ctrl+J`) ; l'aperçu y est
   rendu par un portail React depuis la conversation, sans changer son isolation.
@@ -190,3 +190,13 @@ ou Précédent) : historique, fichiers et différence côte à côte, chacun dé
 Le panneau droit garde ce qui se lit à côté d'une conversation : l'aperçu HTML
 (`Ctrl+J`). Le diff d'une intervention reste affiché à côté du chat et propose
 « Ouvrir dans Git ». Le brouillon de la conversation est conservé à l'aller-retour.
+
+## D016 — Barre latérale réduite plutôt que masquée (implémenté)
+
+Date : 29 septembre 2026. Statut : **retenu**, validé par l'utilisateur ; remplace le
+masquage complet de la barre latérale décrit en D012.
+
+Masquée, la barre laissait une colonne vide sans repère. `Ctrl+B` et le bouton de la
+barre de titre basculent désormais entre la barre complète et un rail de 52 px :
+nouvelle conversation, recherche, Atelier, un emblème par projet avec une pastille
+(réponse attendue, erreur, exécution en cours), ouverture de projet et Paramètres.
