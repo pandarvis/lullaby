@@ -6,6 +6,7 @@ import { AtelierView } from '../shell/AtelierView';
 import { back, canBack, canForward, currentView, forward, initialNavigation, navigate, prune, type View } from '../shell/navigation';
 import { clampPanelWidth, defaultPanelWidth, type PanelTab } from '../shell/panel';
 import { RightPanel } from '../shell/RightPanel';
+import { GitWorkspace } from '../shell/GitWorkspace';
 import { ShellContext } from '../shell/ShellContext';
 import { useShortcuts } from '../shell/shortcuts';
 import { Sidebar } from '../shell/Sidebar';
@@ -27,7 +28,7 @@ export function App(){
   const [diagnostics,setDiagnostics]=useState<Record<string,Diagnostic[]>>({});const [loading,setLoading]=useState<string>();
   const searchRef=useRef<HTMLInputElement>(null);
   useEffect(()=>{const unsubscribe=window.lullaby.subscribe(sessionStore.accept);void window.lullaby.snapshot().then(result=>{if(result.ok)sessionStore.accept(result.value);else setNotice(result.message);});return unsubscribe;},[]);
-  useEffect(()=>{setNav(previous=>prune(previous,item=>item.kind==='atelier'||snapshot.projects.some(project=>project.id===item.projectId)&&(item.kind==='project'||snapshot.sessions.some(session=>session.id===item.sessionId))));},[snapshot]);
+  useEffect(()=>{setNav(previous=>prune(previous,item=>item.kind==='atelier'||snapshot.projects.some(project=>project.id===item.projectId)&&(item.kind!=='session'||snapshot.sessions.some(session=>session.id===item.sessionId))));},[snapshot]);
   const projectId=view.kind==='atelier'?undefined:view.projectId;
   const project=snapshot.projects.find(item=>item.id===projectId);
   const session=view.kind==='session'?snapshot.sessions.find(item=>item.id===view.sessionId):undefined;
@@ -51,16 +52,21 @@ export function App(){
   }
   function selectProject(id:string){if(pendingNew){setPendingNew(false);go({kind:'project',projectId:id});}else openProject(id);}
   async function openFolder(){const result=await window.lullaby.pickProject();if(result.ok&&result.value)go({kind:'project',projectId:result.value.id});else if(!result.ok)setNotice(result.message);}
-  const togglePanel=(tab?:PanelTab)=>setPanel(current=>tab?(current===tab?undefined:tab):(current?undefined:'git'));
+  const togglePanel=(tab?:PanelTab)=>setPanel(current=>tab?(current===tab?undefined:tab):(current?undefined:'preview'));
+  // Git replaces the conversation; leaving it returns to where the user came from.
+  function toggleGit(){
+    if(view.kind==='git'){if(canBack(nav))setNav(back);else openProject(view.projectId);return;}
+    if(projectId)go({kind:'git',projectId});
+  }
   const toggleSidebar=()=>setSidebarHidden(hidden=>!hidden);
-  useShortcuts({toggleSidebar,togglePanel:()=>togglePanel(),newSession:()=>newSession(),back:()=>setNav(back),forward:()=>setNav(forward),
+  useShortcuts({toggleSidebar,togglePanel:()=>togglePanel(),toggleGit,newSession:()=>newSession(),back:()=>setNav(back),forward:()=>setNav(forward),
     search:()=>{setSidebarHidden(false);requestAnimationFrame(()=>searchRef.current?.focus());}});
   useEffect(()=>{const fit=()=>setViewport(window.innerWidth);window.addEventListener('resize',fit);return()=>window.removeEventListener('resize',fit);},[]);
-  const shell=useMemo(()=>({openPanel:(tab:PanelTab)=>setPanel(tab),previewSlot}),[previewSlot]);
+  const shell=useMemo(()=>({openPanel:(tab:PanelTab)=>setPanel(tab),openGit:projectId?()=>go({kind:'git',projectId}):undefined,previewSlot}),[previewSlot,projectId]);
   const diagnostic=session&&diagnostics[session.projectId]?.find(item=>item.provider===session.provider);
   return <SnapshotContext.Provider value={snapshot}><ShellContext.Provider value={shell}>
     <div className={`shell iris-shell ${sidebarHidden?'sidebar-hidden':''} ${panel?'panel-open':''}`}>
-      <TitleBar project={project} projects={snapshot.projects} sessions={snapshot.sessions} sidebarHidden={sidebarHidden} canBack={canBack(nav)} canForward={canForward(nav)} panel={panel} menuOpen={menuOpen}
+      <TitleBar project={project} projects={snapshot.projects} sessions={snapshot.sessions} sidebarHidden={sidebarHidden} canBack={canBack(nav)} canForward={canForward(nav)} panel={panel} git={view.kind==='git'} onToggleGit={toggleGit} menuOpen={menuOpen}
         onMenu={open=>{setMenuOpen(open);if(!open)setPendingNew(false);}} onToggleSidebar={toggleSidebar} onBack={()=>setNav(back)} onForward={()=>setNav(forward)}
         onSelectProject={selectProject} onAtelier={()=>go({kind:'atelier'})} onTogglePanel={togglePanel}/>
       <div className="shell-body">
@@ -70,11 +76,12 @@ export function App(){
           onProjectRemoved={id=>{if(id===projectId)go({kind:'atelier'});}} onSessionRemoved={id=>{if(view.kind==='session'&&view.sessionId===id)go({kind:'project',projectId:view.projectId});}} onError={setNotice}/>
         <main className="main-area">
           {notice&&<div className="shell-notice" role="alert"><span>{notice}</span><button onClick={()=>setNotice('')}>Fermer</button></div>}
-          {session&&project?<SessionView session={session} diagnostic={diagnostic} checking={loading===session.projectId} onRetry={()=>void diagnose(session.projectId)}/>
+          {view.kind==='git'&&project?<GitWorkspace project={project} onClose={toggleGit}/>
+            :session&&project?<SessionView session={session} diagnostic={diagnostic} checking={loading===session.projectId} onRetry={()=>void diagnose(session.projectId)}/>
             :project?<NewConversation key={project.id} project={project} onCreated={id=>go({kind:'session',projectId:project.id,sessionId:id})} onError={setNotice}/>
             :<AtelierView projects={snapshot.projects} sessions={snapshot.sessions} remembered={remembered} onOpen={openProject} onOpenFolder={()=>void openFolder()}/>}
         </main>
-        <RightPanel tab={panel} width={clampPanelWidth(panelWidth,viewport)} projectId={project?.id} onTab={setPanel} onClose={()=>setPanel(undefined)} onResize={setPanelWidth} onSlot={setPreviewSlot}/>
+        <RightPanel tab={panel} width={clampPanelWidth(panelWidth,viewport)} onTab={setPanel} onClose={()=>setPanel(undefined)} onResize={setPanelWidth} onSlot={setPreviewSlot}/>
       </div>
       {settings&&<SettingsScreen items={project?diagnostics[project.id]??[]:[]} loading={!!project&&loading===project.id} onRefresh={()=>{if(project)void diagnose(project.id);}} onClose={()=>{setSettings(false);if(project)void diagnose(project.id);}}/>}
     </div>

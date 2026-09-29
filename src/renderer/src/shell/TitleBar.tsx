@@ -4,7 +4,7 @@ import logo from '../assets/lullaby.svg';
 import { ProjectEmblem } from '../app/ProjectEmblem';
 import { ShellIcon } from './ShellIcon';
 import type { PanelTab } from './panel';
-type Props={project?:Project;projects:Project[];sessions:Session[];sidebarHidden:boolean;canBack:boolean;canForward:boolean;panel?:PanelTab;menuOpen:boolean;
+type Props={project?:Project;projects:Project[];sessions:Session[];sidebarHidden:boolean;canBack:boolean;canForward:boolean;panel?:PanelTab;git?:boolean;menuOpen:boolean;onToggleGit:()=>void;
   onMenu:(open:boolean)=>void;onToggleSidebar:()=>void;onBack:()=>void;onForward:()=>void;onSelectProject:(id:string)=>void;onAtelier:()=>void;onTogglePanel:(tab:PanelTab)=>void};
 export function TitleBar(p:Props){
   const anchor=useRef<HTMLDivElement>(null);const trigger=useRef<HTMLButtonElement>(null);const onMenu=useRef(p.onMenu);onMenu.current=p.onMenu;
@@ -40,8 +40,8 @@ export function TitleBar(p:Props){
     {p.project&&<span className="titlebar-path" title={p.project.cwd}>{p.project.cwd}</span>}
     <div className="titlebar-drag"/>
     <div className="titlebar-tools">
-      <button className="shell-icon" aria-label="Git" title="Git (Ctrl+J)" aria-pressed={p.panel==='git'} onClick={()=>p.onTogglePanel('git')}><ShellIcon name="git"/></button>
-      <button className="shell-icon" aria-label="Aperçu" title="Aperçu" aria-pressed={p.panel==='preview'} onClick={()=>p.onTogglePanel('preview')}><ShellIcon name="preview"/></button>
+      <button className="shell-icon" aria-label="Git" title={p.project?'Git du projet (Ctrl+Maj+G)':'Ouvrez un projet pour consulter Git'} aria-pressed={!!p.git} disabled={!p.project} onClick={p.onToggleGit}><ShellIcon name="git"/></button>
+      <button className="shell-icon" aria-label="Aperçu" title="Aperçu (Ctrl+J)" aria-pressed={p.panel==='preview'} onClick={()=>p.onTogglePanel('preview')}><ShellIcon name="preview"/></button>
     </div>
   </header>;
 }

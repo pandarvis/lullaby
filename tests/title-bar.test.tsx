@@ -5,14 +5,15 @@ import { TitleBar } from '../src/renderer/src/shell/TitleBar';
 afterEach(cleanup);
 const projects=[{id:'a',name:'Lullaby',cwd:'C:/Sources/lullaby',folderKey:'a'},{id:'b',name:'Alice',cwd:'C:/Sources/alice',folderKey:'b'}];
 const sessions=[{id:'s',projectId:'a',provider:'claude' as const,title:'T',phase:'idle' as const,draft:'',choices:{}}];
-function props(extra={}){return {projects,sessions,sidebarHidden:false,canBack:false,canForward:true,menuOpen:false,onMenu:vi.fn(),onToggleSidebar:vi.fn(),onBack:vi.fn(),onForward:vi.fn(),onSelectProject:vi.fn(),onAtelier:vi.fn(),onTogglePanel:vi.fn(),...extra};}
+function props(extra={}){return {projects,sessions,sidebarHidden:false,canBack:false,canForward:true,menuOpen:false,onMenu:vi.fn(),onToggleSidebar:vi.fn(),onBack:vi.fn(),onForward:vi.fn(),onSelectProject:vi.fn(),onAtelier:vi.fn(),onTogglePanel:vi.fn(),onToggleGit:vi.fn(),...extra};}
 test('shows the current project, its path and navigation state',()=>{
-  const p=props({project:projects[0],panel:'git'});render(<TitleBar {...p}/>);
+  const p=props({project:projects[0],git:true});render(<TitleBar {...p}/>);
   expect(screen.getByRole('button',{name:/Lullaby/,expanded:false})).toBeTruthy();
   expect(screen.getByText('C:/Sources/lullaby')).toBeTruthy();
   expect((screen.getByRole('button',{name:'Précédent'})as HTMLButtonElement).disabled).toBe(true);
   fireEvent.click(screen.getByRole('button',{name:'Suivant'}));expect(p.onForward).toHaveBeenCalled();
   expect(screen.getByRole('button',{name:'Git'}).getAttribute('aria-pressed')).toBe('true');
+  fireEvent.click(screen.getByRole('button',{name:'Git'}));expect(p.onToggleGit).toHaveBeenCalled();
   fireEvent.click(screen.getByRole('button',{name:'Aperçu'}));expect(p.onTogglePanel).toHaveBeenCalledWith('preview');
   fireEvent.click(screen.getByRole('button',{name:'Masquer la barre latérale'}));expect(p.onToggleSidebar).toHaveBeenCalled();
 });

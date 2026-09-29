@@ -31,3 +31,10 @@ test('prune removes deleted views, merges neighbours and keeps a valid position'
   expect(prune(nav,()=>true)).toBe(nav);
   expect(prune(nav,()=>false)).toEqual(initialNavigation);
 });
+test('the Git view is one entry per project, distinct from its conversations',()=>{
+  const git:View={kind:'git',projectId:'p'};
+  let nav=navigate(navigate(initialNavigation,a),git);
+  expect(currentView(nav)).toEqual(git);expect(navigate(nav,{kind:'git',projectId:'p'})).toBe(nav);
+  expect(currentView(navigate(nav,{kind:'git',projectId:'q'}))).toEqual({kind:'git',projectId:'q'});
+  nav=back(nav);expect(currentView(nav)).toEqual(a);
+});

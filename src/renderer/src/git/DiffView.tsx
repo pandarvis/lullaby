@@ -1,5 +1,9 @@
 import type { GitDiff } from '../../../shared/git';
-export function DiffView({diff}:{diff:GitDiff}) {
+import { highlight, languageForPath } from '../chat/highlight';
+const escape=(text:string)=>text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+// Line by line: a token spanning several lines (block comment, template) may lose its colour.
+export function DiffView({diff,path}:{diff:GitDiff;path?:string}) {
+  const language=path?languageForPath(path):undefined;
   let oldLine:number|undefined,newLine:number|undefined=diff.format==='file'?1:undefined;
   const lines=diff.text.split('\n',5001),limited=lines.length>5000;
   return <div className="git-diff-view">
@@ -12,7 +16,8 @@ export function DiffView({diff}:{diff:GitDiff}) {
       if(hunk){oldLine=Number(hunk[1]);newLine=Number(hunk[2]);kind='hunk';}
       else if(diff.format==='file'){newNumber=newLine!++;kind='context';}
       else if(oldLine!==undefined&&newLine!==undefined){if(display.startsWith('+')){newNumber=newLine++;kind='added';}else if(display.startsWith('-')){oldNumber=oldLine++;kind='removed';}else if(display.startsWith(' ')){oldNumber=oldLine++;newNumber=newLine++;kind='context';}}
-      return <tr key={index} className={`git-diff-${kind}`}><td className="git-line-number">{oldNumber}</td><td className="git-line-number">{newNumber}</td><td className="git-line"><code>{display||' '}</code></td></tr>;
+      const prefix=diff.format==='file'?'':display.slice(0,1);const markup=language&&kind!=='hunk'&&kind!=='meta'?highlight(display.slice(prefix.length),language):undefined;
+      return <tr key={index} className={`git-diff-${kind}`}><td className="git-line-number">{oldNumber}</td><td className="git-line-number">{newNumber}</td><td className="git-line">{markup===undefined?<code>{display||' '}</code>:<code className="hljs" dangerouslySetInnerHTML={{__html:escape(prefix)+markup||' '}}/>}</td></tr>;
     })}</tbody></table></div>}
   </div>;
 }

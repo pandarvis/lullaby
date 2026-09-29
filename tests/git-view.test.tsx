@@ -4,8 +4,8 @@ import { cleanup,render,screen,fireEvent,waitFor } from '@testing-library/react'
 import { GitView } from '../src/renderer/src/git/GitView';
 import { CommitGraph } from '../src/renderer/src/git/CommitGraph';
 import { ChangesTree } from '../src/renderer/src/git/ChangesTree';
+import { DiffView } from '../src/renderer/src/git/DiffView';
 import irisStyles from '../src/renderer/src/styles/iris.css?raw';
-import { RightPanel } from '../src/renderer/src/shell/RightPanel';
 import { SessionChat } from '../src/renderer/src/chat/SessionChat';
 import { SnapshotContext } from '../src/renderer/src/chat/sessionStore';
 import type { GitSnapshot } from '../src/shared/git';
@@ -27,13 +27,14 @@ test('chooses merge parent and routes versions separately; HTML names remain tex
   expect(screen.getByRole('button',{name:/<script>.txt/})).toBeTruthy();expect(document.querySelector('script')).toBeNull();expect(screen.getByRole('button',{name:/deleted.txt/})).toBeTruthy();expect(screen.getByText('Conflits')).toBeTruthy();
   git.diff.mockResolvedValueOnce({ok:true,value:{kind:'binary',text:'Fichier binaire',truncated:true}} as any);fireEvent.click(screen.getByRole('button',{name:/<script>.txt/}));expect(await screen.findByText('Fichier binaire')).toBeTruthy();expect(screen.getByText(/Différence tronquée/)).toBeTruthy();
 });
-test('opening Git in the right panel keeps the actual assistant-ui draft',async()=>{
+test('opening the full-width Git view and coming back keeps the assistant-ui draft',async()=>{
   api();Object.assign(window.lullaby,{saveDraft:vi.fn().mockResolvedValue({ok:true}),send:vi.fn(),interrupt:vi.fn()});
   const state={revision:1,projects:[],sessions:[{id:'chat-git',projectId:'p',provider:'claude' as const,title:'Chat',phase:'idle' as const,draft:'',choices:{}}],messages:{'chat-git':[]},pending:[]};
-  const panel=(tab?:'git')=><SnapshotContext.Provider value={state}><SessionChat sessionId="chat-git"/><RightPanel tab={tab} width={420} projectId="p" onTab={()=>{}} onClose={()=>{}} onResize={()=>{}} onSlot={()=>{}}/></SnapshotContext.Provider>;
-  const view=render(panel());
+  const main=(git:boolean)=><SnapshotContext.Provider value={state}>{git?<GitView projectId="p"/>:<SessionChat sessionId="chat-git"/>}</SnapshotContext.Provider>;
+  const view=render(main(false));
   fireEvent.change(screen.getByRole('textbox',{name:'Votre message'}),{target:{value:'mon brouillon'}});
-  view.rerender(panel('git'));await screen.findByRole('heading',{name:'Merge fixture'});
+  view.rerender(main(true));await screen.findByRole('heading',{name:'Merge fixture'});
+  view.rerender(main(false));
   expect((screen.getByRole('textbox',{name:'Votre message'})as HTMLTextAreaElement).value).toBe('mon brouillon');
 });
 test('a late diff never replaces the newly selected file',async()=>{
@@ -78,4 +79,23 @@ test('clean local changes lead to history and refresh between clean and changed 
   expect(await screen.findByRole('heading',{name:'Aucune modification locale'})).toBeTruthy();
   expect(screen.queryByRole('button',{name:/deleted.txt/})).toBeNull();
   expect(screen.queryByText('+after')).toBeNull();expect(screen.queryByText(/Sélectionnez un fichier/)).toBeNull();
+});
+test('coming back to the window re-reads Git silently and keeps the open diff',async()=>{
+  const git=api();let serial=0;git.read.mockImplementation(async(projectId:string)=>({ok:true,value:{...snapshot(projectId),id:`read-${++serial}`}}));
+  render(<GitView projectId="p"/>);await screen.findByRole('heading',{name:'Merge fixture'});
+  fireEvent.click(await screen.findByRole('button',{name:/commit\.ts/}));await screen.findByText('+after');
+  const files=git.commitFiles.mock.calls.length,diffs=git.diff.mock.calls.length;
+  window.dispatchEvent(new Event('focus'));
+  await waitFor(()=>expect(git.read).toHaveBeenCalledTimes(2),{timeout:2000});
+  expect(screen.queryByText('Lecture du dépôt…')).toBeNull();expect(screen.getByText('+after')).toBeTruthy();
+  await new Promise(resolve=>setTimeout(resolve,50));
+  expect(git.commitFiles.mock.calls.length).toBe(files);expect(git.diff.mock.calls.length).toBe(diffs);
+});
+test('diff lines take the colours of the file language and keep their sign',()=>{
+  const diff={kind:'text' as const,text:'@@ -1 +1 @@\n-const a = 1;\n+const a = "b";\n context',truncated:false};
+  const view=render(<DiffView diff={diff} path="src/a.ts"/>);
+  const added=view.container.querySelector('.git-diff-added code')!;
+  expect(added.textContent).toBe('+const a = "b";');expect(added.querySelector('.hljs-keyword')?.textContent).toBe('const');expect(added.querySelector('.hljs-string')).toBeTruthy();
+  expect(view.container.querySelector('.git-diff-hunk .hljs-keyword')).toBeNull();
+  view.unmount();const plain=render(<DiffView diff={diff} path="notes.unknown"/>);expect(plain.container.querySelector('.hljs-keyword')).toBeNull();
 });

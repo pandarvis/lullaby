@@ -141,6 +141,7 @@ Date : 28 septembre 2026. Statut : **retenu**, validé par l'utilisateur le
   de 76 px et les onglets Conversations/Git disparaissent.
 - Git et les aperçus HTML s'ouvrent dans un panneau droit (`Ctrl+J`) ; l'aperçu y est
   rendu par un portail React depuis la conversation, sans changer son isolation.
+  Git dans le panneau est remplacé par une vue pleine largeur (D015).
 - Couches CSS : `shell.css`, chargé en dernier, surcharge les styles hérités
   d'`iris.css` et `studio.css` ; les règles mortes de l'ancien rail et de l'ancienne
   barre ont été supprimées de ces deux fichiers.
@@ -176,3 +177,16 @@ pas été modifiée ailleurs. Il est fermé en cas d'interruption ou d'erreur, a
 Un doute sur la fraîcheur de la session impose un démarrage neuf. Codex suit la même
 règle : le processus App Server garde son fil, contrôlé via le fichier `thread.path`
 (champ marqué instable : sans lui, pas de réutilisation).
+
+## D015 — Git en vue pleine largeur (implémenté)
+
+Date : 29 septembre 2026. Statut : **retenu**, validé par l'utilisateur ; remplace
+Git dans le panneau droit (D012).
+
+Dans le panneau, l'historique, les fichiers et la différence étaient tronqués et le
+graphe occupait la largeur utile. Git devient une vue du projet qui remplace la
+conversation (bouton Git de la barre de titre, `Ctrl+Maj+G`, retour par « Retour »
+ou Précédent) : historique, fichiers et différence côte à côte, chacun défilant seul.
+Le panneau droit garde ce qui se lit à côté d'une conversation : l'aperçu HTML
+(`Ctrl+J`). Le diff d'une intervention reste affiché à côté du chat et propose
+« Ouvrir dans Git ». Le brouillon de la conversation est conservé à l'aller-retour.

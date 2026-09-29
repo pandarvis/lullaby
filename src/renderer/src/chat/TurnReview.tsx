@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import type { ReviewFile,TurnReview } from '../../../shared/contracts';
 import { UiIcon } from '../app/UiIcon';
 import { DiffView } from '../git/DiffView';
 import '../git/git.css';
+import { ShellContext } from '../shell/ShellContext';
 export type ReviewSelection={review:TurnReview;path?:string};
 function Counts({file}:{file:ReviewFile}){return file.additions!==undefined?<span className="review-counts"><span>+{file.additions}</span><span>−{file.deletions}</span></span>:<small>{file.diff.kind==='binary'?'Binaire':'Non comparé'}</small>;}
 export function TurnReviewCard({review,onExamine}:{review:TurnReview;onExamine:(selection:ReviewSelection)=>void}){
@@ -17,12 +18,12 @@ export function TurnReviewCard({review,onExamine}:{review:TurnReview;onExamine:(
   </section>;
 }
 export function TurnReviewPane({selection,onClose}:{selection:ReviewSelection;onClose:()=>void}){
-  const {review}=selection;const [path,setPath]=useState(selection.path??review.files[0]?.path);
+  const shell=useContext(ShellContext);const {review}=selection;const [path,setPath]=useState(selection.path??review.files[0]?.path);
   const file=review.files.find(file=>file.path===path)??review.files[0];
-  return <aside className="turn-review-pane" aria-label="Examiner les modifications"><header><UiIcon name="file" flat/><strong>Modifications de l’intervention</strong><button className="icon-button" aria-label="Fermer les modifications" onClick={onClose}><UiIcon name="close"/></button></header>
+  return <aside className="turn-review-pane" aria-label="Examiner les modifications"><header><UiIcon name="file" flat/><strong>Modifications de l’intervention</strong>{shell.openGit&&<button className="text-button" onClick={shell.openGit}>Ouvrir dans Git</button>}<button className="icon-button" aria-label="Fermer les modifications" onClick={onClose}><UiIcon name="close"/></button></header>
     <p className="review-scope">Avant / après cette intervention · relevé conservé au {new Date(review.capturedAt).toLocaleString('fr-FR')}. Les éditions faites ensuite n’y figurent pas.</p>
     {review.notice&&<p className="review-scope review-warning">{review.notice}</p>}
     <nav aria-label="Fichiers de l’intervention">{review.files.map(item=><button key={item.path} aria-current={file?.path===item.path?'true':undefined} onClick={()=>setPath(item.path)}><span className="review-path">{item.path}</span><Counts file={item}/></button>)}</nav>
-    {file&&<div className="review-file-diff"><div className="git-diff-path">{file.path}</div><DiffView diff={file.diff}/></div>}
+    {file&&<div className="review-file-diff"><div className="git-diff-path">{file.path}</div><DiffView diff={file.diff} path={file.path}/></div>}
   </aside>;
 }
