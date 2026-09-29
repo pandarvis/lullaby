@@ -9,7 +9,7 @@ import { spawnNativeClaude } from './native';
 import { claudePermissionMode } from '../permissions';
 type Answer=ReplyRequest['answer'];
 type Stamp={lastModified:number;fileSize?:number};
-export type ClaudeDeps={query:typeof query;sessionInfo:(sessionId:string,cwd:string)=>Promise<Stamp|undefined>;settings:(cwd:string)=>Promise<Settings>;idleMs:number;maxIdle:number};
+export type ClaudeDeps={query:typeof query;sessionInfo:(sessionId:string,cwd:string)=>Promise<Stamp|undefined>;settings:(cwd:string)=>Promise<Settings>;startupMs:number;idleMs:number;maxIdle:number};
 // User plugins and hooks load before the engine answers; measured at ~32 s on a
 // managed Windows workstation (6 s without them), so 20 s aborted valid sessions.
 const STARTUP_TIMEOUT_MS=90000;
@@ -19,7 +19,7 @@ const defaults:ClaudeDeps={query,
   // Looked up without `dir`: with a Windows folder the SDK 0.3.283 lookup finds nothing.
   sessionInfo:sessionId=>getSessionInfo(sessionId),
   // Same cascade and trust filter as the CLI, without spawning it.
-  settings:async cwd=>filterEscalatingDefaultMode(await resolveSettings({cwd,settingSources:['user','project','local']})),idleMs:10*60_000,maxIdle:3};
+  settings:async cwd=>filterEscalatingDefaultMode(await resolveSettings({cwd,settingSources:['user','project','local']})),startupMs:STARTUP_TIMEOUT_MS,idleMs:10*60_000,maxIdle:3};
 type Turn={
   onMessage(message:SDKMessage):void;onEnd():void;
   ask(requestKind:'approval'|'question',text:string,signal:AbortSignal):Promise<Answer>;
@@ -45,6 +45,14 @@ export function describeNative(settings:Settings|undefined,models:NonNullable<Di
   const effort=typeof settings?.effortLevel==='string'?settings.effortLevel:undefined;
   return {configuredModel:row?.id,native:{modelName:row?.name??value,effort,permission:settings?.permissions?.defaultMode??'default'}};
 }
+// Says which step failed, so the banner can suggest the right action.
+function diagnosticIssue(error:unknown,timedOut:boolean,startupMs:number):string {
+  const code=error instanceof Error?error.message:'';
+  if(code==='AUTH_CONFIGURATION_AMBIGUOUS')return 'Une variable de clé API peut sélectionner une facturation API. Retirez-la pour utiliser l’abonnement ; aucune bascule payante n’a été faite.';
+  if(code==='SUBSCRIPTION_NOT_CONFIRMED')return 'Claude répond, mais aucun abonnement Pro, Max, Team ou Enterprise n’est confirmé. Connectez-vous dans Claude Code (/login), puis réessayez.';
+  if(timedOut)return `Le moteur Claude n’a pas répondu en ${Math.max(1,Math.round(startupMs/1000))} s. Son démarrage peut être long (hooks, antivirus, réseau) : réessayez.`;
+  return `Le moteur Claude n’a pas pu confirmer l’abonnement${code?` : « ${code.replace(/\s+/g,' ').slice(0,200)} »`:''}. Vérifiez sa connexion, puis réessayez.`;
+}
 function engineKey(input:RunInput){
   const env=createHash('sha256').update(JSON.stringify(Object.entries(input.env).filter(([name])=>!name.startsWith('CLAUDE_AGENT_SDK_')).sort(([a],[b])=>a.localeCompare(b)))).digest('hex');
   return JSON.stringify({cwd:input.cwd,choices:input.choices,env});
@@ -58,7 +66,7 @@ export class ClaudeAdapter implements ProviderAdapter {
     let runtime:Query|undefined;
     const input=new AsyncQueue<SDKUserMessage>();
     const controller=new AbortController();
-    const timeout=setTimeout(()=>controller.abort(),STARTUP_TIMEOUT_MS);
+    const timeout=setTimeout(()=>controller.abort(),this.deps.startupMs);
     try {
       checkSubscriptionEnvironment(env,'claude');
       runtime=this.deps.query({prompt:input,options:{cwd,env,systemPrompt:{type:'preset',preset:'claude_code'},settingSources:['user','project','local'],abortController:controller,spawnClaudeCodeProcess:spawnNativeClaude}});
@@ -66,7 +74,7 @@ export class ClaudeAdapter implements ProviderAdapter {
       diagnostic.skills=(await runtime.supportedCommands()).map(skill=>({name:skill.name,available:true,evidence:'Commande annoncée par le moteur natif ; invocation à vérifier.'}));
       diagnostic.models=(await runtime.supportedModels()).map(model=>({id:model.value,name:model.displayName,efforts:model.supportedEffortLevels??[],default:false}));
       Object.assign(diagnostic,describeNative(await this.deps.settings(cwd).catch(()=>undefined),diagnostic.models));
-    } catch(error) {diagnostic.auth=error instanceof Error&&error.message==='AUTH_CONFIGURATION_AMBIGUOUS'?'ambiguous':'missing';diagnostic.issues.push('Connexion Claude par abonnement non confirmée. Vérifiez la connexion officielle et la configuration.');}
+    } catch(error) {diagnostic.auth=error instanceof Error&&error.message==='AUTH_CONFIGURATION_AMBIGUOUS'?'ambiguous':'missing';diagnostic.issues.push(diagnosticIssue(error,controller.signal.aborted,this.deps.startupMs));}
     finally {clearTimeout(timeout);input.end();controller.abort();runtime?.close();}
     return diagnostic;
   }
@@ -101,7 +109,7 @@ export class ClaudeAdapter implements ProviderAdapter {
     }
     if(permissionMode!==undefined)options.permissionMode=permissionMode;
     const runtime=this.deps.query({prompt:incoming,options});
-    const timeout=setTimeout(()=>controller.abort(),STARTUP_TIMEOUT_MS);
+    const timeout=setTimeout(()=>controller.abort(),this.deps.startupMs);
     try {assertClaudeSubscription(await runtime.accountInfo());}
     catch(error){incoming.end();controller.abort();runtime.close();throw error;}
     finally {clearTimeout(timeout);}

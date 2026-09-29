@@ -174,3 +174,9 @@ html,body,#root{height:100%;margin:0;background:var(--chrome)}
 .iris-shell .overview-columns,.iris-shell .project-row{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) 130px;gap:16px}
 .iris-shell .overview-state{grid-column:auto;grid-row:auto}
 @container (max-width:560px){.iris-shell .overview-columns,.iris-shell .project-row{grid-template-columns:minmax(0,1fr) 130px}.iris-shell .overview-columns span:nth-child(2){display:none}.iris-shell .overview-state{grid-column:2;grid-row:1 / span 2}}
+/* Bandeau de diagnostic : l'action de nouvelle vérification reste dans le bandeau. */
+.iris-shell .session-header .model-notice{display:flex;align-items:center;gap:10px}
+.iris-shell .session-header .model-notice span{flex:1;min-width:0}
+.notice-action{flex-shrink:0;border:1px solid currentColor;background:transparent;color:inherit;border-radius:var(--radius);padding:1px 9px;font:inherit;font-weight:600;cursor:pointer}
+.notice-action:hover:not(:disabled){background:#fff8}
+.notice-action:disabled{opacity:.6;cursor:progress}

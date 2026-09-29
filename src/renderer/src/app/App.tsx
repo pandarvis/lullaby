@@ -70,7 +70,7 @@ export function App(){
           onProjectRemoved={id=>{if(id===projectId)go({kind:'atelier'});}} onSessionRemoved={id=>{if(view.kind==='session'&&view.sessionId===id)go({kind:'project',projectId:view.projectId});}} onError={setNotice}/>
         <main className="main-area">
           {notice&&<div className="shell-notice" role="alert"><span>{notice}</span><button onClick={()=>setNotice('')}>Fermer</button></div>}
-          {session&&project?<SessionView session={session} diagnostic={diagnostic}/>
+          {session&&project?<SessionView session={session} diagnostic={diagnostic} checking={loading===session.projectId} onRetry={()=>void diagnose(session.projectId)}/>
             :project?<NewConversation key={project.id} project={project} onCreated={id=>go({kind:'session',projectId:project.id,sessionId:id})} onError={setNotice}/>
             :<AtelierView projects={snapshot.projects} sessions={snapshot.sessions} remembered={remembered} onOpen={openProject} onOpenFolder={()=>void openFolder()}/>}
         </main>
