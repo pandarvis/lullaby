@@ -232,3 +232,23 @@ html,body,#root{height:100%;margin:0;background:var(--chrome)}
 .project-remove-buttons{display:flex;justify-content:flex-end;gap:6px}
 .shell-button.danger{background:#b4404f;border-color:#b4404f;color:#fff}
 .shell-button.danger:hover:not(:disabled){background:#9c3242;border-color:#9c3242}
+/* Journal de travail : lignes compactes pendant un tour, une ligne repliée ensuite. */
+.work-log{margin:6px 0;min-width:0}
+.work-summary>summary{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:3px 8px;border-radius:var(--radius);list-style:none;cursor:pointer;color:var(--muted);font-size:var(--text-sm)}
+.work-summary>summary::-webkit-details-marker,.work-row>summary::-webkit-details-marker{display:none}
+.work-summary>summary:hover{background:var(--hover);color:var(--ink)}
+.work-summary>summary svg{width:14px;height:14px;flex:none;transform:rotate(-90deg);transition:transform var(--fast)}
+.work-summary[open]>summary svg{transform:none}
+.work-rows{display:flex;flex-direction:column;gap:1px;min-width:0;margin-top:4px;padding-left:10px;border-left:2px solid var(--line)}
+.work-row{min-width:0}
+.work-row>summary{display:flex;align-items:center;gap:8px;min-height:26px;padding:2px 6px;border-radius:var(--radius);list-style:none;cursor:pointer;font-size:var(--text-sm);color:var(--ink)}
+.work-row>summary:hover{background:var(--hover)}
+.work-row>summary svg{width:15px;height:15px;flex:none;color:var(--muted)}
+.work-verb{flex:none;font-weight:600}
+.work-row code{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:12px;color:var(--muted);background:none}
+.work-running{width:10px;height:10px;flex:none;border:2px solid var(--accent);border-right-color:transparent;border-radius:50%;animation:work-spin .8s linear infinite}
+@keyframes work-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.work-running{animation:none}}
+.work-error{flex:none;margin-left:auto;padding:0 7px;border-radius:999px;background:var(--rose);color:var(--rose-ink);font-size:var(--text-xs)}
+.work-summary>summary .work-error{margin-left:4px}
+.work-row pre{margin:2px 0 6px 23px;padding:8px 10px;max-height:240px;overflow:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);font-size:11px;white-space:pre-wrap;overflow-wrap:anywhere}
