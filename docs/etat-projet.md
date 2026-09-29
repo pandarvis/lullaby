@@ -4,6 +4,11 @@ Dernière mise à jour : 29 septembre 2026, Claude.
 
 ## État réel
 
+**Version 0.1.0** : première version, stabilisée sur `release/0.1.0` depuis `develop`,
+fusionnée dans `main` avec le tag annoté `v0.1.0` ; contenu et limites dans le
+[CHANGELOG](../CHANGELOG.md). Paquet `dist/win-unpacked` construit et lancé sur le
+poste professionnel (projets et conversations existants rechargés) ; non signé.
+
 Le checkout initial `C:\Sources\lullaby` reste sur `develop`, au merge local
 `391b780` de la consultation Git. Documentation, socle Windows et icône Iris
 intégrés. Publication des branches sur `origin` demandée pour la reprise sur poste

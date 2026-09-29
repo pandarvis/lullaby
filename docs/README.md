@@ -6,6 +6,7 @@ dans la même PR. Éviter les comptes rendus redondants et les copies de convers
 | Document | Source de référence pour |
 | --- | --- |
 | [État du projet](etat-projet.md) | Ce qui existe, ce qui est vérifié et la prochaine action |
+| [Historique des versions](../CHANGELOG.md) | Contenu et limites de chaque version publiée |
 | [Cadrage](cadrage.md) | Besoin, contraintes et architecture envisagée |
 | [Fidélité aux moteurs](fidelite-moteurs.md) | Instructions natives, skills, reprise et critères de comparaison avec les clients officiels |
 | [Direction artistique](direction-artistique.md) | Référence Ankama/Dofus 3, principes UX et mouvement |
