@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lullaby — coquille Iris</title>
+<!-- Maquette de la spec docs/superpowers/specs/2026-09-28-iris-shell-design.md.
+     Autonome : aucune dépendance, aucun réseau. Les données sont fictives. -->
+<style>
+:root{
+  color-scheme:light;
+  --ink:#302e50;--muted:#696582;--faint:#8f8aa8;
+  --chrome:#e9e5f5;--paper:#f6f4fb;--surface:#fcfbff;--line:#dedbea;
+  --hover:#6551ad14;--accent:#6551ad;--accent-soft:#e5dff8;
+  --mint:#c7e9df;--mint-ink:#246051;--amber:#f4ddb1;--amber-ink:#765016;--rose:#f0d2d5;--rose-ink:#8a3340;
+  --text-xs:11px;--text-sm:13px;--text-md:14px;--text-lg:16px;
+  --row:32px;--control:28px;--icon:16px;--radius:6px;--radius-lg:8px;
+  --titlebar:40px;--sidebar:280px;--panel:420px;
+  --fast:120ms;--medium:160ms;
+  font:var(--text-sm)/1.3 'Segoe UI Variable Text','Segoe UI',system-ui,sans-serif;color:var(--ink);
+}
+@media (prefers-reduced-motion:reduce){:root{--fast:0ms;--medium:0ms}}
+.no-motion{--fast:0ms;--medium:0ms}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--chrome);overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:var(--radius)}
+svg.i{width:var(--icon);height:var(--icon);flex:none}
+.stroke{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- Fenêtre ---------- */
+.app{display:grid;grid-template-rows:var(--titlebar) 1fr;height:100vh}
+.body{display:grid;grid-template-columns:var(--sidebar) 1fr auto;min-height:0;transition:grid-template-columns var(--medium) ease}
+.app.rail-hidden .body{grid-template-columns:0 1fr auto}
+
+/* ---------- Barre de titre ---------- */
+.titlebar{display:flex;align-items:center;gap:2px;padding-left:8px;background:var(--chrome);user-select:none}
+.titlebar .logo{width:20px;height:22px;margin:0 8px 0 4px}
+.icon-btn{width:var(--control);height:var(--control);display:grid;place-items:center;border-radius:var(--radius);color:var(--muted);transition:background var(--fast),color var(--fast)}
+.icon-btn:hover{background:var(--hover);color:var(--ink)}
+.icon-btn[aria-pressed=true]{background:var(--accent-soft);color:var(--accent)}
+.icon-btn:disabled{opacity:.35;cursor:default;background:none}
+.project-switch{display:flex;align-items:center;gap:6px;height:var(--control);padding:0 8px;margin-left:8px;border-radius:var(--radius);font-weight:600;transition:background var(--fast)}
+.project-switch:hover{background:var(--hover)}
+.project-switch .emb{width:16px;height:18px}
+.path{color:var(--faint);font-size:var(--text-xs);font-family:'Cascadia Code',Consolas,monospace;margin-left:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.drag{flex:1;align-self:stretch}
+.panel-toggles{display:flex;gap:2px;margin-right:8px}
+.win{display:flex;align-self:stretch}
+.win span{width:46px;display:grid;place-items:center;color:var(--ink)}
+.win span:hover{background:#6551ad1f}.win span.close:hover{background:#c42b1c;color:#fff}
+.menu{position:absolute;top:36px;left:120px;min-width:260px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:4px;box-shadow:0 8px 24px #30285014;z-index:20;opacity:0;transform:translateY(-4px);pointer-events:none;transition:opacity var(--fast),transform var(--fast)}
+.menu.open{opacity:1;transform:none;pointer-events:auto}
+.menu button{display:flex;align-items:center;gap:8px;width:100%;height:var(--row);padding:0 8px;border-radius:var(--radius);text-align:left}
+.menu button:hover{background:var(--hover)}
+.menu .emb{width:16px;height:18px}
+.menu small{margin-left:auto;color:var(--faint);font-size:var(--text-xs)}
+
+/* ---------- Barre latérale ---------- */
+.sidebar{background:var(--chrome);display:flex;flex-direction:column;min-width:0;overflow:hidden;padding:4px 8px 8px}
+.search{display:flex;align-items:center;gap:8px;height:var(--row);padding:0 8px;margin-bottom:6px;border:1px solid var(--line);border-radius:var(--radius);background:#fcfbff99;color:var(--faint)}
+.search:focus-within{border-color:var(--accent);background:var(--surface)}
+.search input{flex:1;border:0;background:none;font:inherit;color:var(--ink);outline:none;min-width:0}
+.search kbd{font:10px 'Segoe UI',sans-serif;color:var(--faint);border:1px solid var(--line);border-radius:4px;padding:1px 4px}
+.nav-row{display:flex;align-items:center;gap:8px;width:100%;height:var(--row);padding:0 8px;border-radius:var(--radius);text-align:left;transition:background var(--fast)}
+.nav-row:hover{background:var(--hover)}
+.nav-row.active{background:var(--accent-soft);font-weight:600}
+.nav-row .i{color:var(--muted)}
+.scroll{flex:1;overflow:auto;margin:6px -8px 0;padding:0 8px;scrollbar-width:thin;scrollbar-color:#c9c3de transparent}
+.section{display:flex;align-items:center;height:28px;padding:0 8px;margin-top:10px;color:var(--faint);font-size:var(--text-xs);letter-spacing:.06em;text-transform:uppercase}
+.section .icon-btn{margin-left:auto;width:22px;height:22px}
+.group-head{display:flex;align-items:center;gap:6px;height:28px;padding:0 4px 0 8px;margin-top:6px;border-radius:var(--radius);color:var(--muted);font-weight:600}
+.group-head:hover{background:var(--hover)}
+.group-head .toggle{display:flex;align-items:center;gap:8px;flex:1;min-width:0;height:100%;text-align:left}
+.group-head .emb{width:16px;height:18px;flex:none}
+.group-head .name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.group-head .chev{width:12px;height:12px;color:var(--faint);transition:transform var(--fast)}
+.group.collapsed .chev{transform:rotate(-90deg)}
+.group-head .actions{display:flex;opacity:0;transition:opacity var(--fast)}
+.group-head:hover .actions,.group-head:focus-within .actions{opacity:1}
+.group-head .actions .icon-btn{width:22px;height:22px}
+.attn{width:7px;height:7px;border-radius:50%;background:#d49a3a;flex:none;display:none}
+.group.collapsed .attn.show{display:block}
+.convs{overflow:hidden;transition:max-height var(--medium) ease}
+.group.collapsed .convs{max-height:0!important}
+.conv{position:relative;display:flex;align-items:center;gap:8px;width:100%;height:var(--row);padding:0 8px 0 30px;border-radius:var(--radius);text-align:left;transition:background var(--fast)}
+.conv:hover{background:var(--hover)}
+.conv.active{background:var(--accent-soft);font-weight:600}
+.conv .title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.conv .when{color:var(--faint);font-size:var(--text-xs);font-weight:400}
+.conv .more{position:absolute;right:4px;width:24px;height:24px;display:none}
+.conv:hover .when{visibility:hidden}.conv:hover .more{display:grid}
+.state{position:absolute;left:12px;width:12px;height:12px;display:grid;place-items:center}
+.state.run::before{content:'';width:7px;height:7px;border-radius:50%;background:#3d9a80;box-shadow:0 0 0 3px var(--mint);animation:breathe 2.4s ease-in-out infinite}
+.state.wait{color:#b77a1c}.state.err{color:#b4404f}
+.state.idle::before{content:'';width:5px;height:5px;border-radius:50%;background:#bdb6d4}
+@keyframes breathe{50%{box-shadow:0 0 0 1px var(--mint)}}
+.no-motion .state.run::before{animation:none}
+@media (prefers-reduced-motion:reduce){.state.run::before{animation:none}}
+.show-all{height:28px;padding:0 8px 0 30px;color:var(--accent);font-size:var(--text-xs);border-radius:var(--radius)}
+.show-all:hover{background:var(--hover)}
+.empty-line{height:28px;padding:0 8px 0 30px;color:var(--faint);font-size:var(--text-xs);display:flex;align-items:center}
+.sidebar-foot{border-top:1px solid var(--line);padding-top:6px;margin-top:6px}
+
+/* ---------- Zone centrale ---------- */
+.main{background:var(--paper);border-top-left-radius:var(--radius-lg);display:flex;flex-direction:column;min-width:0;min-height:0;position:relative}
+.app.rail-hidden .main{border-top-left-radius:0}
+.notice{display:flex;align-items:center;gap:8px;height:32px;padding:0 12px;background:var(--amber);color:var(--amber-ink);font-size:var(--text-sm);border-top-left-radius:inherit}
+.notice button{margin-left:auto;text-decoration:underline}
+.conv-head{display:flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-bottom:1px solid var(--line);flex:none}
+.conv-head h1{font-size:var(--text-sm);font-weight:600;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 6px;border-radius:4px;font-size:var(--text-xs);font-weight:600;flex:none}
+.badge.run{background:var(--mint);color:var(--mint-ink)}.badge.wait{background:var(--amber);color:var(--amber-ink)}.badge.err{background:var(--rose);color:var(--rose-ink)}.badge.idle{background:var(--accent-soft);color:var(--muted)}
+.engine{display:flex;align-items:center;gap:6px;margin-left:auto;color:var(--muted);font-size:var(--text-xs)}
+.thread{flex:1;overflow:auto;scrollbar-width:thin;scrollbar-color:#c9c3de transparent}
+.column{max-width:860px;margin:0 auto;padding:24px 24px 8px}
+.msg{font-size:var(--text-md);line-height:1.5;margin-bottom:20px}
+.msg p{margin:0 0 10px}
+.msg.user{margin-left:auto;max-width:78%;width:fit-content;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:8px 12px}
+.msg code{font:12.5px 'Cascadia Code',Consolas,monospace;background:var(--accent-soft);padding:1px 4px;border-radius:4px}
+.msg ul{margin:0 0 10px;padding-left:20px}.msg li{margin:2px 0}
+pre{margin:0 0 12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;font:12.5px/1.55 'Cascadia Code',Consolas,monospace}
+pre .ph{display:flex;align-items:center;height:28px;padding:0 10px;border-bottom:1px solid var(--line);color:var(--faint);font:var(--text-xs) 'Segoe UI',sans-serif}
+pre code{display:block;padding:10px 12px;background:none!important}
+.k{color:#6551ad}.s{color:#246051}.n{color:#a05f12}.c{color:#8f8aa8}
+.activity{display:flex;align-items:center;gap:8px;width:100%;height:30px;padding:0 10px;margin-bottom:6px;border:1px solid var(--line);border-radius:var(--radius);background:#fcfbffb3;color:var(--muted);font-size:var(--text-sm);text-align:left;transition:background var(--fast)}
+.activity:hover{background:var(--surface)}
+.activity b{color:var(--ink);font-weight:600}
+.activity .chev{margin-left:auto;width:12px;height:12px;transition:transform var(--fast)}
+.activity[aria-expanded=true] .chev{transform:rotate(180deg)}
+.activity-detail{display:none;margin:-2px 0 8px;padding:8px 10px;border:1px solid var(--line);border-top:0;border-radius:0 0 var(--radius) var(--radius);background:var(--surface);font:12px/1.5 'Cascadia Code',Consolas,monospace;color:var(--muted)}
+.activity[aria-expanded=true]+.activity-detail{display:block}
+.approval{border:1px solid #e3c68f;background:#fdf6e7;border-radius:var(--radius-lg);padding:10px 12px;margin-bottom:20px}
+.approval header{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--amber-ink);margin-bottom:6px}
+.approval code{display:block;font:12.5px 'Cascadia Code',Consolas,monospace;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:6px 8px;margin-bottom:8px}
+.approval .row{display:flex;gap:6px}
+.btn{height:var(--control);padding:0 12px;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface);font-weight:600;transition:background var(--fast),border-color var(--fast)}
+.btn:hover{border-color:#c9c3de}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{background:#584599}
+.composer-wrap{flex:none;padding:0 24px 12px}
+.composer{max-width:860px;margin:0 auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);display:flex;align-items:flex-end;gap:8px;padding:8px 8px 8px 12px;transition:border-color var(--fast),box-shadow var(--fast)}
+.composer:focus-within{border-color:#b7a9e2;box-shadow:0 0 0 3px #6551ad14}
+.composer textarea{flex:1;border:0;resize:none;background:none;font:var(--text-md)/1.5 inherit;font-family:inherit;color:var(--ink);outline:none;max-height:160px;padding:2px 0}
+.composer textarea::placeholder{color:var(--faint)}
+.send{width:var(--control);height:var(--control);border-radius:var(--radius);background:var(--accent);color:#fff;display:grid;place-items:center;flex:none}
+.send:disabled{background:var(--accent-soft);color:var(--faint);cursor:default}
+.options{max-width:860px;margin:4px auto 0;display:flex;align-items:center;gap:2px;color:var(--muted)}
+.opt{display:flex;align-items:center;gap:6px;height:26px;padding:0 8px;border-radius:var(--radius);font-size:var(--text-sm);transition:background var(--fast)}
+.opt:hover{background:var(--hover);color:var(--ink)}
+.opt .chev{width:10px;height:10px}
+.options .spacer{flex:1}
+.provider{width:14px;height:14px}
+
+/* Atelier */
+.atelier{flex:1;overflow:auto}
+.atelier .column{padding-top:20px}
+.atelier h1{font-size:var(--text-lg);margin:0 0 4px}
+.atelier .sub{color:var(--muted);margin:0 0 16px}
+.counters{display:flex;gap:8px;margin-bottom:16px}
+.counter{display:flex;align-items:center;gap:8px;height:var(--row);padding:0 12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
+.counter b{font-size:var(--text-md)}
+.table{border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface);overflow:hidden}
+.trow{display:grid;grid-template-columns:18px minmax(120px,1fr) minmax(160px,1.6fr) 150px;align-items:center;gap:12px;width:100%;height:44px;padding:0 12px;border-bottom:1px solid var(--line);text-align:left;transition:background var(--fast)}
+.trow:last-child{border-bottom:0}
+.trow:hover{background:var(--hover)}
+.trow .emb{width:18px;height:20px}
+.trow .pname{font-weight:600}.trow .pname small{display:block;font-weight:400;color:var(--faint);font-size:var(--text-xs);font-family:'Cascadia Code',Consolas,monospace}
+.trow .badge{justify-self:end}
+.trow .last{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ---------- Panneau droit ---------- */
+.panel{width:0;background:var(--surface);border-left:1px solid var(--line);display:flex;flex-direction:column;min-width:0;overflow:hidden;position:relative;transition:width var(--medium) ease}
+.panel.open{width:var(--panel)}
+.panel.resizing{transition:none}
+.resizer{position:absolute;left:-3px;top:0;bottom:0;width:6px;cursor:col-resize;z-index:2}
+.resizer:hover,.panel.resizing .resizer{background:#6551ad33}
+.tabs{display:flex;align-items:center;gap:2px;height:40px;padding:0 8px;border-bottom:1px solid var(--line);flex:none}
+.tab{display:flex;align-items:center;gap:6px;height:var(--control);padding:0 10px;border-radius:var(--radius);color:var(--muted);font-weight:600;transition:background var(--fast)}
+.tab:hover{background:var(--hover)}
+.tab[aria-selected=true]{background:var(--accent-soft);color:var(--ink)}
+.tabs .icon-btn{margin-left:auto}
+.panel-body{flex:1;overflow:auto;min-width:320px}
+.gitline{display:grid;grid-template-columns:28px 1fr auto;align-items:center;height:34px;padding:0 12px 0 4px;border-bottom:1px solid #edeaf5}
+.gitline:hover{background:var(--hover)}
+.gitline svg{width:28px;height:34px}
+.gitline .msgc{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gitline small{color:var(--faint);font:var(--text-xs) 'Cascadia Code',Consolas,monospace}
+.ref{display:inline-block;font-size:10px;font-weight:600;padding:0 5px;border-radius:4px;margin-right:6px;background:var(--accent-soft);color:var(--accent)}
+.ref.mint{background:var(--mint);color:var(--mint-ink)}
+.panel-section{padding:10px 12px 4px;color:var(--faint);font-size:var(--text-xs);letter-spacing:.06em;text-transform:uppercase}
+.file{display:flex;align-items:center;gap:8px;height:28px;padding:0 12px;font:12px 'Cascadia Code',Consolas,monospace}
+.file:hover{background:var(--hover)}
+.file .st{width:14px;font-weight:700;color:#a05f12}.file .st.a{color:#246051}
+.file .delta{margin-left:auto;color:var(--faint)}
+.preview-frame{margin:12px;border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.preview-bar{display:flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-bottom:1px solid var(--line);color:var(--faint);font-size:var(--text-xs);background:var(--paper)}
+.preview-page{padding:24px;background:linear-gradient(160deg,#f2eaff,#e7f6f0);min-height:240px}
+.preview-page h2{margin:0 0 6px;font-size:18px}
+.preview-page p{margin:0 0 12px;color:var(--muted)}
+
+/* Outils de maquette */
+.demo{position:fixed;left:12px;bottom:52px;z-index:30;display:flex;gap:6px;padding:6px;background:#302e50e6;color:#fff;border-radius:var(--radius-lg);font-size:var(--text-xs);box-shadow:0 8px 24px #30285033}
+.demo button{height:24px;padding:0 8px;border-radius:4px;background:#ffffff1f}
+.demo button:hover{background:#ffffff38}
+.demo button[aria-pressed=true]{background:#c7e9df;color:#1e4a40}
+.tip{position:fixed;z-index:40;pointer-events:none;background:var(--ink);color:#fff;font-size:var(--text-xs);padding:4px 8px;border-radius:4px;opacity:0;transition:opacity var(--fast)}
+.tip.show{opacity:1}
+@media (max-width:999px){.panel.open{position:absolute;right:0;top:var(--titlebar);bottom:0;box-shadow:-8px 0 24px #30285014;z-index:10}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="logo" viewBox="0 0 40 44"><path fill="#7f68b6" d="M20 0 39 10v24L20 44 1 34V10z"/><path fill="#c5b2ef" d="m20 4 14 8-14 8-14-8z"/><path fill="#4c3b7a" d="m20 20 14-8v19L20 39z"/><path fill="#f2eaff" d="m10 15 7 4v13l13-7v7l-13 7-7-4z"/></symbol>
+    <symbol id="i-rail" viewBox="0 0 24 24"><rect class="stroke" x="3" y="4" width="18" height="16" rx="2"/><path class="stroke" d="M9 4v16"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path class="stroke" d="M19 12H5m6-6-6 6 6 6"/></symbol>
+    <symbol id="i-fwd" viewBox="0 0 24 24"><path class="stroke" d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path class="stroke" d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle class="stroke" cx="11" cy="11" r="6"/><path class="stroke" d="m20 20-4.5-4.5"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path class="stroke" d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path class="stroke" d="M4 20h4L19 9l-4-4L4 16z"/></symbol>
+    <symbol id="i-atelier" viewBox="0 0 24 24"><path class="stroke" d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/><path class="stroke" d="m4 7.5 8 4.5 8-4.5M12 12v9"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path class="stroke" d="m9 3h6l1 3 3 1.5 2 4.5-2 4.5-3 1.5-1 3H9l-1-3-3-1.5L3 12l2-4.5L8 6z"/><circle class="stroke" cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-git" viewBox="0 0 24 24"><circle class="stroke" cx="6" cy="6" r="2.2"/><circle class="stroke" cx="6" cy="18" r="2.2"/><circle class="stroke" cx="18" cy="9" r="2.2"/><path class="stroke" d="M6 8.2v7.6M18 11.2c0 4-6 3-10.5 5.6"/></symbol>
+    <symbol id="i-preview" viewBox="0 0 24 24"><rect class="stroke" x="3" y="4" width="18" height="16" rx="2"/><path class="stroke" d="M3 9h18M7 6.5h.01M10 6.5h.01"/></symbol>
+    <symbol id="i-panel" viewBox="0 0 24 24"><rect class="stroke" x="3" y="4" width="18" height="16" rx="2"/><path class="stroke" d="M15 4v16"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path class="stroke" d="M12 19V5m-6 6 6-6 6 6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path class="stroke" d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-wait" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2 22 20H2z"/><path d="M12 9v5m0 3h.01" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="i-err" viewBox="0 0 24 24"><path fill="currentColor" d="m8 2h8l6 6v8l-6 6H8l-6-6V8z"/><path d="m9 9 6 6m0-6-6 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path class="stroke" d="m12 3 8 3.5V12c0 4.5-3.5 7.5-8 9-4.5-1.5-8-4.5-8-9V6.5z"/></symbol>
+    <symbol id="i-term" viewBox="0 0 24 24"><path class="stroke" d="m5 7 5 5-5 5m7 1h7"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path class="stroke" d="M6 3h8l4 4v14H6z"/><path class="stroke" d="M14 3v4h4"/></symbol>
+    <symbol id="i-claude" viewBox="0 0 24 24"><g stroke="#d97757" stroke-width="2.6" stroke-linecap="round"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/></g></symbol>
+    <symbol id="i-codex" viewBox="0 0 24 24"><circle class="stroke" cx="12" cy="12" r="8"/><path class="stroke" d="M12 4v8l6 4"/></symbol>
+  </defs>
+</svg>
+
+<div class="app" id="app">
+  <header class="titlebar">
+    <svg class="logo" aria-label="Lullaby"><use href="#logo"/></svg>
+    <button class="icon-btn" id="railBtn" data-tip="Replier la barre latérale (Ctrl+B)" aria-label="Replier la barre latérale"><svg class="i"><use href="#i-rail"/></svg></button>
+    <button class="icon-btn" id="backBtn" data-tip="Précédent (Alt+←)" aria-label="Précédent" disabled><svg class="i"><use href="#i-back"/></svg></button>
+    <button class="icon-btn" id="fwdBtn" data-tip="Suivant (Alt+→)" aria-label="Suivant" disabled><svg class="i"><use href="#i-fwd"/></svg></button>
+    <button class="project-switch" id="projectSwitch" aria-haspopup="menu" aria-expanded="false"><span id="switchEmb"></span><span id="switchName">Atelier</span><svg class="i" style="width:12px;height:12px;color:var(--faint)"><use href="#i-chev"/></svg></button>
+    <span class="path" id="switchPath"></span>
+    <div class="drag" title="Zone déplaçable de la fenêtre"></div>
+    <div class="panel-toggles">
+      <button class="icon-btn" id="gitBtn" data-tip="Git (Ctrl+J)" aria-label="Git" aria-pressed="false"><svg class="i"><use href="#i-git"/></svg></button>
+      <button class="icon-btn" id="previewBtn" data-tip="Aperçu" aria-label="Aperçu" aria-pressed="false"><svg class="i"><use href="#i-preview"/></svg></button>
+    </div>
+    <div class="win" aria-hidden="true" title="Boutons natifs Windows (titleBarOverlay)">
+      <span><svg class="i" viewBox="0 0 24 24" style="width:10px"><path d="M4 12h16" stroke="currentColor" stroke-width="1.5"/></svg></span>
+      <span><svg class="i" viewBox="0 0 24 24" style="width:10px"><rect x="4" y="4" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span>
+      <span class="close"><svg class="i" viewBox="0 0 24 24" style="width:10px"><path d="m4 4 16 16M20 4 4 20" stroke="currentColor" stroke-width="1.5"/></svg></span>
+    </div>
+    <div class="menu" id="projectMenu" role="menu"></div>
+  </header>
+
+  <div class="body">
+    <aside class="sidebar" aria-label="Navigation">
+      <label class="search"><svg class="i"><use href="#i-search"/></svg><input id="search" placeholder="Rechercher" aria-label="Rechercher une conversation"><kbd>Ctrl K</kbd></label>
+      <button class="nav-row" id="newBtn"><svg class="i"><use href="#i-edit"/></svg>Nouvelle conversation</button>
+      <button class="nav-row" id="atelierBtn"><svg class="i"><use href="#i-atelier"/></svg>Atelier</button>
+      <div class="scroll" id="groups" role="tree" aria-label="Conversations par projet"></div>
+      <div class="sidebar-foot"><button class="nav-row"><svg class="i"><use href="#i-settings"/></svg>Paramètres</button></div>
+    </aside>
+
+    <main class="main" id="main"></main>
+
+    <aside class="panel" id="panel" aria-label="Panneau latéral">
+      <div class="resizer" id="resizer" role="separator" aria-orientation="vertical" aria-label="Redimensionner le panneau"></div>
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" data-tab="git"><svg class="i"><use href="#i-git"/></svg>Git</button>
+        <button class="tab" role="tab" data-tab="preview"><svg class="i"><use href="#i-preview"/></svg>Aperçu</button>
+        <button class="icon-btn" id="closePanel" aria-label="Fermer le panneau" data-tip="Fermer (Ctrl+J)"><svg class="i"><use href="#i-close"/></svg></button>
+      </div>
+      <div class="panel-body" id="panelBody"></div>
+    </aside>
+  </div>
+</div>
+
+<div class="demo" aria-label="Commandes de la maquette">
+  <span style="align-self:center;opacity:.7;padding:0 4px">Maquette</span>
+  <button id="demoNotice">Avis</button>
+  <button id="demoMotion" aria-pressed="false">Sans animations</button>
+  <button id="demoNarrow">Fenêtre étroite</button>
+</div>
+<div class="tip" id="tip"></div>
+
+<script>
+const glyphs=['m20 11 13 22h-7l-6-11-6 11H7z','m10 14 10 5 10-5v18l-10 5-10-5zm4 7v8l4 2v-8zm8 2v8l4-2v-8z','m20 10 11 12-11 15L9 22zm0 6-5 6 5 8 5-8z','m20 9 4 10 9 4-9 4-4 11-4-11-9-4 9-4zm0 9-3 5 3 5 3-5z','M29 11C12 10 7 22 13 30l-3 5 4 2 3-6c11 2 15-9 12-20zm-5 6-8 12-2-2z','M10 12h5v5h3v-5h4v5h3v-5h5v10l-3 3v11H13V25l-3-3zm8 15v7h4v-7z','m22 9-12 16h9l-2 13 14-19h-9z','m10 16 10-6 10 6v19h-7V21l-3-2-3 2v14h-7z'];
+const tones=[['#7f68b6','#c5b2ef','#4c3b7a','#f2eaff'],['#73ab9a','#bce0c9','#366e64','#edfff0'],['#c6a165','#efdbac','#927245','#fff7da']];
+const emblem=(g,t,cls='emb')=>{const [b,l,s,k]=tones[t];return `<svg class="${cls}" viewBox="0 0 40 44" aria-hidden="true"><path fill="${b}" d="M20 0 39 10v24L20 44 1 34V10z"/><path fill="${l}" d="m20 4 14 8-14 8-14-8z"/><path fill="${s}" d="m20 20 14-8v19L20 39z"/><path fill="${k}" fill-rule="evenodd" d="${glyphs[g]}"/></svg>`};
+const I=(id,style='')=>`<svg class="i" style="${style}"><use href="#i-${id}"/></svg>`;
+
+const projects=[
+  {id:'lullaby',name:'Lullaby',path:'C:\\Sources\\lullaby',g:2,t:0,convs:[
+    {id:'c1',title:'Refonte graphique — coquille Iris',state:'run',when:'maint.',engine:'claude'},
+    {id:'c2',title:'Intégration de turn-review',state:'wait',when:'12 min',engine:'claude'},
+    {id:'c3',title:'Permissions Codex à la reprise',state:'idle',when:'hier',engine:'codex'},
+    {id:'c4',title:'Graphe Git et survol',state:'idle',when:'2 j',engine:'claude'},
+    {id:'c5',title:'Icône Windows Iris',state:'idle',when:'2 j',engine:'claude'},
+    {id:'c6',title:'Aperçus HTML isolés',state:'idle',when:'3 j',engine:'codex'},
+    {id:'c7',title:'Paramètres réseau par moteur',state:'idle',when:'4 j',engine:'claude'}]},
+  {id:'alice',name:'Alice',path:'C:\\Sources\\alice',g:4,t:1,convs:[
+    {id:'c8',title:'Liste de courses — périssables',state:'err',when:'1 h',engine:'claude'},
+    {id:'c9',title:'Watchdog Overkiz',state:'idle',when:'hier',engine:'claude'}]},
+  {id:'eclaircie',name:'Éclaircie',path:'C:\\Sources\\eclaircie',g:1,t:2,convs:[
+    {id:'c10',title:'Graphe temporel du roman',state:'idle',when:'3 j',engine:'claude'}]},
+  {id:'hatchbot',name:'hatchbot',path:'C:\\Sources\\hatchbot',g:6,t:0,convs:[]},
+];
+const stateLabel={run:'En cours',wait:'Attend votre réponse',err:'Erreur',idle:'Terminée'};
+const stateIcon={run:'',wait:I('wait','width:12px;height:12px'),err:I('err','width:12px;height:12px'),idle:''};
+const store={get(k,d){try{const v=localStorage.getItem('mock.'+k);return v===null?d:JSON.parse(v)}catch{return d}},set(k,v){try{localStorage.setItem('mock.'+k,JSON.stringify(v))}catch{}}};
+
+let view={kind:'conv',id:'c1'};const history=[view];let cursor=0;
+let collapsed=store.get('collapsed',{}),expanded={},query='';
+let panelTab=null,panelWidth=store.get('panelWidth',420),notice=false;
+const $=s=>document.querySelector(s);
+const findConv=id=>{for(const p of projects){const c=p.convs.find(c=>c.id===id);if(c)return {p,c}}};
+const currentProject=()=>view.kind==='conv'?findConv(view.id).p:view.kind==='project'?projects.find(p=>p.id===view.id):null;
+
+function go(next,push=true){view=next;if(push){history.splice(cursor+1);history.push(next);cursor=history.length-1}render()}
+function nav(step){const n=cursor+step;if(n<0||n>=history.length)return;cursor=n;view=history[n];render()}
+
+function renderGroups(){
+  const q=query.trim().toLowerCase();
+  let html=`<div class="section">Projets<button class="icon-btn" data-tip="Ouvrir un projet" aria-label="Ouvrir un projet">${I('plus','width:14px;height:14px')}</button></div>`;
+  for(const p of projects){
+    const matchP=p.name.toLowerCase().includes(q);
+    const convs=p.convs.filter(c=>!q||matchP||c.title.toLowerCase().includes(q));
+    if(q&&!convs.length&&!matchP)continue;
+    const isCol=!q&&collapsed[p.id],limit=expanded[p.id]||q?convs.length:5,hasWait=p.convs.some(c=>c.state==='wait'||c.state==='err');
+    html+=`<div class="group ${isCol?'collapsed':''}" role="treeitem" aria-expanded="${!isCol}">
+      <div class="group-head"><button class="toggle" data-group="${p.id}">${emblem(p.g,p.t)}<span class="name">${p.name}</span><svg class="i chev"><use href="#i-chev"/></svg></button>
+      <i class="attn ${hasWait?'show':''}" title="Une conversation attend votre attention"></i>
+      <span class="actions"><button class="icon-btn" data-tip="Nouvelle conversation dans ${p.name}" aria-label="Nouvelle conversation dans ${p.name}" data-new="${p.id}">${I('plus','width:14px;height:14px')}</button><button class="icon-btn" data-tip="Actions du projet" aria-label="Actions du projet ${p.name}">${I('more','width:14px;height:14px')}</button></span></div>
+      <div class="convs" style="max-height:${(Math.min(convs.length,limit)+1)*32+8}px" role="group">`;
+    if(!convs.length)html+=`<div class="empty-line">Aucune conversation</div>`;
+    for(const c of convs.slice(0,limit))html+=`<button class="conv ${view.kind==='conv'&&view.id===c.id?'active':''}" data-conv="${c.id}" title="${c.title} — ${stateLabel[c.state]}"><span class="state ${c.state}" aria-label="${stateLabel[c.state]}">${stateIcon[c.state]}</span><span class="title">${c.title}</span><span class="when">${c.when}</span><span class="icon-btn more" aria-label="Actions de la conversation">${I('more','width:14px;height:14px')}</span></button>`;
+    if(convs.length>limit)html+=`<button class="show-all" data-all="${p.id}">Afficher tout (${convs.length})</button>`;
+    html+=`</div></div>`;
+  }
+  if(q&&html.indexOf('group')<0)html+=`<div class="empty-line" style="padding-left:8px">Aucun résultat pour « ${query} »</div>`;
+  $('#groups').innerHTML=html;
+}
+
+function chatHtml(p,c){
+  const head=`<div class="conv-head"><h1>${c.title}</h1><span class="badge ${c.state}">${stateLabel[c.state]}</span><span class="engine">${c.engine==='claude'?I('claude','width:14px;height:14px')+'Claude · Opus 5.5':I('codex','width:14px;height:14px')+'Codex · GPT'}</span><button class="icon-btn" aria-label="Actions de la conversation">${I('more')}</button></div>`;
+  let body;
+  if(c.id==='c1')body=`
+    <div class="msg user"><p>Lullaby devra s'approcher de la densité de l'app Claude : barre du haut, menus, chat. Tu vois l'idée ?</p></div>
+    <button class="activity" aria-expanded="false">${I('file','width:14px;height:14px')}<span>A lu <b>3 fichiers</b></span><svg class="i chev"><use href="#i-chev"/></svg></button>
+    <div class="activity-detail">src/renderer/src/app/App.tsx<br>src/renderer/src/styles/iris.css<br>docs/direction-artistique.md</div>
+    <button class="activity" aria-expanded="false">${I('term','width:14px;height:14px')}<span>A exécuté <b>npm run typecheck</b> · réussi</span><svg class="i chev"><use href="#i-chev"/></svg></button>
+    <div class="activity-detail">&gt; tsc --noEmit<br>Aucune erreur.</div>
+    <div class="msg"><p>Oui. L'écart principal tient à la <strong>densité</strong> : une seule barre de titre de 40 px, des lignes de 32 px et un texte en 13–14 px. Voici les jetons partagés par toute l'interface :</p>
+    <pre><div class="ph">iris.css</div><code><span class="k">:root</span> {
+  <span class="n">--text-sm</span>: <span class="s">13px</span>;   <span class="c">/* barre latérale, menus */</span>
+  <span class="n">--text-md</span>: <span class="s">14px</span>;   <span class="c">/* messages, saisie */</span>
+  <span class="n">--row</span>: <span class="s">32px</span>;
+  <span class="n">--titlebar</span>: <span class="s">40px</span>;
+}</code></pre>
+    <ul><li>la barre latérale liste les conversations par projet ;</li><li>Git et l'aperçu s'ouvrent à droite sans quitter le chat ;</li><li>l'identité Iris reste : lavande, indigo, menthe et ambre.</li></ul></div>`;
+  else if(c.state==='wait')body=`
+    <div class="msg user"><p>Fusionne turn-review dans develop.</p></div>
+    <div class="approval" role="alert"><header>${I('shield','width:14px;height:14px')}Autorisation demandée</header><code>git merge --no-ff feature/turn-review</code><div class="row"><button class="btn primary">Autoriser</button><button class="btn">Refuser</button></div></div>`;
+  else if(c.state==='err')body=`<div class="msg user"><p>Ajoute les dates de péremption aux articles.</p></div><div class="approval" style="border-color:#e2b3ba;background:#fcf0f1"><header style="color:var(--rose-ink)">${I('err','width:14px;height:14px')}La connexion au moteur a été interrompue</header><div class="row"><button class="btn primary">Reprendre</button></div></div>`;
+  else body=`<div class="msg user"><p>${c.title} ?</p></div><div class="msg"><p>C'est fait. Les modifications sont commitées et les tests passent.</p></div>`;
+  return `${head}<div class="thread"><div class="column">${body}</div></div>
+  <div class="composer-wrap"><div class="composer"><textarea rows="1" id="input" placeholder="Répondre à ${c.engine==='claude'?'Claude':'Codex'}…" aria-label="Message"></textarea><button class="send" id="send" aria-label="Envoyer" disabled>${I('send')}</button></div>
+  <div class="options"><button class="opt" aria-label="Joindre">${I('plus','width:14px;height:14px')}</button><button class="opt">${I('shield','width:14px;height:14px')}Demander<svg class="i chev"><use href="#i-chev"/></svg></button><span class="spacer"></span><button class="opt">${c.engine==='claude'?'Opus 5.5':'GPT-5'}<svg class="i chev"><use href="#i-chev"/></svg></button><button class="opt">Moyen<svg class="i chev"><use href="#i-chev"/></svg></button></div></div>`;
+}
+function atelierHtml(){
+  const all=projects.flatMap(p=>p.convs),run=all.filter(c=>c.state==='run').length,todo=all.filter(c=>c.state==='wait'||c.state==='err').length;
+  const pr=p=>p.convs.find(c=>c.state!=='idle')||p.convs[0];
+  return `<div class="conv-head"><h1>Atelier</h1></div><div class="atelier"><div class="column">
+  <h1>Vos projets</h1><p class="sub">${projects.length} projets · ${all.length} conversations</p>
+  <div class="counters"><span class="counter"><span class="state run" style="position:static"></span><b>${run}</b> en cours</span><span class="counter" style="color:var(--amber-ink)">${I('wait','width:12px;height:12px')}<b>${todo}</b> à traiter</span></div>
+  <div class="table">${projects.map(p=>{const c=pr(p);return `<button class="trow" data-open="${p.id}">${emblem(p.g,p.t)}<span class="pname">${p.name}<small>${p.path}</small></span><span class="last">${c?c.title:'Aucune conversation'}</span>${c?`<span class="badge ${c.state}">${stateLabel[c.state]}</span>`:'<span></span>'}</button>`}).join('')}</div></div></div>`;
+}
+function renderMain(){
+  let html=notice?`<div class="notice" role="alert">${I('wait','width:14px;height:14px')}Codex introuvable : vérifiez le chemin dans Paramètres.<button id="closeNotice">Fermer</button></div>`:'';
+  if(view.kind==='conv'){const {p,c}=findConv(view.id);html+=chatHtml(p,c)}else html+=atelierHtml();
+  $('#main').innerHTML=html;
+  const input=$('#input');if(input)input.addEventListener('input',()=>{$('#send').disabled=!input.value.trim();input.style.height='auto';input.style.height=input.scrollHeight+'px'});
+}
+function renderPanel(){
+  const open=!!panelTab;$('#panel').classList.toggle('open',open);document.documentElement.style.setProperty('--panel',panelWidth+'px');
+  $('#gitBtn').setAttribute('aria-pressed',panelTab==='git');$('#previewBtn').setAttribute('aria-pressed',panelTab==='preview');
+  document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t.dataset.tab===panelTab));
+  if(!open)return;
+  const commits=[['a','Iris shell : jetons de densité','il y a 2 min','feature/iris-shell',1],['a','docs: specify Iris shell density','il y a 20 min','',0],['a','docs: explain professional workstation handoff','hier','feature/turn-review',0],['b','feat: compact chat controls','hier','',0],['m','feat: integrate Git inspector into develop','2 j','develop',0],['a','feat: inspect changed files and diffs','3 j','',0]];
+  $('#panelBody').innerHTML=panelTab==='git'?`<div class="panel-section">Modifications · 3</div>
+    <div class="file"><span class="st">M</span>src/renderer/src/styles/iris.css<span class="delta">+48 −31</span></div>
+    <div class="file"><span class="st">M</span>src/renderer/src/app/App.tsx<span class="delta">+12 −40</span></div>
+    <div class="file"><span class="st a">A</span>src/renderer/src/app/TitleBar.tsx<span class="delta">+64</span></div>
+    <div class="panel-section">Historique</div>
+    ${commits.map(([k,m,w,r,head],i)=>`<div class="gitline"><svg viewBox="0 0 28 34"><path d="M10 ${i?0:17}V34" stroke="#b7a9e2" stroke-width="2"/>${k==='b'?'<path d="M10 34C10 22 20 24 20 12V0" stroke="#9fd2c1" stroke-width="2" fill="none"/>':''}<circle cx="10" cy="17" r="${head?5:4}" fill="${k==='m'?'#fcfbff':'#6551ad'}" stroke="#6551ad" stroke-width="2"/></svg><span class="msgc">${r?`<span class="ref ${r==='develop'?'mint':''}">${r}</span>`:''}${m}</span><small>${w}</small></div>`).join('')}`
+    :`<div class="preview-frame"><div class="preview-bar">${I('preview','width:12px;height:12px')}docs/mockups/iris-shell.html<span style="margin-left:auto">isolé · sans réseau</span></div><div class="preview-page"><h2>Aperçu HTML</h2><p>Les pages proposées par l'agent s'affichent ici, isolées, à côté de la conversation.</p><button class="btn primary">Bouton d'exemple</button></div></div>`;
+}
+function renderTitle(){
+  const p=currentProject();
+  $('#switchEmb').innerHTML=p?emblem(p.g,p.t):I('atelier');$('#switchName').textContent=p?p.name:'Atelier';$('#switchPath').textContent=p?p.path:'';
+  $('#backBtn').disabled=cursor===0;$('#fwdBtn').disabled=cursor>=history.length-1;
+  $('#atelierBtn').classList.toggle('active',view.kind==='atelier');
+  $('#projectMenu').innerHTML=`<button data-atelier>${I('atelier')}Atelier</button>`+projects.map(p=>`<button data-open="${p.id}">${emblem(p.g,p.t)}${p.name}<small>${p.convs.length} conv.</small></button>`).join('');
+}
+function render(){renderTitle();renderGroups();renderMain();renderPanel()}
+
+function setRail(hidden){$('#app').classList.toggle('rail-hidden',hidden);store.set('railHidden',hidden);$('#railBtn').setAttribute('aria-label',hidden?'Déplier la barre latérale':'Replier la barre latérale')}
+function togglePanel(tab){panelTab=panelTab===tab||(!tab&&panelTab)?null:(tab||'git');renderPanel()}
+function openProject(id){const p=projects.find(p=>p.id===id);const c=p.convs.find(c=>c.state!=='idle')||p.convs[0];if(c)go({kind:'conv',id:c.id});else{collapsed[id]=false;go({kind:'atelier'})}}
+function newConv(pid){const p=projects.find(p=>p.id===(pid||currentProject()?.id))||projects[0];const c={id:'n'+Date.now(),title:'Nouvelle conversation',state:'idle',when:'maint.',engine:'claude'};p.convs.unshift(c);collapsed[p.id]=false;go({kind:'conv',id:c.id});setTimeout(()=>$('#input')?.focus(),0)}
+
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button,[data-conv]');const menu=$('#projectMenu');
+  if(!e.target.closest('#projectSwitch')&&!e.target.closest('#projectMenu'))menu.classList.remove('open');
+  if(!t)return;
+  if(t.id==='projectSwitch'){const o=!menu.classList.contains('open');menu.classList.toggle('open',o);t.setAttribute('aria-expanded',o);return}
+  if(t.dataset.new){e.stopPropagation();newConv(t.dataset.new);return}
+  if(t.dataset.group){collapsed[t.dataset.group]=!collapsed[t.dataset.group];store.set('collapsed',collapsed);renderGroups();return}
+  if(t.dataset.conv){if(e.target.closest('.more'))return;go({kind:'conv',id:t.dataset.conv});return}
+  if(t.dataset.all){expanded[t.dataset.all]=true;renderGroups();return}
+  if(t.dataset.open){menu.classList.remove('open');openProject(t.dataset.open);return}
+  if('atelier' in t.dataset){menu.classList.remove('open');go({kind:'atelier'});return}
+  if(t.dataset.tab){panelTab=t.dataset.tab;renderPanel();return}
+  if(t.classList.contains('activity')){t.setAttribute('aria-expanded',t.getAttribute('aria-expanded')!=='true');return}
+  switch(t.id){
+    case 'railBtn':setRail(!$('#app').classList.contains('rail-hidden'));break;
+    case 'backBtn':nav(-1);break;case 'fwdBtn':nav(1);break;
+    case 'gitBtn':togglePanel('git');break;case 'previewBtn':togglePanel('preview');break;case 'closePanel':panelTab=null;renderPanel();break;
+    case 'atelierBtn':go({kind:'atelier'});break;case 'newBtn':newConv();break;
+    case 'closeNotice':case 'demoNotice':notice=t.id==='demoNotice'?!notice:false;renderMain();break;
+    case 'demoMotion':{const on=t.getAttribute('aria-pressed')!=='true';t.setAttribute('aria-pressed',on);document.documentElement.classList.toggle('no-motion',on);break}
+    case 'demoNarrow':{const b=document.body;const on=!b.style.width;b.style.width=on?'900px':'';b.style.margin=on?'0 auto':'';b.style.boxShadow=on?'0 0 0 1px var(--line)':'';t.textContent=on?'Fenêtre large':'Fenêtre étroite';break}
+  }
+});
+$('#search').addEventListener('input',e=>{query=e.target.value;renderGroups()});
+$('#search').addEventListener('keydown',e=>{if(e.key==='Escape'){e.target.value='';query='';renderGroups()}});
+document.addEventListener('keydown',e=>{
+  const k=e.key.toLowerCase();
+  if(e.ctrlKey&&k==='b'){e.preventDefault();setRail(!$('#app').classList.contains('rail-hidden'))}
+  else if(e.ctrlKey&&k==='j'){e.preventDefault();togglePanel()}
+  else if(e.ctrlKey&&k==='k'){e.preventDefault();$('#search').focus()}
+  else if(e.ctrlKey&&k==='n'){e.preventDefault();newConv()}
+  else if(e.altKey&&e.key==='ArrowLeft'){e.preventDefault();nav(-1)}
+  else if(e.altKey&&e.key==='ArrowRight'){e.preventDefault();nav(1)}
+  else if((e.key==='ArrowDown'||e.key==='ArrowUp')&&e.target.closest('.sidebar')&&e.target.tagName!=='INPUT'){
+    const rows=[...document.querySelectorAll('.sidebar .nav-row,.sidebar .toggle,.sidebar .conv,.sidebar .show-all')].filter(r=>r.offsetParent&&r.getBoundingClientRect().height>0);
+    const i=rows.indexOf(e.target.closest('button'));const n=rows[i+(e.key==='ArrowDown'?1:-1)];if(n){e.preventDefault();n.focus()}
+  }
+});
+// Redimensionnement du panneau droit, 320 px à 60 % de la fenêtre.
+$('#resizer').addEventListener('pointerdown',e=>{
+  const panel=$('#panel');panel.classList.add('resizing');e.target.setPointerCapture(e.pointerId);
+  const move=ev=>{panelWidth=Math.round(Math.min(innerWidth*.6,Math.max(320,innerWidth-ev.clientX)));document.documentElement.style.setProperty('--panel',panelWidth+'px')};
+  const up=()=>{panel.classList.remove('resizing');store.set('panelWidth',panelWidth);removeEventListener('pointermove',move);removeEventListener('pointerup',up)};
+  addEventListener('pointermove',move);addEventListener('pointerup',up);
+});
+// Infobulles des boutons-icônes.
+const tip=$('#tip');
+document.addEventListener('pointerover',e=>{const t=e.target.closest('[data-tip]');if(!t){tip.classList.remove('show');return}const r=t.getBoundingClientRect();tip.textContent=t.dataset.tip;tip.classList.add('show');const w=tip.offsetWidth;tip.style.left=Math.min(innerWidth-w-8,Math.max(8,r.left+r.width/2-w/2))+'px';tip.style.top=(r.bottom+6)+'px'});
+
+setRail(store.get('railHidden',false));
+render();
+</script>
+</body>
+</html>

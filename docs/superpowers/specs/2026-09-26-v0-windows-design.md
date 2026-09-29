@@ -1,6 +1,10 @@
 # Lullaby V0 — validation locale sous Windows
 
-Date : 26 septembre 2026. Spécification proposée pour revue avant implémentation.
+Date : 26 septembre 2026. Spécification validée avec le plan d'implémentation.
+
+Un [plan d'implémentation](../plans/2026-09-26-v0-windows.md) a été demandé et rédigé.
+Le socle est implémenté sur sa branche feature ; les résultats réels et limites
+sont tenus dans [l'état du projet](../../etat-projet.md) et les recettes liées.
 
 ## Objectif
 
@@ -26,16 +30,27 @@ permet de choisir l'autre. La migration de contexte entre fournisseurs viendra p
 La V0 accepte plusieurs conversations mais une seule exécution à la fois par dossier,
 afin d'éviter les écritures concurrentes sans ajouter immédiatement des worktrees.
 
+Complément proposé après précision de l'usage CLI : le projet représente le dossier,
+pas une conversation unique. Après les essais de sessions créées dans Lullaby,
+vérifier la reprise par identifiant d'une session Claude créée en CLI dans le même
+dossier d'essai. La découverte et l'affichage de toutes les sessions externes restent
+à cadrer ; ne pas annoncer leur compatibilité avant l'essai. Ne pas reprendre une
+session encore utilisée activement dans un autre client.
+
 ## Interface
 
 Fenêtre unique : liste des conversations à gauche, chat au centre, accès à un
 petit panneau de diagnostic. Afficher le dossier et le fournisseur de la conversation.
+Le menu doit être repliable en une barre d'icônes et mémoriser cette préférence,
+avec noms accessibles et indicateurs d'attention conservés.
 États visibles : disponible, travaille, attend une réponse, interrompu, terminé,
 erreur et quota atteint lorsque le moteur permet de l'identifier.
 Les messages d'erreur précisent l'étape concernée sans révéler de secret.
 
-Pas de maquette avancée nécessaire pour ce premier test. Réutiliser les composants
-assistant-ui ; CSS simple pour la structure, sans ajouter un deuxième kit graphique.
+La [direction artistique](../../direction-artistique.md) doit guider la V0 : référence
+Ankama/Dofus 3, identité soignée et animations légères. Réutiliser les composants
+assistant-ui avec des styles et réglages visuels communs, sans ajouter un deuxième
+kit graphique. Valider une première composition avant de décliner tous les écrans.
 Masquer les opérations de chat non implémentées (édition, régénération, pièces jointes).
 
 ## Architecture et dépendances
@@ -73,6 +88,23 @@ autres outils. Une limite d'abonnement arrête la requête sans bascule payante.
 
 ## Paquet Windows
 
+### Réseau du poste professionnel
+
+Prévoir dès l'essai professionnel un réglage réseau propre à Claude, pour réutiliser
+le relais local que l'utilisateur démarre actuellement (probablement Px, à confirmer).
+Prévoir un bouton « Démarrer Px » à la demande de l'utilisateur, une fois sa commande
+confirmée et configurée. Garder le lancement externe comme solution de diagnostic
+initiale. Transmettre les réglages requis
+au processus Claude sans les propager automatiquement à Codex. Vérifier les variables
+héritées et la configuration native effective. Signaler un relais indisponible dans
+le diagnostic, sans modifier les paramètres réseau globaux. Le lancement automatique
+du relais à l'ouverture de l'application n'est pas demandé. Le lancement par bouton
+est à intégrer après validation de la configuration : exécutable et arguments séparés,
+réutilisation d'un relais existant, arrêt limité au processus que Lullaby a lancé,
+erreurs lisibles. Ne pas confondre un port ouvert avec un accès Claude fonctionnel.
+
+### Distribution
+
 Premier essai en développement sur la machine personnelle, puis essai d'un paquet
 Windows qui embarque Electron et les bibliothèques. Pour les moteurs, vérifier les
 binaires fournis officiellement et leur fonctionnement hors archive asar ; réutiliser
@@ -89,8 +121,14 @@ poste pro. La signature et l'autorisation d'exécution ne sont pas présumées a
 
 ## Validation de la V0
 
+Appliquer le contrat de [fidélité aux moteurs](../../fidelite-moteurs.md) :
+instructions natives, découverte et invocation d'un skill témoin, puis maintien
+des capacités après reprise. Documenter les écarts avec la CLI/client officiel.
+
 - Application et paquet démarrent nativement sur Windows.
 - Un échange réel puis une relance fonctionnent avec chaque abonnement.
+- Essai complémentaire : reprise d'une session Claude CLI arrêtée, par identifiant,
+  dans son dossier d'essai et avec sa configuration native.
 - Lecture et modification d'un fichier d'essai, avec autorisation lorsque requise.
 - Arrêt d'une exécution ; reprise d'une conversation après redémarrage.
 - Aucun mélange de messages en changeant de conversation pendant une réponse.
@@ -104,8 +142,14 @@ d'essai dédié, sans modifier les autres projets de la machine.
 
 ## Après la V0
 
-Tableau de bord multi-projets, parallélisme isolé, chronos humains et agents, export
-de reporting, profils réseau et éventuelle passation Claude/Codex. Ces besoins restent
+La prochaine tranche de développement planifiée est la
+[vue Git V1](2026-09-26-v1-git-design.md) : graphe de commits et fichiers modifiés,
+tous deux souhaités par l'utilisateur. Les notifications Windows sont hors priorité.
+Voir la [feuille de route](../../feuille-de-route.md) pour les autres jalons.
+
+Tableau de bord multi-projets, parallélisme isolé, temps humains et agents par session
+avec cumuls par projet, export
+de reporting, gestion avancée des profils réseau et éventuelle passation Claude/Codex. Ces besoins restent
 dans l'objectif Lullaby, mais ne retardent pas le premier test des deux connexions.
 
 ## Références vérifiées

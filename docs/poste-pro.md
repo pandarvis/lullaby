@@ -5,6 +5,32 @@ de l'ordinateur personnel ne suffisent pas. Cette checklist n'installe rien.
 Docker et WSL sont confirmés bloqués : aucune étape ne doit les nécessiter.
 La cible est une exécution Windows native.
 
+## Reprendre la version complète sur un autre poste
+
+La branche de validation actuelle est **`feature/turn-review`**. Elle contient les
+évolutions d’interface et le récapitulatif des interventions, pas encore fusionnés
+dans `develop`. Pour un nouveau clone, dans PowerShell :
+
+```powershell
+git clone --branch feature/turn-review https://github.com/pandarvis/lullaby.git
+cd lullaby
+npm ci
+node node_modules/electron/install.js
+npm run dev
+```
+
+Ces commandes nécessitent Git, Node 22.12 ou ultérieur compatible, npm et l’accès
+aux téléchargements npm/Electron. Pour un clone existant, préserver ses changements
+locaux, puis `git fetch origin` et `git switch feature/turn-review`.
+Voir [Développement](developpement.md) pour construire le paquet Windows.
+
+Git transporte les sources, le lockfile et la documentation, pas `node_modules`,
+le paquet compilé, les connexions, la configuration réseau ou les conversations
+personnelles. Ces réglages se font sur le poste concerné. Pour utiliser l’application
+sans construire sur place, transférer par un moyen autorisé **tout** le dossier
+`dist/win-unpacked` produit sur le poste personnel, pas seulement `Lullaby.exe`.
+La checklist ci-dessous reste à exécuter sur le poste professionnel.
+
 ## 1. Inventaire local
 
 Dans PowerShell, ce bloc indique les exécutables disponibles et leur version :
@@ -33,7 +59,10 @@ ne doit pas bloquer l'utilisation du paquet final. Le bloc ci-dessus les relève
 seulement pour l'inventaire. Le paquet Electron devra embarquer son runtime et
 ses bibliothèques ; aucun serveur web séparé, WSL ou Docker n'est prévu.
 
-L'installation ou l'intégration des moteurs Claude/Codex reste à déterminer.
+Le SDK Claude épinglé embarque un exécutable Windows natif. La recette personnelle
+a été réalisée avec Git for Windows et son Bash natif disponibles ; vérifier ces
+prérequis et l'autorisation de cet exécutable sur le poste pro. Codex sera détecté
+comme moteur externe configurable. Voir la [recette Claude](validation/claude-local.md).
 Un paquet unique peut lancer plusieurs exécutables : chacun peut être bloqué.
 Vérifier les exigences d'autorisation, de signature du paquet et des exécutables
 enfants, et la méthode de distribution acceptée (installateur ou autre).
@@ -68,6 +97,36 @@ Ne pas copier de jetons, de fichiers d'identifiants ou d'URL de proxy contenant
 un mot de passe dans Git ou dans un compte rendu.
 
 ## 3. Réseau et restrictions à identifier
+
+L'utilisateur indique lancer un proxy local avant Claude, avec une commande de
+mémoire `px -proxy <option>`. Le poste n'est pas disponible pour confirmation.
+Cela évoque [Px](https://github.com/genotrance/px), relais HTTP(S) vers un proxy
+d'entreprise pouvant gérer son authentification Windows ; identité de l'outil,
+version, arguments et port local restent à confirmer. La documentation Px emploie
+`--proxy=HOST:PORT` pour le proxy amont : ne pas confondre cette destination avec
+l'adresse locale que Claude doit utiliser.
+
+À relever localement lors du prochain accès au poste :
+
+- Nom/version du programme et méthode de démarrage actuellement utilisée.
+- Port d'écoute local et manière dont Claude reçoit ce réglage (terminal,
+  variables d'environnement ou configuration Claude).
+- Certificats éventuellement nécessaires et comportement quand Px est arrêté.
+- Résultat d'un essai Codex séparé : ChatGPT Desktop semble fonctionner sans Px,
+  selon l'utilisateur, mais cela ne valide pas le réseau du moteur Codex.
+
+Premier essai proposé : garder le lancement manuel existant de Px et configurer
+le processus Claude lancé par Lullaby pour utiliser ce relais. Ne pas réinstaller
+Px ni ajouter un runtime Python si le programme déjà présent suffit. Prévoir une
+configuration par moteur ; ne pas appliquer automatiquement le proxy Claude à
+Codex ou à toute l'application. Ne pas arrêter un Px démarré en dehors de Lullaby.
+L'utilisateur demande un bouton pour démarrer Px depuis Lullaby. Il est simulé
+dans la maquette ; le branchement réel attend la confirmation de l'exécutable,
+de ses arguments et de son port. Démarrer à la demande, sans activation automatique
+à l'ouverture de Lullaby. Si un relais existe déjà, le réutiliser ; un bouton d'arrêt
+ne doit arrêter qu'un processus lancé par Lullaby. Distinguer processus démarré,
+port disponible et connexion Claude vérifiée. Conserver le lancement externe pour
+le premier diagnostic réseau si la commande n'est pas encore configurée.
 
 - Le blocage Claude Desktop vise-t-il seulement l'application, ou aussi Claude Code CLI ?
 - Les exécutables locaux et processus enfants nécessaires sont-ils autorisés ?
@@ -107,9 +166,12 @@ Noter le plan disponible et l'état des quotas sans publier d'informations de co
 | Git, Node, npm, Claude, Codex : présents et versions | |
 | Autorisation d'utiliser les moteurs locaux | |
 | Type de proxy et certificat requis | |
+| Outil Px confirmé, port local et transmission du réglage à Claude | |
+| Claude avec relais local / Codex testé séparément | |
 | Connexion Claude par abonnement | |
 | Connexion Codex par abonnement | |
 | Réponse puis reprise de session | |
+| Reprise dans Lullaby d'une session Claude créée en CLI (essai ultérieur) | |
 | Installation du paquet et lancement des processus enfants | |
 | Téléchargement des dépendances (si développement sur ce poste) | |
 | Dossier de travail utilisable | |
@@ -117,3 +179,26 @@ Noter le plan disponible et l'état des quotas sans publier d'informations de co
 Conserver ce compte rendu localement ; ne pas ajouter les détails internes de
 l'entreprise au dépôt public. Un statut « à vérifier » est préférable à une
 conclusion obtenue uniquement à partir d'un test réseau partiel.
+
+## Réglages implémentés dans le socle Windows
+
+Le panneau Réseau configure chaque moteur séparément : adresse HTTP(S), certificat
+PEM et, en option, exécutable/arguments/port du relais. Les champs vides conservent
+l'environnement hérité, dont l'interface n'affiche que la présence des variables.
+La configuration est stockée dans network.json sous les données utilisateur de
+Lullaby, hors des projets. Aucun identifiant n'est à saisir dans ces champs.
+
+Le bouton de lancement est explicite. Un port déjà ouvert est traité comme relais
+externe : Lullaby le conserve à sa fermeture. Seul le processus lancé par Lullaby
+est arrêté. Un port ouvert ne prouve ni l'authentification au proxy d'entreprise ni
+l'accès au fournisseur ; le diagnostic puis un véritable échange restent nécessaires.
+Le relais doit rester en avant-plan dans son processus (pas de mode daemon détaché).
+
+Claude reçoit NODE_EXTRA_CA_CERTS ; Codex reçoit CODEX_CA_CERTIFICATE, avec son
+héritage SSL_CERT_FILE préservé si aucun chemin n'est saisi. Référence Codex :
+[certificats et authentification](https://learn.chatgpt.com/docs/auth#custom-ca-bundles).
+Ces réglages ne désactivent pas TLS et ne changent pas l'environnement global.
+
+Tests locaux : environnements séparés, URL/arguments avec secrets refusés, relais
+TCP externe conservé, lanceur absent, timeout, lancement/arrêt possédé et rechargement
+des profils. Px et le certificat d'entreprise réels restent non testés sur poste pro.

@@ -15,19 +15,16 @@ Contrainte confirmée : Docker et WSL sont bloqués. La cible est Windows natif,
 sans conteneur ni environnement Linux requis.
 Le poste professionnel devra être évalué séparément : logiciels autorisés, proxy,
 certificats et connexion aux comptes. Son fonctionnement n'est pas encore vérifié.
+La [direction artistique](direction-artistique.md) prend pour référence les interfaces
+Ankama/Dofus 3 : identité soignée, UX exigeante et animations discrètes.
 
-## Choix de réutilisation
+## Direction retenue pour la réutilisation
 
-| Option | Intérêt | Travail et limites |
-| --- | --- | --- |
-| Évaluer CloudCLI local et son système de plugins | Chat, projets et sessions Claude/Codex déjà annoncés ; compagnon desktop disponible | Vérifier les interactions et événements accessibles aux plugins pour le tableau de bord et les chronos |
-| Electron + React + assistant-ui + intégrations officielles | Identité et fonctionnement propres à Lullaby ; composants du chat réutilisés | Maintenir deux adaptateurs, le stockage et la gestion des processus |
-| Fork complet de CloudCLI | Permet de modifier tout le produit | Reprises des mises à jour et divergences à maintenir ; licence AGPL-3.0-or-later à examiner avant adoption |
-
-Recommandation révisée : application Electron indépendante, avec les bibliothèques
-du chat embarquées et les intégrations officielles. CloudCLI reste une référence
-fonctionnelle, pas un socle recommandé : son serveur et son cycle de maintenance
-ajouteraient une couche au déploiement. Il n'a pas été testé ici.
+Application Electron indépendante, avec React, les composants du chat embarqués
+et les intégrations officielles Claude/Codex. Réutiliser une bibliothèque graphique
+comme assistant-ui ; maintenir les deux adaptateurs, le stockage et la gestion
+des processus dans Lullaby. Aucune application tierce complète ni serveur séparé
+n'est prévu comme socle.
 
 Distinguer les dépendances de développement (outils de compilation), les
 bibliothèques embarquées (sans installation individuelle) et les exécutables
@@ -35,9 +32,7 @@ externes (susceptibles de nécessiter une autorisation). Réduire aussi le nombr
 de bibliothèques pour limiter maintenance et surface à auditer. Un seul paquet
 distribué ne signifie pas un seul processus ou exécutable autorisé.
 
-Sources : [CloudCLI](https://github.com/siteboon/claudecodeui/blob/main/README.md),
-[starter de plugin](https://github.com/cloudcli-ai/cloudcli-plugin-starter),
-[assistant-ui ExternalStoreRuntime](https://www.assistant-ui.com/docs/runtimes/custom/external-store).
+Source : [assistant-ui ExternalStoreRuntime](https://www.assistant-ui.com/docs/runtimes/custom/external-store).
 
 assistant-ui reste le candidat pour le chat, à condition de vérifier ses dépendances
 et son fonctionnement dans le paquet final. AI Elements est une alternative,
@@ -46,7 +41,30 @@ Source : [AI Elements](https://elements.ai-sdk.dev/docs).
 
 ## Les protocoles et l'affichage
 
+### Dossiers et sessions existantes
+
+Usage précisé par l'utilisateur : ouvrir un dossier de projet, lancer Claude CLI,
+puis reprendre une session avec `resume`. Le parcours de Lullaby doit donc distinguer
+le projet (dossier local) des conversations rattachées à ce dossier. Ouvrir un projet
+doit permettre de choisir une conversation existante ou d'en créer une nouvelle.
+
+Étudier la reprise de sessions Claude créées hors de Lullaby, au lieu de limiter
+durablement l'interface aux sessions qu'elle crée elle-même. Le SDK documente
+l'énumération, la lecture et la reprise par identifiant des sessions locales.
+Cette capacité est une piste d'intégration, pas un essai réussi avec la version
+installée. Préserver le dossier de travail et la configuration native ; ne pas
+reprendre simultanément une même session en CLI et dans Lullaby. La reprise d'un
+historique ne signifie pas s'attacher à un processus CLI déjà en cours.
+
+Source : [sessions du SDK Claude](https://code.claude.com/docs/en/agent-sdk/sessions).
+
+### Adaptateurs
+
 Nous intégrons des moteurs d'agents, pas uniquement les API de modèles.
+
+L'exigence de [fidélité aux moteurs](fidelite-moteurs.md) précise le chargement des
+instructions et skills, la reprise native et les critères de comparaison avec les
+clients officiels. Les catégories de sessions n'imposent aucun rôle restrictif.
 
 - Claude Agent SDK : flux de messages et d'événements via une bibliothèque TypeScript.
 - Codex App Server : commandes et événements JSON-RPC ; transport local possible via stdio.
@@ -128,6 +146,36 @@ paquet ; vérifier les exigences de signature et d'installation avec le poste ci
 
 ## Périmètre proposé de la première version
 
+### Trajectoire V0 / V1 / V2
+
+- **V0 : validation technique**, avec les deux abonnements sur Windows, puis essai
+  du paquet sur le poste professionnel.
+- **V1 : priorité au développement**, confirmée par l'utilisateur : projets,
+  sessions et agents, chat, outils et reprise fidèles aux moteurs. La rédaction et
+  la maintenance des README, décisions et autres documents du dépôt restent des
+  tâches accessibles aux agents dans ce même espace. Le périmètre détaillé reste
+  à préciser ; cette priorité ne valide pas toute la spécification V0.
+- **V2 : piste documentaire à explorer**, éventuellement un outil spécialisé et
+  une UX dédiée. Aucun format, éditeur ou périmètre n'est encore choisi.
+
+Piste UX proposée pour cette V2 : un espace « Documents » rattaché au projet,
+associant document consultable/éditable, conversation de l'agent et modifications
+à relire. Comparer cette approche à un simple aperçu à côté du chat avant de choisir.
+Réutiliser projets, sessions et identité Iris ; déterminer les formats et usages
+réels avant de retenir une bibliothèque. Cette exploration ne bloque pas la V1
+et n'ajoute aucune dépendance pour le moment.
+
+### Cible fonctionnelle
+
+Le besoin Git est confirmé : **graphe commits/branches/merges et arborescence des
+fichiers modifiés**, tous les deux. La [spécification Git V1](superpowers/specs/2026-09-26-v1-git-design.md)
+propose une première tranche de consultation avec diffs, après le socle fiable.
+Les [plans d'implémentation](feuille-de-route.md) détaillent ces deux jalons.
+
+Notifications Windows explicitement écartées pour le moment. Les alertes internes,
+badges et petits sons réglables restent une piste de confort, sans dépendance au
+centre de notifications du système ; leur intégration suit les jalons socle et Git.
+
 Le premier livrable sera la [V0 de validation locale](superpowers/specs/2026-09-26-v0-windows-design.md)
 sur le poste personnel, puis son paquet sera testé sur le poste professionnel.
 Les éléments ci-dessous décrivent la cible fonctionnelle plus large après cette V0.
@@ -137,13 +185,21 @@ Les éléments ci-dessous décrivent la cible fonctionnelle plus large après ce
 3. Voir plusieurs sessions et conserver leur activité en changeant de vue.
 4. Rouvrir l'application et retrouver les sessions persistées ; une exécution
    interrompue par l'arrêt de l'application est signalée, pas annoncée comme active.
-5. Ajouter un chrono humain par projet, pause, correction, note et export CSV.
-   Mesurer séparément la durée des exécutions des agents.
+5. Suivre le temps par session, avec cumul par projet, pause, correction, note et
+   export CSV. Afficher séparément le temps humain et la durée des exécutions des
+   agents. Un total global seul ne répond pas au besoin de reporting.
+
+Chaque entrée de temps se rattache à une session et à son projet. Le total projet
+agrège ses sessions sur la période choisie. Ne pas compter une même plage de temps
+humain dans plusieurs sessions simultanées ; le cumul des agents peut en revanche
+dépasser le temps écoulé si plusieurs agents travaillent en parallèle. La méthode
+de saisie/chronométrage et le traitement d'une activité hors session restent à cadrer.
 
 Hypothèses à confirmer : fournisseur choisi par session ; reprise par un autre
-fournisseur reportée ; un seul chrono humain actif ; première version centrée sur
-les sessions créées depuis Lullaby. Les sessions externes et les sous-agents ne
-sont pas automatiquement équivalents à des conversations pilotables.
+fournisseur reportée ; un seul chrono humain actif. Le premier essai crée ses propres
+sessions puis vérifie une reprise Claude depuis la CLI sur un dossier d'essai.
+Un catalogue complet des sessions externes et le pilotage des sous-agents restent
+à cadrer séparément.
 
 Le parallélisme sur un même dépôt doit utiliser des répertoires Git séparés ou
 empêcher les écritures simultanées. Pas de bascule automatique vers une API facturée.
@@ -169,6 +225,22 @@ interruption, une reprise, une perte de connexion et l'association correcte des
 événements quand deux sessions tournent. Aucun de ces essais n'a encore été exécuté.
 
 ## Inventaire local observé
+
+### Réseau propre à chaque moteur
+
+Le poste professionnel nécessite, d'après l'utilisateur, un relais local lancé
+avant Claude, probablement Px (identité et commande à confirmer). Prévoir des
+réglages proxy/certificats par moteur, appliqués à son processus au lancement,
+sans modifier l'environnement global ni écraser les réglages administrés.
+Le fonctionnement supposé de ChatGPT Desktop sans relais ne valide pas Codex.
+Un bouton de lancement du relais depuis Lullaby est demandé ; son branchement
+attend la confirmation de la commande Px. Le lancement est explicite, avec état
+visible ; aucun démarrage automatique à l'ouverture de Lullaby n'est décidé.
+Le premier diagnostic pourra réutiliser un relais lancé manuellement. Ne pas arrêter
+un processus démarré hors de Lullaby. Voir les relevés dans
+[la checklist professionnelle](poste-pro.md).
+
+### Exécutables du poste personnel
 
 Le 26 septembre 2026 : Git 2.49.0.windows.1, Node 22.16.0, npm 10.9.2,
 Claude Code 2.1.220 et Codex CLI 0.158.0-alpha.2.1 sont accessibles.

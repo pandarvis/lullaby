@@ -1,0 +1,20 @@
+appId: com.pandarvis.lullaby
+productName: Lullaby
+directories:
+  output: dist
+electronDist: node_modules/electron/dist
+asar: false
+npmRebuild: false
+files:
+  - out/**
+  - package.json
+  - resources/lullaby.ico
+  - '!**/*.map'
+  - '!**/tests/**'
+  - '!**/test/**'
+win:
+  icon: resources/lullaby.ico
+  target:
+    - target: dir
+      arch: [x64]
+  signExecutable: false
